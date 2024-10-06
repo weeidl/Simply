@@ -1,14 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_forward_app/screens/login/cubit/auth_cubit.dart';
-import 'package:sms_forward_app/screens/login/cubit/auth_segmented_control_cubit.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 
 class CustomSegmentedControl extends StatelessWidget {
-  final Map<AuthSegmentedControlState, Widget> children;
-  final AuthSegmentedControlState groupValue;
-  final ValueChanged<AuthSegmentedControlState> onValueChanged;
+  final Map<AuthStatus, Widget> children;
+  final AuthStatus groupValue;
+  final ValueChanged<AuthStatus> onValueChanged;
 
   const CustomSegmentedControl({
     Key? key,
@@ -26,11 +23,11 @@ class CustomSegmentedControl extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        children: children.keys.map((state) {
-          final isSelected = groupValue == state;
+        children: children.keys.map((status) {
+          final isSelected = groupValue == status;
           return Expanded(
             child: GestureDetector(
-              onTap: () => onValueChanged(state),
+              onTap: () => onValueChanged(status),
               child: Container(
                 margin: const EdgeInsets.all(4),
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -39,7 +36,7 @@ class CustomSegmentedControl extends StatelessWidget {
                   borderRadius: BorderRadius.circular(44),
                 ),
                 alignment: Alignment.center,
-                child: children[state],
+                child: children[status],
               ),
             ),
           );

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/screens/login/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/features/user_auth/presentation/pages/login_page.dart';
 import 'package:sms_forward_app/screens/home/home.dart';
+import 'package:sms_forward_app/screens/login/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/screens/login/screen/login_screen.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 

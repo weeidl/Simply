@@ -3,14 +3,14 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
+import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/home/cubit/fcm_cubit.dart';
 import 'package:sms_forward_app/screens/messages_list/cubit/messages_cubit.dart';
+import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
 import 'package:sms_forward_app/screens/splash/splash_screen.dart';
 import 'package:sms_forward_app/themes/colors.dart';
-
-import 'screens/login/cubit/auth_cubit.dart';
 
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}
 
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => AuthCubit(),
+          create: (context) => SplashCubit(),
         ),
         BlocProvider(
           create: (context) => FcmCubit()..init(),
@@ -46,9 +46,6 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CheckDeviceCubit(),
-        ),
-        BlocProvider(
-          create: (context) => AuthCubit(),
         ),
       ],
       child: BlocBuilder<FcmCubit, FcmState>(

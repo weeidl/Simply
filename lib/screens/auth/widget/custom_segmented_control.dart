@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sms_forward_app/screens/login/cubit/auth_cubit.dart';
+import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 
 class CustomSegmentedControl extends StatelessWidget {

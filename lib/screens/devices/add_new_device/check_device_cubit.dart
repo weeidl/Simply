@@ -56,7 +56,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
         deviceId: id,
         userId: _deviceRepository.id,
         deviceName: model,
-        isMainDevice: isMainDevice,
+        isMainDevice: true,
       ),
     );
   }
@@ -65,26 +65,27 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final bool? device = prefs.getBool('is_main_device');
     if (device ?? false) {
-      // updateInfoDevice();
+      updateInfoDevice();
     }
   }
 
-  // void updateInfoDevice() async {
-  //   var battery = Battery();
-  //   int batteryLevel = await battery.batteryLevel;
-  //
-  //   final Telephony telephony = Telephony.instance;
-  //   final NetworkType networkType = await telephony.dataNetworkType;
-  //
-  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  //   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-  //
-  //   _deviceRepository.addBatteryAndNetworkStatus(
-  //     batteryStatus: batteryLevel,
-  //     networkTypeStatus: networkType.name,
-  //     deviceId: androidInfo.id,
-  //   );
-  // }
+  void updateInfoDevice() async {
+    var battery = Battery();
+    int batteryLevel = await battery.batteryLevel;
+
+    final Telephony telephony = Telephony.instance;
+    final NetworkType networkType = await telephony.dataNetworkType;
+
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
+    print(batteryLevel);
+    _deviceRepository.addBatteryAndNetworkStatus(
+      batteryStatus: batteryLevel,
+      networkTypeStatus: networkType.name,
+      deviceId: androidInfo.id,
+    );
+  }
 
   Future<void> saveDeviceTokenToPreferences(String? token) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

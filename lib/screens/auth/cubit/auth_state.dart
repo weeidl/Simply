@@ -2,21 +2,15 @@ part of 'auth_cubit.dart';
 
 enum AuthStatus { login, register }
 
-@immutable
-abstract class AuthState {}
-
-class AuthInit extends AuthState {}
-
-class AuthAuthenticated extends AuthState {}
-
-class AuthUnauthenticated extends AuthState {
+class AuthState {
   final AuthStatus status;
+  final String? authErrorMessage;
+
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController nameController;
-  final String? authErrorMessage;
 
-  AuthUnauthenticated({
+  AuthState({
     required this.status,
     required this.emailController,
     required this.passwordController,
@@ -24,16 +18,16 @@ class AuthUnauthenticated extends AuthState {
     this.authErrorMessage,
   });
 
-  AuthUnauthenticated copyWith({
+  AuthState copyWith({
     AuthStatus? status,
     String? authErrorMessage,
   }) {
-    return AuthUnauthenticated(
+    return AuthState(
       status: status ?? this.status,
       emailController: emailController,
       passwordController: passwordController,
       nameController: nameController,
-      authErrorMessage: authErrorMessage,
+      authErrorMessage: authErrorMessage ?? this.authErrorMessage,
     );
   }
 }

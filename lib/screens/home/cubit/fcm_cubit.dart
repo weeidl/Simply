@@ -9,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/bloc/notification/background_message.dart';
-import 'package:sms_forward_app/bloc/notification/notification.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/models/messages.dart';
@@ -72,7 +71,7 @@ class FcmCubit extends Cubit<FcmState> {
         _deviceRepository.id,
       );
       final Messages messages = Messages.updateFireStore(msg);
-      final MessageThread messageTitle = MessageThread.updateFireStore(msg);
+      final MessageDetails messageTitle = MessageDetails.updateFireStore(msg);
 
       await sendPushMessages(tokens, messages);
       await _messagesRepository.sendMessageFirebase(
@@ -90,7 +89,7 @@ class FcmCubit extends Cubit<FcmState> {
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const DarwinInitializationSettings iosInitialize =
         DarwinInitializationSettings();
-    final InitializationSettings initializationSettings =
+    const InitializationSettings initializationSettings =
         InitializationSettings(
       android: androidInitialize,
       iOS: iosInitialize,

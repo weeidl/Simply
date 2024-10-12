@@ -28,7 +28,7 @@ class MessagesRepository {
     return response;
   }
 
-  Future<PaginatedResponse<MessageThread>> fetchMessage(
+  Future<PaginatedResponse<MessageDetails>> fetchMessage(
     String id, {
     int limit = 20,
     DocumentSnapshot? startAfter,
@@ -39,9 +39,9 @@ class MessagesRepository {
 
     final response = await _firebaseApi.fetchPaginatedData(
       collection: collection,
-      fromJson: (data) => MessageThread.fromJson(data),
+      fromJson: (data) => MessageDetails.fromJson(data),
       limit: limit,
-      descending: false,
+      // descending: false,
       startAfter: startAfter,
       orderByField: 'date',
     );
@@ -63,7 +63,7 @@ class MessagesRepository {
   }
 
   Future<void> sendMessageFirebase({
-    required MessageThread messageTitle,
+    required MessageDetails messageTitle,
     required Messages messages,
   }) async {
     final documentReference = _firebaseApi.documentReference(_url);

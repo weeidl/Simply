@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/widget/custom_progress_indicator.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 import 'package:sms_forward_app/themes/text_style.dart';

@@ -5,10 +5,10 @@ import 'package:sms_forward_app/repositories/messages_repository.dart';
 import 'package:sms_forward_app/screens/common/standard_list_cubit.dart';
 import 'package:sms_forward_app/screens/common/status.dart';
 
-class MessagesCubit extends StandardListCubit<Messages> {
+class MessagesListCubit extends StandardListCubit<Messages> {
   final MessagesRepository messagesRepository;
 
-  MessagesCubit({required this.messagesRepository})
+  MessagesListCubit({required this.messagesRepository})
       : super(
           fetch: ({DocumentSnapshot? startAfter}) {
             return messagesRepository.fetchMessages(startAfter: startAfter);

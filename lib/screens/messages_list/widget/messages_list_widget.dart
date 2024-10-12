@@ -1,61 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:sms_forward_app/extensions.dart';
+import 'package:sms_forward_app/models/messages.dart';
+import 'package:sms_forward_app/screens/message_details/screen/message_details_screen.dart';
 import 'package:sms_forward_app/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 import 'package:sms_forward_app/themes/text_style.dart';
 
-class MessagesWidget extends StatelessWidget {
-  final String imagePath;
-  final String title;
-  final String message;
-  final String time;
-  final int? notificationCount;
+class MessagesListWidget extends StatelessWidget {
+  final Messages message;
 
-  const MessagesWidget({
+  const MessagesListWidget({
     super.key,
-    required this.imagePath,
-    required this.title,
     required this.message,
-    required this.time,
-    this.notificationCount,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AvatarWithIndicator(
-          imagePath: imagePath,
-          notificationCount: notificationCount,
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    final unreadMessageCount = message.unreadMessagesCount;
+    final notificationCount =
+        unreadMessageCount == 0 ? null : unreadMessageCount;
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MessageDetailsScreen.route(
+            id: message.id,
+            title: message.title,
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AvatarWithIndicator(notificationCount: notificationCount),
+            const Gap(8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: AppTextStyle.title5(AppColor.greyDark),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.title,
+                        style: AppTextStyle.title5(AppColor.greyDark),
+                      ),
+                      const Spacer(),
+                      Text(
+                        message.lastMessageDate.formatDateTime(),
+                        style: AppTextStyle.captionS(AppColor.grey),
+                      ),
+                    ],
                   ),
-                  const Spacer(),
-                  Text(time),
+                  const Gap(4),
+                  Text(
+                    message.lastMessage,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.captionSM(AppColor.greyDark),
+                  ),
                 ],
               ),
-              const SizedBox(height: 4.0),
-              Text(
-                message,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyle.captionSM(AppColor.greyDark),
-                // softWrap: true,
-              ),
-            ],
-          ),
+            ),
+            const Gap(8),
+          ],
         ),
-        const SizedBox(width: 8),
-      ],
+      ),
     );
   }
 }

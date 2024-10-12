@@ -4,9 +4,8 @@
 // import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:sms_forward_app/models/messages.dart';
 //
-const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
-const authorizationKey =
-    'AAAAg2Ra7cE:APA91bHa6clWgpg3u8S66q9ZeMwV08sS_3T54pfi2A0XlgvxYANsgmc5QI7lDu7vHH20u96Gy_4Ywnt9Qdo3L2rcJPW2DmMbC-Tyxz6B44RM4tL8QM7gOKdaI9j2cnEJlsgpcMzbRcCw';
+// const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
+// const authorizationKey = '';
 //
 // Future<void> sendPushMessages(List<String> tokens, Messages messages) async {
 //   print('-=-=--=-=-=-sdfsdfsdfdsfsdfdsf1');

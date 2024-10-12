@@ -1,6 +1,3 @@
-import 'dart:ui';
-
-import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/painting.dart';
 
 abstract class AppTextStyle {
@@ -144,7 +141,7 @@ abstract class AppTextStyle {
   static TextStyle captionS(Color color) {
     return TextStyle(
       fontSize: 12,
-      fontWeight: FontWeight.w400,
+      fontWeight: FontWeight.w300,
       color: color,
       letterSpacing: letterSpacing,
     );

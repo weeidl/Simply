@@ -1,18 +1,10 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:sms_forward_app/models/device.dart';
 import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/widget/device_info_widget.dart';
-import 'package:sms_forward_app/screens/widget/custom_progress_indicator.dart';
-import 'package:http/http.dart' as http;
 import 'package:sms_forward_app/themes/colors.dart';
-import 'dart:convert';
 
 import 'package:sms_forward_app/themes/text_style.dart';
 

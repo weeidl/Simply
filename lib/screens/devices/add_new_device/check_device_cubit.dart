@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:battery_plus/battery_plus.dart';
-import 'package:bloc/bloc.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/models/device.dart';
 import 'package:sms_forward_app/repositories/device_repository.dart';
@@ -79,7 +79,6 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
-    print(batteryLevel);
     _deviceRepository.addBatteryAndNetworkStatus(
       batteryStatus: batteryLevel,
       networkTypeStatus: networkType.name,

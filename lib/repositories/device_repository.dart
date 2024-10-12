@@ -10,7 +10,7 @@ class DeviceRepository {
 
   Future<void> update(
       {required Device device, required String deviceID}) async {
-    final itemsBackend = await _firebaseApi.itemsCollection(_url);
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
 
     await itemsBackend.doc(deviceID).set(
           device.toMap(),
@@ -21,7 +21,7 @@ class DeviceRepository {
   Future<List<String>> getTokensForAllDevices(String userId) async {
     try {
       final CollectionReference<Map<String, dynamic>> collectionReference =
-          await _firebaseApi.itemsCollection(_url);
+          _firebaseApi.itemsCollection(_url);
 
       final querySnapshot = await collectionReference.get();
 
@@ -42,7 +42,7 @@ class DeviceRepository {
   }
 
   Future<List<Device>> fetch() async {
-    final itemsBackend = await _firebaseApi.itemsCollection(_url);
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
     final snapshot = await itemsBackend.get();
 
     List<Device> device = snapshot.docs.map((doc) {
@@ -57,7 +57,7 @@ class DeviceRepository {
     required int batteryStatus,
     required String networkTypeStatus,
   }) async {
-    final itemsBackend = await _firebaseApi.itemsCollection(_url);
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
 
     await itemsBackend.doc(deviceId).set(
       {

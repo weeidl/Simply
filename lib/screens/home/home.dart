@@ -2,13 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/screen/devices_screen.dart';
 import 'package:sms_forward_app/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:sms_forward_app/screens/settings/settings_screen.dart';
-import 'package:sms_forward_app/screens/test.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 
 class HomePage extends StatefulWidget {

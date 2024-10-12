@@ -1,9 +1,9 @@
-class MessageThread {
+class MessageDetails {
   final String text;
   final DateTime date;
   bool isRead;
 
-  MessageThread({
+  MessageDetails({
     required this.text,
     required this.date,
     this.isRead = false,
@@ -17,15 +17,15 @@ class MessageThread {
     };
   }
 
-  factory MessageThread.fromJson(Map<String, dynamic> json) {
-    return MessageThread(
+  factory MessageDetails.fromJson(Map<String, dynamic> json) {
+    return MessageDetails(
       text: json['text'],
       date: DateTime.parse(json['date']),
       isRead: json['isRead'] ?? false,
     );
   }
 
-  static MessageThread updateFireStore(msg) => MessageThread(
+  static MessageDetails updateFireStore(msg) => MessageDetails(
         text: msg.body ?? '',
         date: DateTime.now(),
       );

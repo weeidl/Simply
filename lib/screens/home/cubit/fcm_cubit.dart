@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/bloc/notification/background_message.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
+import 'package:sms_forward_app/key.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/models/messages.dart';
 import 'package:sms_forward_app/repositories/device_repository.dart';
@@ -19,7 +20,6 @@ import 'package:telephony/telephony.dart';
 part 'fcm_state.dart';
 
 const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
-const authorizationKey = '';
 
 class FcmCubit extends Cubit<FcmState> {
   final Telephony telephony = Telephony.instance;

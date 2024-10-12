@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sms_forward_app/bloc/notification/notification.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/models/messages.dart';
@@ -36,6 +37,5 @@ void getTokenBackground(Messages messages) async {
     deviceRepository.id,
   );
 
-  // sendPushMessages(token, messages);
-  print('sendPushMessages(token, messages);');
+  sendPushMessages(token, messages);
 }

@@ -28,4 +28,8 @@ class MessagesListCubit extends StandardListCubit<Messages> {
       ));
     });
   }
+
+  Future<void> updatedUnreadMessagesCount(Messages message) async {
+    await messagesRepository.update(message.id, message.title);
+  }
 }

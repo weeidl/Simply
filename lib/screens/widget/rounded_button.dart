@@ -62,7 +62,7 @@ class RoundedButton extends StatelessWidget {
                 if (states.contains(WidgetState.disabled)) {
                   return disabledBackgroundColor ?? AppColor.orange;
                 }
-                return buttonColor ?? AppColor.violet;
+                return buttonColor ?? AppColor.orange;
               },
             ),
           ),

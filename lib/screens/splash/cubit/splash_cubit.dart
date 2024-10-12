@@ -19,6 +19,16 @@ class SplashCubit extends Cubit<SplashState> {
     });
   }
 
+  Future<bool> signOut() async {
+    try {
+      await _auth.signOut();
+      emit(AuthUnauthenticated());
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   @override
   Future<void> close() {
     _authSubscription?.cancel();

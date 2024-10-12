@@ -68,17 +68,17 @@ class MessagesRepository {
   }) async {
     final documentReference = _firebaseApi.documentReference(_url);
 
-    // Обновляем информацию о сообщениях
     DocumentReference docRef =
         documentReference.collection(_messages).doc(messages.title);
+
     await _setData(
       docRef: docRef,
       data: {
         _messages: messages.toJson(),
+        'unread_messages_count': FieldValue.increment(1),
       },
     );
 
-    // Добавляем новое сообщение в коллекцию
     CollectionReference messagesCollection = documentReference
         .collection(_message)
         .doc('items')

@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/bloc/notification/background_message.dart';
+import 'package:sms_forward_app/bloc/notification/notification.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
 import 'package:sms_forward_app/key.dart';
 import 'package:sms_forward_app/models/message.dart';
@@ -156,66 +157,6 @@ class FcmCubit extends Cubit<FcmState> {
       );
     } catch (e) {
       debugPrint('Error showing notification: $e');
-    }
-  }
-
-  Future<void> sendPushMessages(List<String> tokens, Messages messages) async {
-    try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final deviceToken = prefs.getString('device_token');
-      final headers = <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'key=$authorizationKey',
-      };
-      final messagePayload = jsonEncode({
-        'priority': 'high',
-        'content_available': true,
-        'apns': {
-          'headers': {
-            'apns-priority': '10',
-          },
-          'payload': {
-            'aps': {
-              'alert': {
-                'title': messages.title,
-                'body': messages.lastMessage,
-              },
-              'sound': 'default',
-            },
-          },
-        },
-        'data': {
-          'click_action': 'FLUTTER_NOTIFICATION_CLICK',
-          'status': 'done',
-          'body': messages.lastMessage,
-          'title': messages.title,
-        },
-        'notification': {
-          'title': messages.title,
-          'body': messages.lastMessage,
-        },
-      });
-
-      var sendFutures = <Future>[];
-
-      for (String token in tokens) {
-        if (token != deviceToken) {
-          sendFutures.add(
-            http.post(
-              Uri.parse(fcmServerUrl),
-              headers: headers,
-              body: jsonEncode({
-                ...json.decode(messagePayload),
-                'to': token,
-              }),
-            ),
-          );
-        }
-      }
-
-      await Future.wait(sendFutures);
-    } catch (e) {
-      log("Error sending push messages: $e");
     }
   }
 }

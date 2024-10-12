@@ -18,10 +18,10 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
   late final List<Widget> _tabs;
 
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
         statusBarColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.dark,
         statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
       child: Scaffold(
         backgroundColor: _selectedIndex == 1 ? AppColor.orange : AppColor.white,
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        body: SafeArea(child: _tabs[_selectedIndex]),
+        body: _tabs[_selectedIndex],
       ),
     );
   }

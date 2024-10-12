@@ -1,17 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:developer';
-import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/bloc/notification/background_message.dart';
 import 'package:sms_forward_app/bloc/notification/notification.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
-import 'package:sms_forward_app/key.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/models/messages.dart';
 import 'package:sms_forward_app/repositories/device_repository.dart';

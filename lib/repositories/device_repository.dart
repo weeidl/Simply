@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sms_forward_app/models/device.dart';
 import 'package:sms_forward_app/repositories/firebase_api.dart';
@@ -36,7 +38,7 @@ class DeviceRepository {
 
       return tokens;
     } catch (e) {
-      print("Произошла ошибка при получении токенов устройств: $e");
+      log("Произошла ошибка при получении токенов устройств: $e");
       return [];
     }
   }

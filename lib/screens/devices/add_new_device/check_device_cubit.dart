@@ -19,7 +19,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
 
   Future checkDevice() async {
     updateInfoMainDevice();
-    final isNewDevice = await checkDeviceTokenToPreferences();
+    // final isNewDevice = await checkDeviceTokenToPreferences();
 
     // if (isNewDevice) {
     await FirebaseMessaging.instance.getToken().then((token) async {
@@ -34,7 +34,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
 
   Future<void> saveDevice(String token) async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    final isMainDevice = await checkMainDevice();
+    // final isMainDevice = await checkMainDevice();
     final String id;
     final String model;
 

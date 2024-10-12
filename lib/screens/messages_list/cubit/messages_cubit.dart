@@ -1,27 +1,31 @@
-import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:sms_forward_app/models/message.dart';
+import 'package:sms_forward_app/bloc/update_message_stream.dart';
 import 'package:sms_forward_app/models/messages.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
+import 'package:sms_forward_app/screens/common/standard_list_cubit.dart';
+import 'package:sms_forward_app/screens/common/status.dart';
 
-part 'messages_state.dart';
-
-class MessagesCubit extends Cubit<MessagesState> {
+class MessagesCubit extends StandardListCubit<Messages> {
   final MessagesRepository messagesRepository;
 
-  MessagesCubit({required this.messagesRepository}) : super(MessagesInitial());
+  MessagesCubit({required this.messagesRepository})
+      : super(
+          fetch: ({DocumentSnapshot? startAfter}) {
+            return messagesRepository.fetchMessages(startAfter: startAfter);
+          },
+        ) {
+    fetch();
+    initStream();
+  }
 
-  Future<void> fetch() async {
-    emit(MessagesLoading());
-
-    // try {
-    final response = await messagesRepository.fetchMessages();
-
-    // state is MessagesLoaded
-    emit(MessagesLoaded(items: response));
-    // } catch (e) {
-    //   emit(MessagesError(message: e.toString()));
-    // }
+  void initStream() {
+    UpdateMessageStream.stream.listen((event) async {
+      final response = await messagesRepository.fetchMessages();
+      emit(state.copyWith(
+        items: [...state.items, ...response.items],
+        lastDocument: response.lastDocument,
+        status: StandardStatus.loaded,
+      ));
+    });
   }
 }

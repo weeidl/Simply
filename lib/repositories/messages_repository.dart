@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sms_forward_app/models/paginated_response.dart';
 import 'package:sms_forward_app/repositories/firebase_api.dart';
 import 'package:sms_forward_app/models/messages.dart';
-
 import '../models/message.dart';
 
 class MessagesRepository {
@@ -10,50 +10,55 @@ class MessagesRepository {
   static const _messages = "messages";
   static const _message = "message";
 
-  Future<List<Messages>> fetchMessages() async {
-    final documentReference = await _firebaseApi.documentReference(_url);
+  Future<PaginatedResponse<Messages>> fetchMessages({
+    int limit = 20,
+    DocumentSnapshot? startAfter,
+  }) async {
+    final documentReference = _firebaseApi.documentReference(_url);
+    final collection = documentReference.collection(_messages);
 
-    final response = await documentReference.collection(_messages).get();
+    final response = await _firebaseApi.fetchPaginatedData(
+      collection: collection,
+      fromJson: (data) => Messages.fromJson(data[_messages]),
+      limit: limit,
+      startAfter: startAfter,
+      orderByField: 'messages.last_message_date',
+    );
 
-    List<Messages> messagesWithTitles = response.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      return Messages.fromJson(data[_messages]);
-    }).toList();
-
-    messagesWithTitles.sort((a, b) {
-      return b.lastMessageDate.compareTo(a.lastMessageDate);
-    });
-
-    return messagesWithTitles;
+    return response;
   }
 
-  Future<List<MessageThread>> fetchMessage(String id) async {
-    final documentSnapshot = await _firebaseApi.documentReference(_url);
+  Future<PaginatedResponse<MessageThread>> fetchMessage(
+    String id, {
+    int limit = 20,
+    DocumentSnapshot? startAfter,
+  }) async {
+    final documentReference = _firebaseApi.documentReference(_url);
+    final collection =
+        documentReference.collection(_message).doc('items').collection(id);
 
-    final messagesDocument =
-        documentSnapshot.collection(_message).doc('items').collection(id);
+    final response = await _firebaseApi.fetchPaginatedData(
+      collection: collection,
+      fromJson: (data) => MessageThread.fromJson(data),
+      limit: limit,
+      descending: false,
+      startAfter: startAfter,
+      orderByField: 'date',
+    );
 
-    final response = await messagesDocument.get();
-
-    List<MessageThread> messagesWithTitles = response.docs.map((doc) {
-      Map<String, dynamic> data = doc.data();
-      return MessageThread.fromJson(data);
-    }).toList();
-
-    return messagesWithTitles;
+    return response;
   }
 
   Future<void> update(String id, String title) async {
-    final documentSnapshot = await _firebaseApi.documentReference(_url);
-
+    final documentReference = _firebaseApi.documentReference(_url);
     DocumentReference docRef =
-        documentSnapshot.collection(_messages).doc(title);
+        documentReference.collection(_messages).doc(title);
 
-    await docRef.set(
-      {
+    await _setData(
+      docRef: docRef,
+      data: {
         _messages: {"unread_messages_count": 0},
       },
-      SetOptions(merge: true),
     );
   }
 
@@ -61,23 +66,31 @@ class MessagesRepository {
     required MessageThread messageTitle,
     required Messages messages,
   }) async {
-    final documentSnapshot = await _firebaseApi.documentReference(_url);
+    final documentReference = _firebaseApi.documentReference(_url);
 
+    // Обновляем информацию о сообщениях
     DocumentReference docRef =
-        documentSnapshot.collection(_messages).doc(messages.title);
-
-    await docRef.set(
-      {
+        documentReference.collection(_messages).doc(messages.title);
+    await _setData(
+      docRef: docRef,
+      data: {
         _messages: messages.toJson(),
       },
-      SetOptions(merge: true),
     );
 
-    CollectionReference messagesCollection = documentSnapshot
+    // Добавляем новое сообщение в коллекцию
+    CollectionReference messagesCollection = documentReference
         .collection(_message)
         .doc('items')
         .collection(messages.id);
-
     await messagesCollection.add(messageTitle.toJson());
+  }
+
+  Future<void> _setData({
+    required DocumentReference docRef,
+    required Map<String, dynamic> data,
+    bool merge = true,
+  }) async {
+    await docRef.set(data, SetOptions(merge: merge));
   }
 }

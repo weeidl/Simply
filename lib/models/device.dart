@@ -28,7 +28,7 @@ class Device {
       'device_name': deviceName,
       'device_id': deviceId,
       'battery_level': batteryLevel,
-      "is_main_device": isMainDevice,
+      "is_main_device": true,
       "network_type": networkType,
       "date_update_info": dateUpdateInfo,
     };
@@ -40,7 +40,7 @@ class Device {
       token: map['token'],
       deviceName: map['device_name'],
       deviceId: map['device_id'],
-      isMainDevice: map['is_main_device'],
+      isMainDevice: true,
       batteryLevel: map['battery_level'],
       networkType: map['network_type'],
       dateUpdateInfo: map['date_update_info'],

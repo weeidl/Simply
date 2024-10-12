@@ -8,6 +8,7 @@ import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/screen/devices_screen.dart';
 import 'package:sms_forward_app/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:sms_forward_app/screens/settings/settings_screen.dart';
+import 'package:sms_forward_app/screens/test.dart';
 import 'package:sms_forward_app/themes/colors.dart';
 
 class HomePage extends StatefulWidget {

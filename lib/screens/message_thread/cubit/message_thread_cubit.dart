@@ -1,27 +1,23 @@
-import 'dart:developer';
-
-import 'package:bloc/bloc.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:sms_forward_app/screens/common/standard_list_cubit.dart';
 
-part 'message_thread_state.dart';
-
-class MessageThreadCubit extends Cubit<MessageThreadState> {
+class MessageThreadCubit extends StandardListCubit<MessageThread> {
   final MessagesRepository messagesRepository;
+  final String id;
 
-  MessageThreadCubit({required this.messagesRepository})
-      : super(MessageThreadInitial());
-
-  Future<void> fetch(String id, String title) async {
-    emit(MessageThreadLoading());
-
-    try {
-      final response = await messagesRepository.fetchMessage(id);
-      await messagesRepository.fetchMessage(id);
-      await messagesRepository.update(id, title);
-      emit(MessageThreadLoaded(items: response));
-    } catch (e) {
-      emit(MessageError(message: e.toString()));
-    }
+  MessageThreadCubit({
+    required this.messagesRepository,
+    required this.id,
+  }) : super(
+          fetch: ({DocumentSnapshot? startAfter}) =>
+              messagesRepository.fetchMessage(
+            id,
+            limit: 20,
+            startAfter: startAfter,
+          ),
+        ) {
+    fetch();
   }
 }

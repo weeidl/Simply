@@ -21,44 +21,41 @@ class MessagesWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AvatarWithIndicator(
-            imagePath: imagePath,
-            notificationCount: notificationCount,
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AvatarWithIndicator(
+          imagePath: imagePath,
+          notificationCount: notificationCount,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyle.title5(AppColor.greyDark),
+                  ),
+                  const Spacer(),
+                  Text(time),
+                ],
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                message,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyle.captionSM(AppColor.greyDark),
+                // softWrap: true,
+              ),
+            ],
           ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyle.title5(AppColor.greyDark),
-                    ),
-                    const Spacer(),
-                    Text(time),
-                  ],
-                ),
-                const SizedBox(height: 4.0),
-                Text(
-                  message,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.captionSM(AppColor.greyDark),
-                  // softWrap: true,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+        ),
+        const SizedBox(width: 8),
+      ],
     );
   }
 }

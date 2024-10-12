@@ -7,6 +7,7 @@ import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/home/cubit/fcm_cubit.dart';
+import 'package:sms_forward_app/screens/message_thread/cubit/message_thread_cubit.dart';
 import 'package:sms_forward_app/screens/messages_list/cubit/messages_cubit.dart';
 import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
 import 'package:sms_forward_app/screens/splash/splash_screen.dart';

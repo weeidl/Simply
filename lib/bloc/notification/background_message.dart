@@ -37,5 +37,6 @@ void getTokenBackground(Messages messages) async {
     deviceRepository.id,
   );
 
-  sendPushMessages(token, messages);
+  // sendPushMessages(token, messages);
+  print('sendPushMessages(token, messages);');
 }

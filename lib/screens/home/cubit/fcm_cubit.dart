@@ -19,8 +19,7 @@ import 'package:telephony/telephony.dart';
 part 'fcm_state.dart';
 
 const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
-const authorizationKey =
-    'AAAAg2Ra7cE:APA91bHa6clWgpg3u8S66q9ZeMwV08sS_3T54pfi2A0XlgvxYANsgmc5QI7lDu7vHH20u96Gy_4Ywnt9Qdo3L2rcJPW2DmMbC-Tyxz6B44RM4tL8QM7gOKdaI9j2cnEJlsgpcMzbRcCw';
+const authorizationKey = '';
 
 class FcmCubit extends Cubit<FcmState> {
   final Telephony telephony = Telephony.instance;

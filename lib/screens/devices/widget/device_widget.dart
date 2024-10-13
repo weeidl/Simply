@@ -1,15 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
-import 'package:sms_forward_app/extensions.dart';
 import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
 import 'package:sms_forward_app/screens/devices/settings/device_settings_modal.dart';
 import 'package:sms_forward_app/screens/devices/widget/device_info_widget.dart';
 import 'package:sms_forward_app/themes/colors.dart';
-
-import 'package:sms_forward_app/themes/text_style.dart';
 
 class DeviceWidget extends StatelessWidget {
   final Device device;

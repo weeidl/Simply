@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sms_forward_app/main.dart';
-import 'package:sms_forward_app/screens/auth/screen/auth_screen.dart';
 import 'package:sms_forward_app/screens/settings/widget/setting_widget.dart';
 import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
 import 'package:sms_forward_app/screens/widget/app_bar_widget.dart';
@@ -19,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BackgroundWidget(
       appBar: const AppBarWidget(
-        nameScreen: 'Setting',
+        nameScreen: 'Settings',
         isLight: false,
       ),
       child: SingleChildScrollView(
@@ -52,12 +51,11 @@ class SettingsScreen extends StatelessWidget {
               buttonColor: AppColor.greyLight,
               textStyle: AppTextStyle.paragraph(AppColor.orange),
               onPressed: () async {
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-
                 final splashCubit = context.read<SplashCubit>();
                 final navigator = Navigator.of(context);
 
+                final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
                 await prefs.setBool('is_new_device', false);
 
                 final signOut = await splashCubit.signOut();

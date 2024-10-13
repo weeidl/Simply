@@ -34,14 +34,15 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
     super.initState();
   }
 
+  double heightModal(BuildContext context) {
+    final height = MediaQuery.of(context).size.height;
+    return height < 650 ? height * 0.95 : height * 0.85;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: height * 0.95,
-        minHeight: height * 0.85,
-      ),
+    return SizedBox(
+      height: heightModal(context),
       child: Padding(
         padding: EdgeInsets.only(
           bottom: useSafeArea ? MediaQuery.of(context).viewPadding.bottom : 0,

@@ -75,7 +75,6 @@ class MessagesRepository {
       docRef: docRef,
       data: {
         _messages: messages.toJson(),
-        'unread_messages_count': FieldValue.increment(1),
       },
     );
 

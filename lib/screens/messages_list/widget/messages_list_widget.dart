@@ -27,6 +27,7 @@ class MessagesListWidgetState extends State<MessagesListWidget> {
   @override
   void initState() {
     super.initState();
+
     unreadMessagesCount = widget.message.unreadMessagesCount != 0
         ? widget.message.unreadMessagesCount
         : null;

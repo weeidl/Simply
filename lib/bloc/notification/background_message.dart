@@ -1,9 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:sms_forward_app/bloc/notification/notification.dart';
 import 'package:sms_forward_app/bloc/update_message_stream.dart';
 import 'package:sms_forward_app/models/message.dart';
 import 'package:sms_forward_app/models/messages.dart';
-import 'package:sms_forward_app/repositories/device_repository.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
 import 'package:telephony/telephony.dart';
 

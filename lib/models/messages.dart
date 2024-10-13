@@ -21,6 +21,7 @@ class Messages {
       'title': title,
       'last_message': lastMessage,
       'last_message_date': lastMessageDate.toIso8601String(),
+      'unread_messages_count': FieldValue.increment(1),
       'createdAt': FieldValue.serverTimestamp(),
     };
   }

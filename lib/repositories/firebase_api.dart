@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sms_forward_app/models/paginated_response.dart';
+import 'package:simply/models/paginated_response.dart';
 
 class FirebaseApi {
   final FirebaseAuth _auth = FirebaseAuth.instance;

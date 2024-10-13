@@ -1,13 +1,13 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sms_forward_app/screens/widget/dialogs/modal_dialog.dart';
+import 'package:simply/screens/widget/dialogs/modal_dialog.dart';
 
 // Package imports:
 
 // Project imports:
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class MessageDialog {
   static Future<void> show({

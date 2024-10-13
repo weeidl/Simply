@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sms_forward_app/models/paginated_response.dart';
-import 'package:sms_forward_app/repositories/firebase_api.dart';
-import 'package:sms_forward_app/models/messages.dart';
+import 'package:simply/models/paginated_response.dart';
+import 'package:simply/repositories/firebase_api.dart';
+import 'package:simply/models/messages.dart';
 import '../models/message.dart';
 
 class MessagesRepository {

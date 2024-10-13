@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/repositories/device_repository.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/repositories/device_repository.dart';
 
 part 'device_state.dart';
 

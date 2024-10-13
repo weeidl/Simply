@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/devices/settings/device_settings_widget.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/screens/devices/settings/device_settings_widget.dart';
 
 class DeviceSettingsModal {
   static Future<void> show({

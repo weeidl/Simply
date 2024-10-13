@@ -4,14 +4,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/repositories/messages_repository.dart';
-import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
-import 'package:sms_forward_app/screens/home/cubit/fcm_cubit.dart';
-import 'package:sms_forward_app/screens/messages_list/cubit/messages_list_cubit.dart';
-import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
-import 'package:sms_forward_app/screens/splash/splash_screen.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/repositories/messages_repository.dart';
+import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
+import 'package:simply/screens/devices/cubit/device_cubit.dart';
+import 'package:simply/screens/home/cubit/fcm_cubit.dart';
+import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
+import 'package:simply/screens/splash/cubit/splash_cubit.dart';
+import 'package:simply/screens/splash/splash_screen.dart';
+import 'package:simply/themes/colors.dart';
 import 'package:workmanager/workmanager.dart';
 
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}

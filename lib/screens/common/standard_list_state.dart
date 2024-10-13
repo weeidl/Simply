@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sms_forward_app/screens/common/status.dart';
+import 'package:simply/screens/common/status.dart';
 
 @immutable
 class StandardListState<T> {

@@ -1,8 +1,8 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
-import 'package:sms_forward_app/screens/widget/rounded_button.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/screens/widget/rounded_button.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class ModalDialog extends StatelessWidget {
   final String? text;

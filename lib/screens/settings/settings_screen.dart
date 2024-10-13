@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_forward_app/main.dart';
-import 'package:sms_forward_app/screens/settings/widget/setting_widget.dart';
-import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
-import 'package:sms_forward_app/screens/widget/app_bar_widget.dart';
-import 'package:sms_forward_app/screens/widget/bacgraund_widget.dart';
-import 'package:sms_forward_app/screens/widget/rounded_button.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/main.dart';
+import 'package:simply/screens/settings/widget/setting_widget.dart';
+import 'package:simply/screens/splash/cubit/splash_cubit.dart';
+import 'package:simply/screens/widget/app_bar_widget.dart';
+import 'package:simply/screens/widget/bacgraund_widget.dart';
+import 'package:simply/screens/widget/rounded_button.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

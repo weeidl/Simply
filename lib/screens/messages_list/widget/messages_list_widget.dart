@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:sms_forward_app/extensions.dart';
-import 'package:sms_forward_app/models/messages.dart';
-import 'package:sms_forward_app/screens/message_details/screen/message_details_screen.dart';
-import 'package:sms_forward_app/screens/messages_list/cubit/messages_list_cubit.dart';
-import 'package:sms_forward_app/screens/messages_list/widget/avatar_with_indicator.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/extensions.dart';
+import 'package:simply/models/messages.dart';
+import 'package:simply/screens/message_details/screen/message_details_screen.dart';
+import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
+import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class MessagesListWidget extends StatefulWidget {
   final Messages message;

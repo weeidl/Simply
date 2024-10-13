@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:sms_forward_app/extensions.dart';
-import 'package:sms_forward_app/models/message.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/extensions.dart';
+import 'package:simply/models/message.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class MessageDetailsWidget extends StatelessWidget {
   final MessageDetails message;

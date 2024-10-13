@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/themes/colors.dart';
 
 class SettingWidget extends StatelessWidget {
   final String title;

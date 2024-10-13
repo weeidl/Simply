@@ -5,8 +5,8 @@ import 'package:battery_plus/battery_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/repositories/device_repository.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/repositories/device_repository.dart';
 import 'package:telephony/telephony.dart';
 
 part 'check_device_state.dart';

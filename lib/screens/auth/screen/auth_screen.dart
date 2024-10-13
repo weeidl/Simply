@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
-import 'package:sms_forward_app/screens/auth/widget/custom_segmented_control.dart';
-import 'package:sms_forward_app/screens/auth/widget/custom_text_field.dart';
-import 'package:sms_forward_app/screens/home/home.dart';
-import 'package:sms_forward_app/screens/widget/dialogs/message_dialog.dart';
-import 'package:sms_forward_app/screens/widget/divider_with_text.dart';
-import 'package:sms_forward_app/screens/widget/sign_in_button.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/screens/auth/cubit/auth_cubit.dart';
+import 'package:simply/screens/auth/widget/custom_segmented_control.dart';
+import 'package:simply/screens/auth/widget/custom_text_field.dart';
+import 'package:simply/screens/home/home.dart';
+import 'package:simply/screens/widget/dialogs/message_dialog.dart';
+import 'package:simply/screens/widget/divider_with_text.dart';
+import 'package:simply/screens/widget/sign_in_button.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});

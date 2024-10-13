@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/models/message.dart';
-import 'package:sms_forward_app/repositories/messages_repository.dart';
-import 'package:sms_forward_app/screens/common/cubit_list_view.dart';
-import 'package:sms_forward_app/screens/message_details/cubit/message_details_cubit.dart';
-import 'package:sms_forward_app/screens/message_details/widget/message_details_widget.dart';
-import 'package:sms_forward_app/screens/widget/app_bar_widget.dart';
-import 'package:sms_forward_app/screens/widget/bacgraund_widget.dart';
-import 'package:sms_forward_app/screens/widget/place_holder/no_messages_available.dart';
+import 'package:simply/models/message.dart';
+import 'package:simply/repositories/messages_repository.dart';
+import 'package:simply/screens/common/cubit_list_view.dart';
+import 'package:simply/screens/message_details/cubit/message_details_cubit.dart';
+import 'package:simply/screens/message_details/widget/message_details_widget.dart';
+import 'package:simply/screens/widget/app_bar_widget.dart';
+import 'package:simply/screens/widget/bacgraund_widget.dart';
+import 'package:simply/screens/widget/place_holder/no_messages_available.dart';
 
 class MessageDetailsScreen extends StatelessWidget {
   final String title;

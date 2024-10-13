@@ -1,6 +1,6 @@
-# sms_forward_app
+# simply
 
-Sms Forward App
+Simply
 
 ## Getting Started
 

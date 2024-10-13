@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/screens/auth/screen/auth_screen.dart';
-import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/home/home.dart';
-import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/screens/auth/screen/auth_screen.dart';
+import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
+import 'package:simply/screens/home/home.dart';
+import 'package:simply/screens/splash/cubit/splash_cubit.dart';
+import 'package:simply/themes/colors.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});

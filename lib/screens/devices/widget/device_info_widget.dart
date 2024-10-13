@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:sms_forward_app/extensions.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/widget/custom_progress_indicator.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/extensions.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/screens/widget/custom_progress_indicator.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class DeviceInfoWidget extends StatelessWidget {
   final Device device;

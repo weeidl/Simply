@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/screens/common/standard_list_cubit.dart';
+import 'package:simply/screens/common/standard_list_cubit.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:sms_forward_app/screens/common/standard_list_state.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/screens/common/standard_list_state.dart';
+import 'package:simply/themes/colors.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 

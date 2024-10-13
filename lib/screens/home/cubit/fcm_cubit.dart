@@ -4,11 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:sms_forward_app/bloc/notification/background_message.dart';
-import 'package:sms_forward_app/bloc/update_message_stream.dart';
-import 'package:sms_forward_app/models/message.dart';
-import 'package:sms_forward_app/models/messages.dart';
-import 'package:sms_forward_app/repositories/messages_repository.dart';
+import 'package:simply/bloc/notification/background_message.dart';
+import 'package:simply/bloc/update_message_stream.dart';
+import 'package:simply/models/message.dart';
+import 'package:simply/models/messages.dart';
+import 'package:simply/repositories/messages_repository.dart';
 import 'package:telephony/telephony.dart';
 import 'package:workmanager/workmanager.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/screens/auth/cubit/auth_cubit.dart';
+import 'package:simply/themes/colors.dart';
 
 class CustomSegmentedControl extends StatelessWidget {
   final Map<AuthStatus, Widget> children;

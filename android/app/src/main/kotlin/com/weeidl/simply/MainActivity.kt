@@ -1,4 +1,4 @@
-package weeidl.sms.forward.com.sms_forward_app
+package com.weeidl.simply
 
 import io.flutter.embedding.android.FlutterActivity
 

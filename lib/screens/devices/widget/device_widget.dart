@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/devices/settings/device_settings_modal.dart';
-import 'package:sms_forward_app/screens/devices/widget/device_info_widget.dart';
-import 'package:sms_forward_app/themes/colors.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/screens/devices/settings/device_settings_modal.dart';
+import 'package:simply/screens/devices/widget/device_info_widget.dart';
+import 'package:simply/themes/colors.dart';
 
 class DeviceWidget extends StatelessWidget {
   final Device device;

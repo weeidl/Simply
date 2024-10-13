@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/widget/device_widget.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/screens/devices/cubit/device_cubit.dart';
+import 'package:simply/screens/devices/widget/device_widget.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class DevicesScreen extends StatelessWidget {
   const DevicesScreen({Key? key}) : super(key: key);

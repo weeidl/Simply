@@ -7,6 +7,25 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:564324396481:android:269d44df850d7127af5340",
+        "android_client_info": {
+          "package_name": "com.weeidl.simply"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKHSwIwrJqdGTAyO3-ht_cqN2HQc5PrBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:564324396481:android:06dfc5d9818bf2a0af5340",
         "android_client_info": {
           "package_name": "weeidl.sms.forward.com.sms_forward_app"

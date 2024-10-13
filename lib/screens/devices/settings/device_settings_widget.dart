@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/cubit/device_cubit.dart';
-import 'package:sms_forward_app/screens/devices/settings/build_switch_tile.dart';
-import 'package:sms_forward_app/screens/widget/rounded_button.dart';
-import 'package:sms_forward_app/themes/colors.dart';
-import 'package:sms_forward_app/themes/text_style.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
+import 'package:simply/screens/devices/cubit/device_cubit.dart';
+import 'package:simply/screens/devices/settings/build_switch_tile.dart';
+import 'package:simply/screens/widget/rounded_button.dart';
+import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class DeviceSettingsWidget extends StatefulWidget {
   final Device? device;

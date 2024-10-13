@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sms_forward_app/models/device.dart';
-import 'package:sms_forward_app/repositories/firebase_api.dart';
+import 'package:simply/models/device.dart';
+import 'package:simply/repositories/firebase_api.dart';
 
 class DeviceRepository {
   final FirebaseApi _firebaseApi = FirebaseApi();

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:sms_forward_app/models/paginated_response.dart';
-import 'package:sms_forward_app/screens/common/standard_list_state.dart';
-import 'package:sms_forward_app/screens/common/status.dart';
+import 'package:simply/models/paginated_response.dart';
+import 'package:simply/screens/common/standard_list_state.dart';
+import 'package:simply/screens/common/status.dart';
 
 typedef StandardListFetch<T> = Future<PaginatedResponse<T>> Function({
   DocumentSnapshot? startAfter,

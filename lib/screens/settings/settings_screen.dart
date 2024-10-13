@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sms_forward_app/main.dart';
 import 'package:sms_forward_app/screens/auth/screen/auth_screen.dart';
 import 'package:sms_forward_app/screens/settings/widget/setting_widget.dart';
 import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
@@ -62,7 +63,9 @@ class SettingsScreen extends StatelessWidget {
                 final signOut = await splashCubit.signOut();
                 if (signOut) {
                   navigator.pushAndRemoveUntil(
-                    AuthScreen.route(),
+                    MaterialPageRoute(
+                      builder: (context) => const MyApp(),
+                    ),
                     (route) => false,
                   );
                 }

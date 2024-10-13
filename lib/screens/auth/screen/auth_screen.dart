@@ -152,6 +152,8 @@ class AuthScreen extends StatelessWidget {
               if (state.status == AuthStatus.login) {
                 final success = await cubit.signIn();
                 if (!success) {
+                  if (!context.mounted) return;
+
                   await MessageDialog.show(
                     context: context,
                     text: 'Failed to sign in',
@@ -162,6 +164,7 @@ class AuthScreen extends StatelessWidget {
               } else {
                 final user = await cubit.signUp();
                 if (user == null) {
+                  if (!context.mounted) return;
                   await MessageDialog.show(
                     context: context,
                     text: 'Failed to sign up',
@@ -170,11 +173,12 @@ class AuthScreen extends StatelessWidget {
                   return;
                 }
               }
-              // Navigator.pushAndRemoveUntil(
-              //   context,
-              //   HomePage.route(),
-              //   (route) => false,
-              // );
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                HomePage.route(),
+                (route) => false,
+              );
             },
             child: Text(
               state.status == AuthStatus.login ? 'Login' : 'Register',

@@ -11,8 +11,6 @@ void onBackgroundMessage(SmsMessage msg) async {
   await Firebase.initializeApp();
   Messages messages = Messages.updateFireStore(msg);
   MessageDetails messageTitle = MessageDetails.updateFireStore(msg);
-
-  getTokenBackground(messages);
   addMessagesBackground(messages: messages, messageTitle: messageTitle);
   UpdateMessageStream.controller.add('');
 }
@@ -29,13 +27,13 @@ void addMessagesBackground({
   );
 }
 
-void getTokenBackground(Messages messages) async {
-  List<String> token;
-  final DeviceRepository deviceRepository = DeviceRepository();
-
-  token = await deviceRepository.getTokensForAllDevices(
-    deviceRepository.id,
-  );
-
-  sendPushMessages(token, messages);
-}
+// void getTokenBackground(Messages messages) async {
+//   List<String> token;
+//   final DeviceRepository deviceRepository = DeviceRepository();
+//
+//   token = await deviceRepository.getTokensForAllDevices(
+//     deviceRepository.id,
+//   );
+//
+//   sendPushMessages(token, messages);
+// }

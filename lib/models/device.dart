@@ -25,7 +25,7 @@ class Device {
       'device_name': deviceName,
       'device_id': deviceId,
       'battery_level': batteryLevel,
-      "is_main_device": true,
+      "is_main_device": isMainDevice,
       "network_type": networkType,
       "date_update_info": dateUpdateInfo,
     };

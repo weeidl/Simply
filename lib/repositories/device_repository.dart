@@ -10,11 +10,10 @@ class DeviceRepository {
 
   String get id => _firebaseApi.userId ?? '';
 
-  Future<void> update(
-      {required Device device, required String deviceID}) async {
+  Future<void> update({required Device device}) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
 
-    await itemsBackend.doc(deviceID).set(
+    await itemsBackend.doc(device.deviceId).set(
           device.toMap(),
           SetOptions(merge: true),
         );
@@ -56,8 +55,9 @@ class DeviceRepository {
 
   Future<void> addBatteryAndNetworkStatus({
     required String deviceId,
-    required int batteryStatus,
-    required String networkTypeStatus,
+    int? batteryStatus,
+    String? networkTypeStatus,
+    bool isMainDevice = false,
   }) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
 
@@ -65,6 +65,7 @@ class DeviceRepository {
       {
         "battery_level": batteryStatus,
         "network_type": networkTypeStatus,
+        "is_main_device": isMainDevice,
         "date_update_info": DateTime.now(),
       },
       SetOptions(merge: true),

@@ -138,6 +138,15 @@ abstract class AppTextStyle {
     );
   }
 
+  static TextStyle captionSM3(Color color) {
+    return TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w300,
+      color: color,
+      letterSpacing: letterSpacing,
+    );
+  }
+
   static TextStyle captionS(Color color) {
     return TextStyle(
       fontSize: 12,
@@ -151,6 +160,15 @@ abstract class AppTextStyle {
     return TextStyle(
       fontSize: 12,
       fontWeight: FontWeight.w500,
+      color: color,
+      letterSpacing: letterSpacing,
+    );
+  }
+
+  static TextStyle captionSC4(Color color) {
+    return TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
       color: color,
       letterSpacing: letterSpacing,
     );

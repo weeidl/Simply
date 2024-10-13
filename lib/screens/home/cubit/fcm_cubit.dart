@@ -12,6 +12,7 @@ import 'package:sms_forward_app/models/messages.dart';
 import 'package:sms_forward_app/repositories/device_repository.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
 import 'package:telephony/telephony.dart';
+import 'package:workmanager/workmanager.dart';
 
 part 'fcm_state.dart';
 
@@ -35,10 +36,40 @@ class FcmCubit extends Cubit<FcmState> {
         onBackgroundMessage: onBackgroundMessage,
         listenInBackground: true,
       );
+      // await initLocalNotifications();
+      await requestPermission();
+      scheduleBackgroundTask();
+      showPersistentNotification();
     }
+  }
 
-    await initLocalNotifications();
-    await requestPermission();
+  Future<void> showPersistentNotification() async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'foreground_channel_id',
+      'Foreground Service',
+      channelDescription: 'This channel is used for foreground service',
+      importance: Importance.low,
+      priority: Priority.low,
+      ongoing: true, // Важная часть для постоянного уведомления
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      'App is running in background',
+      'The app is currently running in background.',
+      platformChannelSpecifics,
+    );
+  }
+
+  void scheduleBackgroundTask() {
+    Workmanager().registerPeriodicTask(
+      "1",
+      "sendFirebaseMessageTask",
+      frequency: const Duration(minutes: 15),
+    );
   }
 
   Future<void> requestPermission() async {
@@ -76,82 +107,6 @@ class FcmCubit extends Cubit<FcmState> {
       UpdateMessageStream.controller.add('');
     } catch (e) {
       debugPrint('Error handling new message: $e');
-    }
-  }
-
-  Future<void> initLocalNotifications() async {
-    const AndroidInitializationSettings androidInitialize =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings iosInitialize =
-        DarwinInitializationSettings();
-    const InitializationSettings initializationSettings =
-        InitializationSettings(
-      android: androidInitialize,
-      iOS: iosInitialize,
-    );
-
-    await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
-
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('Notification opened: ${message.messageId}');
-    });
-
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage? message) {
-      if (message != null) {
-        debugPrint('Initial message received: ${message.messageId}');
-      }
-    });
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      _showNotification(message);
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      _showNotification(message);
-    });
-  }
-
-  Future<void> _showNotification(RemoteMessage message) async {
-    try {
-      final BigTextStyleInformation bigTextStyleInformation =
-          BigTextStyleInformation(
-        message.notification?.body ?? '',
-        htmlFormatBigText: true,
-        contentTitle: message.notification?.title ?? '',
-        htmlFormatContentTitle: true,
-      );
-      final AndroidNotificationDetails androidPlatformChannelSpecifics =
-          AndroidNotificationDetails(
-        'sms_forward_channel',
-        'SMS Forward Notifications',
-        importance: Importance.max,
-        priority: Priority.high,
-        styleInformation: bigTextStyleInformation,
-        playSound: true,
-      );
-      final NotificationDetails platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-      );
-      await flutterLocalNotificationsPlugin.show(
-        0,
-        message.notification?.title,
-        message.notification?.body,
-        platformChannelSpecifics,
-        payload: message.data['body'],
-      );
-    } catch (e) {
-      debugPrint('Error showing notification: $e');
     }
   }
 }

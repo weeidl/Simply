@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:sms_forward_app/themes/colors.dart';
+import 'package:sms_forward_app/themes/text_style.dart';
 
 class CustomProgressIndicator extends StatelessWidget {
   final String textProgress;
@@ -17,25 +18,19 @@ class CustomProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CircularPercentIndicator(
-      radius: 34,
-      lineWidth: 8,
+      radius: 30,
+      lineWidth: 4,
       animation: true,
       percent: progress / 100,
       center: Text(
         textProgress,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
+        style: AppTextStyle.captionSM(AppColor.greyDark2),
       ),
       footer: Padding(
         padding: const EdgeInsets.only(top: 4),
         child: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
+          style: AppTextStyle.captionSC4(AppColor.greyDark2),
         ),
       ),
       backgroundColor: AppColor.greyDarkInverted,

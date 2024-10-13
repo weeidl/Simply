@@ -20,17 +20,16 @@ class DeviceCubit extends Cubit<DeviceState> {
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: DeviceStatus.error,
-        ),
-      );
+      emit(state.copyWith(status: DeviceStatus.error));
     }
+  }
 
-    // ----------------------------------------------------------------------------
-    // if (state.items[0].isMainDevice == true) {
-    //   batteryStatus();
-    //   networkTypeStatus();
-    // }
+  Future<void> updateDevice() async {
+    try {
+      final response = await _deviceRepository.fetch();
+      emit(state.copyWith(items: response));
+    } catch (e) {
+      emit(state.copyWith(status: DeviceStatus.error));
+    }
   }
 }

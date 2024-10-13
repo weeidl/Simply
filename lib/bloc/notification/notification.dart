@@ -46,3 +46,79 @@ Future<void> sendPushMessages(List<String> tokens, Messages messages) async {
     log("Произошла ошибка: $e");
   }
 }
+
+// Future<void> initLocalNotifications() async {
+//   const AndroidInitializationSettings androidInitialize =
+//   AndroidInitializationSettings('@mipmap/ic_launcher');
+//   const DarwinInitializationSettings iosInitialize =
+//   DarwinInitializationSettings();
+//   const InitializationSettings initializationSettings =
+//   InitializationSettings(
+//     android: androidInitialize,
+//     iOS: iosInitialize,
+//   );
+//
+//   await flutterLocalNotificationsPlugin.initialize(
+//     initializationSettings,
+//   );
+//
+//   await FirebaseMessaging.instance
+//       .setForegroundNotificationPresentationOptions(
+//     alert: true,
+//     badge: true,
+//     sound: true,
+//   );
+//
+//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+//     debugPrint('Notification opened: ${message.messageId}');
+//   });
+//
+//   FirebaseMessaging.instance
+//       .getInitialMessage()
+//       .then((RemoteMessage? message) {
+//     if (message != null) {
+//       debugPrint('Initial message received: ${message.messageId}');
+//     }
+//   });
+//
+//   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+//     _showNotification(message);
+//   });
+//
+//   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+//     _showNotification(message);
+//   });
+// }
+//
+// Future<void> _showNotification(RemoteMessage message) async {
+//   try {
+//     final BigTextStyleInformation bigTextStyleInformation =
+//     BigTextStyleInformation(
+//       message.notification?.body ?? '',
+//       htmlFormatBigText: true,
+//       contentTitle: message.notification?.title ?? '',
+//       htmlFormatContentTitle: true,
+//     );
+//     final AndroidNotificationDetails androidPlatformChannelSpecifics =
+//     AndroidNotificationDetails(
+//       'sms_forward_channel',
+//       'SMS Forward Notifications',
+//       importance: Importance.max,
+//       priority: Priority.high,
+//       styleInformation: bigTextStyleInformation,
+//       playSound: true,
+//     );
+//     final NotificationDetails platformChannelSpecifics = NotificationDetails(
+//       android: androidPlatformChannelSpecifics,
+//     );
+//     await flutterLocalNotificationsPlugin.show(
+//       0,
+//       message.notification?.title,
+//       message.notification?.body,
+//       platformChannelSpecifics,
+//       payload: message.data['body'],
+//     );
+//   } catch (e) {
+//     debugPrint('Error showing notification: $e');
+//   }
+// }

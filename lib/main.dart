@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sms_forward_app/repositories/messages_repository.dart';
 import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
@@ -10,14 +13,27 @@ import 'package:sms_forward_app/screens/messages_list/cubit/messages_list_cubit.
 import 'package:sms_forward_app/screens/splash/cubit/splash_cubit.dart';
 import 'package:sms_forward_app/screens/splash/splash_screen.dart';
 import 'package:sms_forward_app/themes/colors.dart';
+import 'package:workmanager/workmanager.dart';
 
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}
+
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    // if (task == "sendFirebaseMessageTask") {
+    // await sendMessagesToFirebase();
+    // }
+    return Future.value(true);
+  });
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackground);
+  if (Platform.isAndroid) {
+    Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+  }
   runApp(const MyApp());
 }
 

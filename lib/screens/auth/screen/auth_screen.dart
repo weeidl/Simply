@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:sms_forward_app/screens/auth/cubit/auth_cubit.dart';
 import 'package:sms_forward_app/screens/auth/widget/custom_segmented_control.dart';
 import 'package:sms_forward_app/screens/auth/widget/custom_text_field.dart';
+import 'package:sms_forward_app/screens/home/home.dart';
 import 'package:sms_forward_app/screens/widget/dialogs/message_dialog.dart';
 import 'package:sms_forward_app/screens/widget/divider_with_text.dart';
 import 'package:sms_forward_app/screens/widget/sign_in_button.dart';
@@ -156,6 +157,7 @@ class AuthScreen extends StatelessWidget {
                     text: 'Failed to sign in',
                     buttonText: 'OK',
                   );
+                  return;
                 }
               } else {
                 final user = await cubit.signUp();
@@ -165,8 +167,14 @@ class AuthScreen extends StatelessWidget {
                     text: 'Failed to sign up',
                     buttonText: 'OK',
                   );
+                  return;
                 }
               }
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   HomePage.route(),
+              //   (route) => false,
+              // );
             },
             child: Text(
               state.status == AuthStatus.login ? 'Login' : 'Register',

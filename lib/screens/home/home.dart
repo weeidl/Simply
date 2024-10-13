@@ -2,7 +2,10 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sms_forward_app/screens/devices/add_new_device/check_device_cubit.dart';
+import 'package:sms_forward_app/screens/devices/settings/device_settings_modal.dart';
 import 'package:sms_forward_app/screens/devices/screen/devices_screen.dart';
 import 'package:sms_forward_app/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:sms_forward_app/screens/settings/settings_screen.dart';
@@ -79,40 +82,52 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.dark,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-      ),
-      child: Scaffold(
-        backgroundColor: _selectedIndex == 1 ? AppColor.orange : AppColor.white,
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewPadding.bottom,
-          ),
-          decoration: BoxDecoration(
-            color: AppColor.white,
-            boxShadow: [
-              BoxShadow(
-                color: AppColor.grey.withOpacity(0.1),
-                spreadRadius: 0,
-                blurRadius: 24,
-                offset: const Offset(0, -3),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              buildNavItem(Icons.devices, 'Devices', 0),
-              buildNavItem(Icons.message, 'Message', 1),
-              buildNavItem(Icons.settings, 'Settings', 2),
-            ],
-          ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<CheckDeviceCubit, CheckDeviceState>(
+          listener: (context, state) async {
+            if (state.status == DeviceSettingStatus.showModal) {
+              DeviceSettingsModal.show(context: context);
+            }
+          },
         ),
-        body: _tabs[_selectedIndex],
+      ],
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.dark,
+        ),
+        child: Scaffold(
+          backgroundColor:
+              _selectedIndex == 1 ? AppColor.orange : AppColor.white,
+          bottomNavigationBar: Container(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewPadding.bottom,
+            ),
+            decoration: BoxDecoration(
+              color: AppColor.white,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColor.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 24,
+                  offset: const Offset(0, -3),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                buildNavItem(Icons.devices, 'Devices', 0),
+                buildNavItem(Icons.message, 'Message', 1),
+                buildNavItem(Icons.settings, 'Settings', 2),
+              ],
+            ),
+          ),
+          body: _tabs[_selectedIndex],
+        ),
       ),
     );
   }

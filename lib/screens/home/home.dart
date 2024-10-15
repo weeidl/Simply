@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gap/gap.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:simply/screens/devices/settings/device_settings_modal.dart';
@@ -52,7 +54,11 @@ class HomePageState extends State<HomePage> {
     ];
   }
 
-  Widget buildNavItem(IconData icon, String label, int index) {
+  Widget buildNavItem({
+    required String icon,
+    required String label,
+    required int index,
+  }) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -63,15 +69,21 @@ class HomePageState extends State<HomePage> {
         height: 60,
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: _selectedIndex == index ? AppColor.orange : Colors.grey,
+            SvgPicture.asset(
+              'assets/icons/$icon.svg',
+              colorFilter: ColorFilter.mode(
+                _selectedIndex == index ? AppColor.greyDark2 : AppColor.grey,
+                BlendMode.srcIn,
+              ),
             ),
-            const SizedBox(width: 4),
+            // Icon(
+            const Gap(4),
             Text(
               label,
               style: TextStyle(
-                color: _selectedIndex == index ? AppColor.orange : Colors.grey,
+                color: _selectedIndex == index
+                    ? AppColor.greyDark2
+                    : AppColor.grey,
               ),
             ),
           ],
@@ -95,9 +107,9 @@ class HomePageState extends State<HomePage> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.dark,
+          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.light,
         ),
         child: Scaffold(
           backgroundColor:
@@ -120,9 +132,9 @@ class HomePageState extends State<HomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                buildNavItem(Icons.devices, 'Devices', 0),
-                buildNavItem(Icons.message, 'Message', 1),
-                buildNavItem(Icons.settings, 'Settings', 2),
+                buildNavItem(icon: 'device', label: 'Devices', index: 0),
+                buildNavItem(icon: 'messages', label: 'Message', index: 1),
+                buildNavItem(icon: 'settings', label: 'Settings', index: 2),
               ],
             ),
           ),

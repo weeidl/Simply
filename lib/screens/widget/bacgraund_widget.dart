@@ -1,16 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/text_style.dart';
 
 class BackgroundWidget extends StatelessWidget {
   final Widget child;
   final Widget appBar;
+  final Widget? childAppBar;
 
   const BackgroundWidget({
     super.key,
     required this.child,
     required this.appBar,
+    this.childAppBar,
   });
 
   @override
@@ -24,6 +28,7 @@ class BackgroundWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             appBar,
+            if (childAppBar != null) childAppBar!,
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),

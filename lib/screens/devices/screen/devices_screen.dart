@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:simply/screens/devices/cubit/device_cubit.dart';
 import 'package:simply/screens/devices/widget/device_widget.dart';
 import 'package:simply/themes/colors.dart';
@@ -50,26 +51,34 @@ class DevicesScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          BlocBuilder<DeviceCubit, DeviceState>(
-            builder: (context, state) {
-              if (state.status == DeviceStatus.initial) {
-                context.read<DeviceCubit>().fetch();
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state.status == DeviceStatus.loading) {
-                return const Center(child: CircularProgressIndicator());
-              }
+          Expanded(
+            child: BlocBuilder<DeviceCubit, DeviceState>(
+              builder: (context, state) {
+                if (state.status == DeviceStatus.initial) {
+                  context.read<DeviceCubit>().fetch();
+                  return Center(
+                    child: SpinKitFadingCube(
+                      color: AppColor.orange.withOpacity(0.5),
+                    ),
+                  );
+                }
+                if (state.status == DeviceStatus.loading) {
+                  return Center(
+                    child: SpinKitFadingCube(
+                      color: AppColor.orange.withOpacity(0.5),
+                    ),
+                  );
+                }
 
-              return Expanded(
-                child: ListView.builder(
+                return ListView.builder(
                   itemCount: state.items.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) => DeviceWidget(
                     device: state.items[index],
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ],
       ),

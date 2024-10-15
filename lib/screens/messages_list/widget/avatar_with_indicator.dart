@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 
@@ -18,12 +19,12 @@ class AvatarWithIndicator extends StatelessWidget {
       width: 54,
       margin: const EdgeInsets.all(4),
       child: countNull
-          ? const CircleAvatar(
+          ? CircleAvatar(
               backgroundColor: AppColor.greyLight,
               radius: 24,
-              child: Icon(
-                Icons.perm_identity,
-                color: AppColor.greyDark,
+              child: SvgPicture.asset(
+                'assets/icons/profile.svg',
+                height: 24,
               ),
             )
           : Center(

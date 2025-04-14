@@ -1,9 +1,9 @@
+import 'package:another_telephony/telephony.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:simply/bloc/update_message_stream.dart';
 import 'package:simply/models/message.dart';
 import 'package:simply/models/messages.dart';
 import 'package:simply/repositories/messages_repository.dart';
-import 'package:telephony/telephony.dart';
 
 void onBackgroundMessage(SmsMessage msg) async {
   await Firebase.initializeApp();

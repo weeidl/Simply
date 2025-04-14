@@ -7,6 +7,7 @@ enum DeviceStatus {
   waiting,
   redirect,
   success,
+  empty,
   error,
 }
 

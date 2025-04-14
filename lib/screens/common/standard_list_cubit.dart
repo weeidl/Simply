@@ -14,11 +14,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
 
   StandardListCubit({required StandardListFetch<T> fetch})
       : _fetch = fetch,
-        super(StandardListState<T>(
-          status: StandardStatus.initial,
-          items: const [],
-          lastDocument: null,
-        ));
+        super(StandardListState<T>());
 
   Future<void> fetch() async {
     emit(state.copyWith(status: StandardStatus.loading));
@@ -28,6 +24,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
         status: StandardStatus.loaded,
         items: response.items,
         lastDocument: response.lastDocument,
+        hasNext: response.items.isNotEmpty,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -52,6 +49,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
           lastDocument: hasNewItems ? response.lastDocument : null,
           isPaginate: false,
           status: StandardStatus.loaded,
+          hasNext: hasNewItems,
         ));
       } catch (e) {
         emit(state.copyWith(
@@ -72,6 +70,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
         items: response.items,
         lastDocument: response.lastDocument,
         status: StandardStatus.loaded,
+        hasNext: response.items.isNotEmpty,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -81,11 +80,40 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
     }
   }
 
+  Future<void> loadOlderMessages() async {
+    // Реализуйте этот метод для загрузки более старых сообщений при прокрутке вверх
+    if (state.isLoaded && !state.isPaginate && state.hasNext) {
+      emit(state.copyWith(isPaginate: true));
+
+      try {
+        final response = await _fetch(startAfter: state.lastDocument);
+
+        final items = [...response.items, ...state.items];
+        final hasNewItems = response.items.isNotEmpty;
+
+        emit(state.copyWith(
+          items: items,
+          lastDocument:
+              hasNewItems ? response.lastDocument : state.lastDocument,
+          isPaginate: false,
+          status: StandardStatus.loaded,
+          hasNext: hasNewItems,
+        ));
+      } catch (e) {
+        emit(state.copyWith(
+          status: StandardStatus.error,
+          errorMessage: e.toString(),
+          isPaginate: false,
+        ));
+      }
+    }
+  }
+
   void onScroll(ScrollMetrics metrics) {
     if (state.isLoaded && !state.isPaginate && state.hasNext) {
-      final threshold = metrics.maxScrollExtent * 0.9;
-      if (metrics.pixels >= threshold) {
-        paginate();
+      if (metrics.pixels <= metrics.minScrollExtent + 100) {
+        // Загружаем более старые сообщения при прокрутке к верху
+        loadOlderMessages();
       }
     }
   }

@@ -69,7 +69,14 @@ class DevicesScreen extends StatelessWidget {
                     ),
                   );
                 }
-
+                if (state.status == DeviceStatus.empty) {
+                  print('object');
+                  return Center(
+                    child: SpinKitFadingCube(
+                      color: AppColor.orange.withOpacity(0.5),
+                    ),
+                  );
+                }
                 return ListView.builder(
                   itemCount: state.items.length,
                   shrinkWrap: true,

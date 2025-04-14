@@ -12,6 +12,7 @@ import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 import 'package:simply/screens/contact_us/screen/contact_us_screen.dart';
+import 'package:simply/screens/privacy_policy/screen/privacy_policy_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -109,9 +110,15 @@ class SettingsScreen extends StatelessWidget {
               title: 'Push Notification',
               icon: 'assets/icons/notification.svg',
             ),
-            const SettingWidget(
-              title: 'Privacy Policy',
-              icon: 'assets/icons/privacy_policy.svg',
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                PrivacyPolicyScreen.route(),
+              ),
+              child: const SettingWidget(
+                title: 'Privacy Policy',
+                icon: 'assets/icons/privacy_policy.svg',
+              ),
             ),
             InkWell(
               onTap: () => Navigator.push(

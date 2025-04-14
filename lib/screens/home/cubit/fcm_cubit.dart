@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:another_telephony/telephony.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,6 @@ import 'package:simply/bloc/update_message_stream.dart';
 import 'package:simply/models/message.dart';
 import 'package:simply/models/messages.dart';
 import 'package:simply/repositories/messages_repository.dart';
-import 'package:telephony/telephony.dart';
 import 'package:workmanager/workmanager.dart';
 
 part 'fcm_state.dart';

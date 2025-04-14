@@ -42,7 +42,7 @@ class DeviceRepository {
     }
   }
 
-  Future<List<Device>> fetch() async {
+  Future<List<Device>>? fetch() async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
     final snapshot = await itemsBackend.get();
 

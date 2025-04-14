@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:simply/themes/colors.dart';
-import 'package:simply/themes/text_style.dart';
 
 class BackgroundWidget extends StatelessWidget {
   final Widget child;

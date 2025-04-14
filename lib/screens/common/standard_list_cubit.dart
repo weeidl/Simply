@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply/models/paginated_response.dart';
 import 'package:simply/screens/common/standard_list_state.dart';
 import 'package:simply/screens/common/status.dart';
@@ -14,11 +14,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
 
   StandardListCubit({required StandardListFetch<T> fetch})
       : _fetch = fetch,
-        super(StandardListState<T>(
-          status: StandardStatus.initial,
-          items: const [],
-          lastDocument: null,
-        ));
+        super(StandardListState<T>());
 
   Future<void> fetch() async {
     emit(state.copyWith(status: StandardStatus.loading));
@@ -28,6 +24,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
         status: StandardStatus.loaded,
         items: response.items,
         lastDocument: response.lastDocument,
+        hasNext: response.items.isNotEmpty,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -43,15 +40,16 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
 
       try {
         final response = await _fetch(startAfter: state.lastDocument);
-
         final items = [...state.items, ...response.items];
         final hasNewItems = response.items.isNotEmpty;
 
         emit(state.copyWith(
           items: items,
-          lastDocument: hasNewItems ? response.lastDocument : null,
+          lastDocument:
+              hasNewItems ? response.lastDocument : state.lastDocument,
           isPaginate: false,
           status: StandardStatus.loaded,
+          hasNext: hasNewItems,
         ));
       } catch (e) {
         emit(state.copyWith(
@@ -60,8 +58,6 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
           isPaginate: false,
         ));
       }
-    } else if (state.isPaginate) {
-      emit(state.copyWith(isPaginate: false));
     }
   }
 
@@ -72,6 +68,7 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
         items: response.items,
         lastDocument: response.lastDocument,
         status: StandardStatus.loaded,
+        hasNext: response.items.isNotEmpty,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -83,8 +80,9 @@ class StandardListCubit<T> extends Cubit<StandardListState<T>> {
 
   void onScroll(ScrollMetrics metrics) {
     if (state.isLoaded && !state.isPaginate && state.hasNext) {
-      final threshold = metrics.maxScrollExtent * 0.9;
-      if (metrics.pixels >= threshold) {
+      const double threshold = 200.0;
+
+      if (metrics.pixels >= metrics.maxScrollExtent - threshold) {
         paginate();
       }
     }

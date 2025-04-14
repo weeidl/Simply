@@ -7,25 +7,35 @@ import 'package:simply/themes/colors.dart';
 
 typedef ItemWidgetBuilder<T> = Widget Function(BuildContext context, T item);
 
-class CubitListView<T, C extends StandardListCubit<T>> extends StatelessWidget {
+class CubitListView<T, C extends StandardListCubit<T>> extends StatefulWidget {
   const CubitListView({
     Key? key,
     required this.itemBuilder,
     this.shrinkWrap = false,
     this.controller,
     this.placeHolder,
-    this.header,
     this.error,
-    this.reverse = false,
   }) : super(key: key);
 
   final ItemWidgetBuilder<T> itemBuilder;
   final bool shrinkWrap;
   final ScrollController? controller;
   final Widget? placeHolder;
-  final Widget? header;
   final Widget? error;
-  final bool reverse;
+
+  @override
+  CubitListViewState<T, C> createState() => CubitListViewState<T, C>();
+}
+
+class CubitListViewState<T, C extends StandardListCubit<T>>
+    extends State<CubitListView<T, C>> {
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = widget.controller ?? ScrollController();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +44,18 @@ class CubitListView<T, C extends StandardListCubit<T>> extends StatelessWidget {
         if (state.isInitial) {
           context.read<C>().fetch();
         }
-        if (state.hasError && error != null) {
-          return error!;
+
+        if (state.hasError && widget.error != null) {
+          return widget.error!;
         }
+
         if (state.isLoaded || state.isPaginate) {
           if (state.items.isEmpty) {
-            return placeHolder ?? Container();
+            return widget.placeHolder ?? const SizedBox.shrink();
           }
+
           return RefreshIndicator(
-            onRefresh: reverse ? () async {} : context.read<C>().refresh,
+            onRefresh: () => context.read<C>().refresh(),
             child: NotificationListener<ScrollNotification>(
               onNotification: (scrollInfo) {
                 if (scrollInfo is ScrollUpdateNotification) {
@@ -51,9 +64,11 @@ class CubitListView<T, C extends StandardListCubit<T>> extends StatelessWidget {
                 return false;
               },
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: 12),
+                controller: _scrollController,
+                shrinkWrap: widget.shrinkWrap,
+                physics: const AlwaysScrollableScrollPhysics(),
                 itemCount: state.items.length + (state.isPaginate ? 1 : 0),
-                itemBuilder: (BuildContext context, int index) {
+                itemBuilder: (BuildContext ctx, int index) {
                   if (state.isPaginate && index == state.items.length) {
                     return const Padding(
                       padding: EdgeInsets.all(8.0),
@@ -64,28 +79,32 @@ class CubitListView<T, C extends StandardListCubit<T>> extends StatelessWidget {
                         ),
                       ),
                     );
-                  } else {
-                    final itemIndex =
-                        reverse ? state.items.length - 1 - index : index;
-                    return itemBuilder(context, state.items[itemIndex]);
                   }
+                  return widget.itemBuilder(ctx, state.items[index]);
                 },
-                shrinkWrap: shrinkWrap,
-                controller: controller,
-                reverse: reverse,
               ),
             ),
           );
-        } else if (state.isLoading) {
+        }
+
+        if (state.isLoading) {
           return Center(
             child: SpinKitFadingCube(
-              color: AppColor.orange.withOpacity(0.5),
+              color: AppColor.orange.withValues(alpha: 0.5),
             ),
           );
-        } else {
-          return placeHolder ?? Container();
         }
+
+        return widget.placeHolder ?? const SizedBox.shrink();
       },
     );
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _scrollController.dispose();
+    }
+    super.dispose();
   }
 }

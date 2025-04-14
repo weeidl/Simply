@@ -43,7 +43,7 @@ class AppBarWidget extends StatelessWidget {
             const Spacer(),
             ClipOval(
               child: Container(
-                color: AppColor.greyDark.withOpacity(0.2),
+                color: AppColor.greyDark.withValues(alpha: 0.2),
                 height: 40,
                 width: 40,
                 child: Icon(

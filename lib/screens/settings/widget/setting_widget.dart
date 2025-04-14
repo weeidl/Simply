@@ -45,7 +45,7 @@ class SettingWidget extends StatelessWidget {
             SvgPicture.asset(
               'assets/icons/arrow_right.svg',
               colorFilter: ColorFilter.mode(
-                AppColor.greyDark2.withOpacity(0.5),
+                AppColor.greyDark2.withValues(alpha: 0.5),
                 BlendMode.srcIn,
               ),
             ),

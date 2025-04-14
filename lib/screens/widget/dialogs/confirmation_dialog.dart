@@ -55,7 +55,7 @@ class ConfirmationDialog {
                         Text(
                           title.toUpperCase(),
                           style: AppTextStyle.captionSC(
-                            AppColor.greyDark.withOpacity(0.44),
+                            AppColor.greyDark.withValues(alpha: 0.44),
                           ),
                           textAlign: TextAlign.center,
                         ),

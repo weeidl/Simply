@@ -23,13 +23,13 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
 
     if (isNewDevice == null || isNewDevice) {
       await setBaseInfoForDevice();
+      await prefs.setBool('is_new_device', false);
 
       if (Platform.isIOS) return;
 
       // Проверить есть ли is_new_device в фаербейс, если нет то выводим модалку
       // если маин девайс есть но нет сети и зарядки выводить кнопку включить дисплей нетворк и зарядки
 
-      await prefs.setBool('is_new_device', false);
       emit(state.copyWith(status: DeviceSettingStatus.showModal));
     }
   }
@@ -84,6 +84,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
         userId: _deviceRepository.id,
         deviceId: id,
         deviceName: name,
+        platform: Platform.operatingSystem,
       ),
     );
   }

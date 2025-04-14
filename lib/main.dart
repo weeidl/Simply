@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             theme: ThemeData(
               primaryColor: AppColor.orange,
-              scaffoldBackgroundColor: AppColor.greyLight,
+              scaffoldBackgroundColor: AppColor.white,
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
                   elevation: 0,

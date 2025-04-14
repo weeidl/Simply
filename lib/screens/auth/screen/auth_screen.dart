@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,11 @@ class AuthScreen extends StatelessWidget {
                   ),
                 ),
                 _buildForm(context, cubit, state),
+                Expanded(
+                  child: Container(
+                    color: AppColor.white,
+                  ),
+                ),
               ],
             ),
           );
@@ -67,14 +73,14 @@ class AuthScreen extends StatelessWidget {
   }
 
   Widget _buildWelcomeText(AuthState state) {
-    return Text(
+    return AutoSizeText(
       state.status == AuthStatus.login ? 'Welcome back!' : 'Welcome!',
       style: AppTextStyle.displayAccent(AppColor.white),
     );
   }
 
   Widget _buildSubtitleText(AuthStatus status) {
-    return Text(
+    return AutoSizeText(
       status == AuthStatus.login
           ? 'First you need to log in to your profile'
           : 'To get started, create your account',
@@ -84,7 +90,6 @@ class AuthScreen extends StatelessWidget {
 
   Widget _buildForm(BuildContext context, AuthCubit cubit, AuthState state) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.7,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
       decoration: const BoxDecoration(
         color: Colors.white,

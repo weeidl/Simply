@@ -11,6 +11,7 @@ import 'package:simply/screens/widget/bacgraund_widget.dart';
 import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
+import 'package:simply/screens/contact_us/screen/contact_us_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -25,7 +26,7 @@ class SettingsScreen extends StatelessWidget {
         final navigator = Navigator.of(context);
 
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('is_new_device', false);
+        await prefs.setBool('is_new_device', true);
 
         final signOut = await splashCubit.signOut();
         if (signOut) {
@@ -112,9 +113,15 @@ class SettingsScreen extends StatelessWidget {
               title: 'Privacy Policy',
               icon: 'assets/icons/privacy_policy.svg',
             ),
-            const SettingWidget(
-              title: 'Contact Us',
-              icon: 'assets/icons/call.svg',
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                ContactUsScreen.route(),
+              ),
+              child: const SettingWidget(
+                title: 'Contact Us',
+                icon: 'assets/icons/call.svg',
+              ),
             ),
             const Gap(24),
             Text(

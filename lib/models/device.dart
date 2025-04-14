@@ -8,6 +8,7 @@ class Device {
   final int? batteryLevel;
   final String? networkType;
   final Timestamp? dateUpdateInfo;
+  final String? platform;
 
   Device({
     required this.userId,
@@ -17,6 +18,7 @@ class Device {
     this.batteryLevel,
     this.networkType,
     this.dateUpdateInfo,
+    this.platform,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,6 +30,7 @@ class Device {
       "is_main_device": isMainDevice,
       "network_type": networkType,
       "date_update_info": dateUpdateInfo,
+      "platform": platform,
     };
   }
 
@@ -40,6 +43,7 @@ class Device {
       batteryLevel: map['battery_level'],
       networkType: map['network_type'],
       dateUpdateInfo: map['date_update_info'],
+      platform: map['platform'],
     );
   }
 }

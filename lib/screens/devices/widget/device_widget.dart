@@ -10,10 +10,10 @@ class DeviceWidget extends StatelessWidget {
   const DeviceWidget({super.key, required this.device});
 
   String imageDevice() {
-    if (device.deviceName == 'iPhone 15') {
-      return 'iphone.png';
-    } else {
+    if (device.platform == "android") {
       return 'android.png';
+    } else {
+      return 'iphone.png';
     }
   }
 

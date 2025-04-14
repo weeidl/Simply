@@ -80,7 +80,10 @@ class CubitListViewState<T, C extends StandardListCubit<T>>
                       ),
                     );
                   }
-                  return widget.itemBuilder(ctx, state.items[index]);
+                  return Container(
+                    padding: index == 0 ? const EdgeInsets.only(top: 16) : null,
+                    child: widget.itemBuilder(ctx, state.items[index]),
+                  );
                 },
               ),
             ),

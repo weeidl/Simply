@@ -39,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
       },
       buttonTextTwo: 'Cancel',
       buttonTextStyleTwo: AppTextStyle.paragraphB(AppColor.green),
-      buttonTwoColor: AppColor.green.withOpacity(0.2),
+      buttonTwoColor: AppColor.green.withValues(alpha: 0.2),
       onTapButtonTwo: () => Navigator.pop(context),
     );
   }
@@ -95,28 +95,28 @@ class SettingsScreen extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Gap(24),
-            SettingWidget(
+            const Gap(24),
+            const SettingWidget(
               title: 'Edit Profile',
               icon: 'assets/icons/edit_profile.svg',
             ),
-            SettingWidget(
+            const SettingWidget(
               title: 'Language',
               icon: 'assets/icons/language.svg',
             ),
-            SettingWidget(
+            const SettingWidget(
               title: 'Push Notification',
               icon: 'assets/icons/notification.svg',
             ),
-            SettingWidget(
+            const SettingWidget(
               title: 'Privacy Policy',
               icon: 'assets/icons/privacy_policy.svg',
             ),
-            SettingWidget(
+            const SettingWidget(
               title: 'Contact Us',
               icon: 'assets/icons/call.svg',
             ),
-            Gap(24),
+            const Gap(24),
             Text(
               'Created by © Weeidl',
               style: AppTextStyle.captionS(

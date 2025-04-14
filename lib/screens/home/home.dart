@@ -122,7 +122,7 @@ class HomePageState extends State<HomePage> {
               color: AppColor.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColor.grey.withOpacity(0.1),
+                  color: AppColor.grey.withValues(alpha: 0.1),
                   spreadRadius: 0,
                   blurRadius: 24,
                   offset: const Offset(0, -3),

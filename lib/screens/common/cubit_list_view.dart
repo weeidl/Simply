@@ -14,41 +14,27 @@ class CubitListView<T, C extends StandardListCubit<T>> extends StatefulWidget {
     this.shrinkWrap = false,
     this.controller,
     this.placeHolder,
-    this.header,
     this.error,
-    this.reverse = false,
   }) : super(key: key);
 
   final ItemWidgetBuilder<T> itemBuilder;
   final bool shrinkWrap;
   final ScrollController? controller;
   final Widget? placeHolder;
-  final Widget? header;
   final Widget? error;
-  final bool reverse;
 
   @override
-  _CubitListViewState<T, C> createState() => _CubitListViewState<T, C>();
+  CubitListViewState<T, C> createState() => CubitListViewState<T, C>();
 }
 
-class _CubitListViewState<T, C extends StandardListCubit<T>>
+class CubitListViewState<T, C extends StandardListCubit<T>>
     extends State<CubitListView<T, C>> {
   late ScrollController _scrollController;
-  int _previousItemCount = 0;
 
   @override
   void initState() {
     super.initState();
     _scrollController = widget.controller ?? ScrollController();
-  }
-
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      final position = _scrollController.position;
-      final offset =
-          widget.reverse ? position.minScrollExtent : position.maxScrollExtent;
-      _scrollController.jumpTo(offset);
-    }
   }
 
   @override
@@ -58,35 +44,18 @@ class _CubitListViewState<T, C extends StandardListCubit<T>>
         if (state.isInitial) {
           context.read<C>().fetch();
         }
+
         if (state.hasError && widget.error != null) {
           return widget.error!;
         }
+
         if (state.isLoaded || state.isPaginate) {
           if (state.items.isEmpty) {
-            return widget.placeHolder ?? Container();
+            return widget.placeHolder ?? const SizedBox.shrink();
           }
 
-          // Переворачиваем список элементов, если reverse == true
-          final items =
-              widget.reverse ? state.items.reversed.toList() : state.items;
-
-          // Проверяем, были ли добавлены новые элементы в нижнюю часть списка
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (_scrollController.hasClients) {
-              if (_previousItemCount < items.length) {
-                // Если не происходит пагинация (т.е. не загружаются более старые сообщения)
-                if (!state.isPaginate) {
-                  _scrollToBottom();
-                }
-              }
-              _previousItemCount = items.length;
-            }
-          });
-
           return RefreshIndicator(
-            onRefresh: widget.reverse
-                ? context.read<C>().loadOlderMessages
-                : context.read<C>().refresh,
+            onRefresh: () => context.read<C>().refresh(),
             child: NotificationListener<ScrollNotification>(
               onNotification: (scrollInfo) {
                 if (scrollInfo is ScrollUpdateNotification) {
@@ -95,10 +64,12 @@ class _CubitListViewState<T, C extends StandardListCubit<T>>
                 return false;
               },
               child: ListView.builder(
-                padding: const EdgeInsets.only(top: 12),
-                itemCount: items.length + (state.isPaginate ? 1 : 0),
-                itemBuilder: (BuildContext context, int index) {
-                  if (state.isPaginate && index == items.length) {
+                controller: _scrollController,
+                shrinkWrap: widget.shrinkWrap,
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: state.items.length + (state.isPaginate ? 1 : 0),
+                itemBuilder: (BuildContext ctx, int index) {
+                  if (state.isPaginate && index == state.items.length) {
                     return const Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Center(
@@ -108,25 +79,23 @@ class _CubitListViewState<T, C extends StandardListCubit<T>>
                         ),
                       ),
                     );
-                  } else {
-                    return widget.itemBuilder(context, items[index]);
                   }
+                  return widget.itemBuilder(ctx, state.items[index]);
                 },
-                shrinkWrap: widget.shrinkWrap,
-                controller: _scrollController,
-                reverse: widget.reverse,
               ),
             ),
           );
-        } else if (state.isLoading) {
+        }
+
+        if (state.isLoading) {
           return Center(
             child: SpinKitFadingCube(
-              color: AppColor.orange.withOpacity(0.5),
+              color: AppColor.orange.withValues(alpha: 0.5),
             ),
           );
-        } else {
-          return widget.placeHolder ?? Container();
         }
+
+        return widget.placeHolder ?? const SizedBox.shrink();
       },
     );
   }

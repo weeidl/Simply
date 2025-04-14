@@ -22,7 +22,7 @@ class BuildSwitchTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.orange.withOpacity(0.2),
+        color: AppColor.orange.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

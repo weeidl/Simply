@@ -58,22 +58,21 @@ class DevicesScreen extends StatelessWidget {
                   context.read<DeviceCubit>().fetch();
                   return Center(
                     child: SpinKitFadingCube(
-                      color: AppColor.orange.withOpacity(0.5),
+                      color: AppColor.orange.withValues(alpha: 0.5),
                     ),
                   );
                 }
                 if (state.status == DeviceStatus.loading) {
                   return Center(
                     child: SpinKitFadingCube(
-                      color: AppColor.orange.withOpacity(0.5),
+                      color: AppColor.orange.withValues(alpha: 0.5),
                     ),
                   );
                 }
                 if (state.status == DeviceStatus.empty) {
-                  print('object');
                   return Center(
                     child: SpinKitFadingCube(
-                      color: AppColor.orange.withOpacity(0.5),
+                      color: AppColor.orange.withValues(alpha: 0.5),
                     ),
                   );
                 }

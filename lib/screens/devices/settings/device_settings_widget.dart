@@ -123,6 +123,23 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
                 text: 'Save',
               ),
+              const Gap(8),
+              if (widget.device != null)
+                RoundedButton(
+                  height: 48,
+                  buttonColor: AppColor.magenta.withValues(alpha: 0.1),
+                  textStyle: AppTextStyle.title5(
+                    AppColor.magenta.withValues(alpha: 0.7),
+                  ),
+                  onPressed: () async {
+                    await context
+                        .read<DeviceCubit>()
+                        .deleteDevice(widget.device!.deviceId);
+                    Navigator.pop(context);
+                  },
+                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  text: 'Delete Device',
+                ),
             ],
           ),
         ),

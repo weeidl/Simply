@@ -24,14 +24,3 @@ void addMessagesBackground({
     messageTitle: messageTitle,
   );
 }
-
-// void getTokenBackground(Messages messages) async {
-//   List<String> token;
-//   final DeviceRepository deviceRepository = DeviceRepository();
-//
-//   token = await deviceRepository.getTokensForAllDevices(
-//     deviceRepository.id,
-//   );
-//
-//   sendPushMessages(token, messages);
-// }

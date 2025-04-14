@@ -71,4 +71,9 @@ class DeviceRepository {
       SetOptions(merge: true),
     );
   }
+
+  Future<void> delete(String deviceId) async {
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
+    await itemsBackend.doc(deviceId).delete();
+  }
 }

@@ -32,4 +32,15 @@ class DeviceCubit extends Cubit<DeviceState> {
       emit(state.copyWith(status: DeviceStatus.error));
     }
   }
+
+  Future<void> deleteDevice(String deviceId) async {
+    try {
+      await _deviceRepository.delete(deviceId);
+      final updatedDevices =
+          state.items.where((device) => device.deviceId != deviceId).toList();
+      emit(state.copyWith(items: updatedDevices));
+    } catch (e) {
+      emit(state.copyWith(status: DeviceStatus.error));
+    }
+  }
 }

@@ -33,10 +33,8 @@ class HomePageState extends State<HomePage> {
   void requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.sms,
-      Permission.locationWhenInUse, // или location для фонового использования
+      Permission.locationWhenInUse,
     ].request();
-    log('Проверяем статус разрешения');
-    // Проверяем статус разрешения
     final smsPermission = statuses[Permission.sms];
     if (smsPermission != PermissionStatus.granted) {
       log('Разрешение на SMS не получено');

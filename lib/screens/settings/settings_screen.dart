@@ -70,6 +70,7 @@ class SettingsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+                  // Add later user info
                   'Artur Rustamov',
                   style: AppTextStyle.titleAccent3(AppColor.white),
                 ),

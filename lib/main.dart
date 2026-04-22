@@ -11,6 +11,7 @@ import 'package:simply/screens/splash/cubit/splash_cubit.dart';
 import 'package:simply/screens/splash/splash_screen.dart';
 import 'package:simply/themes/colors.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}
 
 Future<void> main() async {

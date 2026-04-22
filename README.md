@@ -44,8 +44,6 @@ lives in [`docs/`](./docs/README.md).
 - [`docs/04_SECURITY_AUDIT.md`](./docs/04_SECURITY_AUDIT.md)
 - [`docs/05_ARCHITECTURE_IMPROVEMENTS.md`](./docs/05_ARCHITECTURE_IMPROVEMENTS.md)
 - [`docs/06_FIX_PROGRESS.md`](./docs/06_FIX_PROGRESS.md)
-- [`docs/07_RELEASE_SIGNING.md`](./docs/07_RELEASE_SIGNING.md)
-- [`docs/08_CLAUDE_DESIGN_PROMPT.md`](./docs/08_CLAUDE_DESIGN_PROMPT.md)
 - [`firestore.rules`](./firestore.rules) — baseline Firestore Security Rules.
 
 ## Contributing

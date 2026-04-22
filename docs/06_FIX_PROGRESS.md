@@ -139,6 +139,32 @@ debug — нормально, release будет меньше после R8 mini
 
 ---
 
+## Итерация 2 (2026-04-22)
+
+Точечный hotfix критичного бага с SMS в фоне + косметика документации.
+
+- [x] **B-051** Фоновые SMS не долетали до приложения: в фоновом изоляте
+      `FirebaseAuth.instance.currentUser` был null, поэтому записи уходили в
+      `user_messages/null/...` вместо `user_messages/<uid>/...`. Дополнительно
+      отсутствовал `@pragma('vm:entry-point')` (риск для release-сборки из-за
+      tree-shaking) и `await` на Firestore-вызовах (write мог не успеть до
+      убийства изолята).
+      **Файлы**: `lib/bloc/notification/background_message.dart` — полный
+      рерайт с ожиданием `authStateChanges().firstWhere((u) => u != null)` с
+      5-сек таймаутом и явной сборкой пути через `user.uid`.
+      `lib/main.dart:14` — `@pragma('vm:entry-point')` добавлен к
+      `_firebaseMessagingBackground` (заготовка на будущее, тело пока пустое).
+
+- [x] Документация: удалены битые ссылки на несуществующие файлы
+      `07_RELEASE_SIGNING.md` и `08_CLAUDE_DESIGN_PROMPT.md` из
+      `docs/README.md`, `docs/01_PRODUCT_OVERVIEW.md`, `docs/06_FIX_PROGRESS.md`.
+- [x] `docs/README.md` — сводка переписана под режим «personal use», добавлена
+      дата последней синхронизации.
+- [x] Обновлены S-018 и S-019 в `04_SECURITY_AUDIT.md` под текущее состояние
+      кода (B-051).
+
+---
+
 ## Что НЕ сделано в этой итерации (следующий заход)
 
 Это осознанно отложено, потому что требует более масштабной работы, бэкенд-части
@@ -165,7 +191,7 @@ debug — нормально, release будет меньше после R8 mini
 ### Требует внешних действий от автора
 
 - [ ] **B-005 / S-003** Release signing — нужен keystore (ключ не в репо).
-      См. шаблон в `07_RELEASE_SIGNING.md` (создан в этой итерации).
+      Актуально только если проект пойдёт в стор.
 - [ ] **S-002** Firestore Security Rules — нужны проект-ID и firebase CLI.
       Файл `firestore.rules` добавлен в репо как baseline.
 - [ ] **S-004** Текст Privacy Policy — юридический документ, нужен от продакта.

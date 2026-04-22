@@ -224,25 +224,35 @@ Android ставить `FLAG_SECURE`, чтобы скриншоты блокир
 
 ---
 
-## 🟡 S-018. FCM background handler не проверяет аутентификацию
+## 🟡 S-018. FCM background handler — заглушка
 
-**Файл**: `lib/main.dart:17`
+**Файл**: `lib/main.dart:14-15`
 ```dart
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}
 ```
-Тело пустое. Если в будущем добавить — обязательно проверить
-`FirebaseAuth.instance.currentUser` и не выполнять действия от имени
-«прежнего» пользователя при передаче устройства.
+Тело всё ещё пустое. `@pragma` добавлен в Итерации 2 как заготовка на будущее
+(чтобы release-сборка не tree-shake-нула callback, когда он появится).
+
+Отдельно: хендлер SMS (`onBackgroundMessage` в `background_message.dart`)
+в Итерации 2 был полностью переписан, теперь явно проверяет
+`currentUser`, ждёт гидратацию `authStateChanges()` и пишет строго под
+`user.uid`. См. B-051 в `03_BUGS_AND_ISSUES.md`.
+
+Если и FCM-хендлер однажды заработает — там нужна та же защита: никогда не
+писать под несуществующим uid, не выполнять действия от имени «прежнего»
+пользователя при передаче устройства.
 
 ---
 
 ## 🟡 S-019. SMS могут читаться out-of-order
 
-**Файл**: `background_message.dart:8-14`
+**Файл**: `lib/bloc/notification/background_message.dart`
 
-Несколько SMS подряд = несколько параллельных `sendMessageFirebase` вызовов,
-запись в коллекцию через `messagesCollection.add(...)`. Firestore не
-гарантирует порядок `ServerTimestamp` для параллельных запросов.
+После Итерации 2 хендлер — одна атомарная функция, но при нескольких SMS
+подряд всё равно стартует несколько параллельных изолятов / async-цепочек.
+Firestore не гарантирует порядок `ServerTimestamp` для параллельных запросов,
+`collection.add(...)` в той же транзакции не участвует.
 
 Для UX (сортировка по дате) это не критично, но для атак replay / race —
 отсутствие транзакции означает, что два одновременных SMS могут дать

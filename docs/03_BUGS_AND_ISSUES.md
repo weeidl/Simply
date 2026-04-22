@@ -22,6 +22,10 @@ B-032, B-036, B-037, B-038, B-041, B-043 · 🟢 B-050.
 / Kotlin 2.1.0 / Java 17 (устранял ошибку `Unsupported class file major version 65`
 от Java 21 в Android Studio).
 
+## Сводка Итерации 2 (закрыто)
+
+🔴 B-051 (фоновые SMS не доходили до приложения — fixed 2026-04-22).
+
 ---
 
 ## 🔴 Критичные баги логики
@@ -107,6 +111,37 @@ signingConfig signingConfigs.debug
 
 **Как исправить**: создать `key.properties`, добавить в `.gitignore`,
 настроить release-signing.
+
+---
+
+### B-051. Фоновые SMS не попадали в приложение · ✅ FIXED (итерация 2)
+**Файлы**: `lib/bloc/notification/background_message.dart`, `lib/main.dart`.
+
+Три независимых бага в одном месте:
+
+1. **`FirebaseAuth.instance.currentUser` был null в фоновом изоляте.**
+   `another_telephony` запускает `onBackgroundMessage` в отдельном Dart-изоляте.
+   Сразу после `Firebase.initializeApp()` `currentUser` ещё не гидратирован из
+   нативного SDK, поэтому `FirebaseApi.userId` возвращал null. Путь Firestore
+   собирался как `user_messages/null/messages/...` вместо
+   `user_messages/<uid>/messages/...`. Записи не падали (`firestore.rules`
+   разрешал всё), но UI читает из правильного uid и сообщения «исчезали».
+
+2. **Отсутствовал `@pragma('vm:entry-point')`.** В release-сборке tree-shaker
+   может вырезать top-level callback, который вызывается из нативного кода.
+
+3. **Firestore-вызовы без `await`.** Фоновый изолят могли убить до того, как
+   запись дойдёт до сервера.
+
+**Как исправлено**: полный рерайт `background_message.dart` с
+`@pragma('vm:entry-point')`, ожиданием `authStateChanges().firstWhere((u) =>
+u != null)` с 5-сек таймаутом, явной сборкой пути через `user.uid`, `await`
+на всех Firestore-вызовах. `@pragma('vm:entry-point')` также добавлен к
+`_firebaseMessagingBackground` в `main.dart`.
+
+**Как проверить регрессию**: свернуть приложение, отправить тестовую SMS,
+убедиться что запись попала в `user_messages/<твой-uid>/messages/...`, а не
+в `user_messages/null/...`.
 
 ---
 

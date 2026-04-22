@@ -13,8 +13,6 @@
 | [04_SECURITY_AUDIT.md](./04_SECURITY_AUDIT.md) | Аудит безопасности. 24 пункта, включая E2EE, Firestore Rules, Google Play policy. |
 | [05_ARCHITECTURE_IMPROVEMENTS.md](./05_ARCHITECTURE_IMPROVEMENTS.md) | План рефакторинга на 8 спринтов, от гигиены до CI/CD. |
 | [06_FIX_PROGRESS.md](./06_FIX_PROGRESS.md) | Live-трекер: что уже исправлено в итерациях. |
-| [07_RELEASE_SIGNING.md](./07_RELEASE_SIGNING.md) | Pre-release чеклист, Android keystore, Firestore rules deploy, iOS signing, App Store / Play blockers. |
-| [08_CLAUDE_DESIGN_PROMPT.md](./08_CLAUDE_DESIGN_PROMPT.md) | Короткий рабочий промт для Claude Design: сильная, но бережная модернизация UI без потери узнаваемости. |
 
 ## Как пользоваться
 
@@ -26,8 +24,6 @@
    через **06_FIX_PROGRESS**.
 4. **04_SECURITY_AUDIT** — обязательно закрыть 🔴 пункты до любого релиза.
 5. **05_ARCHITECTURE_IMPROVEMENTS** — дорожная карта рефакторинга.
-6. Если запускаешь визуальный редизайн через Claude — начни с
-   **08_CLAUDE_DESIGN_PROMPT**.
 
 ## Правила обновления
 
@@ -37,21 +33,29 @@
   `03_BUGS_AND_ISSUES.md` с уникальным `B-XXX`.
 - Новые security-наблюдения — в `04_SECURITY_AUDIT.md` с `S-XXX`.
 
-## Краткая сводка состояния проекта (на дату аудита)
+## Текущий статус проекта
 
-- **Работает**: регистрация, вход, forgot password по e-mail, перехват SMS на
-  Android, отображение списка чатов, детали чата, копирование OTP по тапу,
-  удаление устройства, кнопка «+» на Devices.
-- **Не работает / заглушка**: Google/Apple auth, Edit Profile, Language,
-  Push Notification screen, Privacy Policy.
-- **Критичные блокеры релиза**:
-  1. Release-сборка подписана debug-ключом.
-  2. Privacy Policy пустая → сторы reject-нут.
-  3. SMS хранятся без шифрования → риск утечки OTP-кодов.
-  4. Baseline `firestore.rules` уже добавлен в репозиторий, но его деплой и
-     валидация в Firebase ещё не подтверждены.
-  5. SMS/foreground-service permissions и Google Play policy для `READ_SMS` /
-     `RECEIVE_SMS` всё ещё требуют отдельной доработки и декларации.
+**Режим использования:** личное приложение автора, публикация в Google Play /
+App Store пока не планируется. Соответственно release-блокеры (подпись,
+политика конфиденциальности, SMS-декларация и т.п.) не являются stop-ship'ами —
+только техническая корректность.
 
-Перед публикацией в Google Play / App Store обязательно закрыть все 🔴 из
-`04_SECURITY_AUDIT.md`.
+Последняя синхронизация с кодом: **2026-04-22**.
+
+### Работает
+- Регистрация, вход, forgot password по e-mail.
+- Перехват SMS на Android (включая фон — фикс 2026-04-22, см.
+  `06_FIX_PROGRESS.md` Итерация 2).
+- Список чатов, детали чата, копирование OTP по тапу.
+- Удаление устройства, кнопка «+» на Devices.
+
+### Заглушки / не реализовано
+- Google/Apple auth, Edit Profile, Language, Push Notification screen,
+  Privacy Policy.
+
+### Что осталось, если когда-то захочется в стор
+- Release-сборка подписана debug-ключом (B-005).
+- Privacy Policy пустая (B-042 / S-004).
+- SMS хранятся без шифрования (S-001).
+- Baseline `firestore.rules` лежит в репозитории, но не задеплоен (S-002).
+- SMS / foreground-service policy для Google Play (S-005, S-006).

@@ -17,9 +17,12 @@ class DeviceRepository {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
 
     await itemsBackend.doc(device.deviceId).set(
-          device.toMap(),
-          SetOptions(merge: true),
-        );
+      {
+        ...device.toMap(),
+        'date_update_info': FieldValue.serverTimestamp(),
+      },
+      SetOptions(merge: true),
+    );
   }
 
   Future<List<String>> getTokensForCurrentUser() async {
@@ -51,16 +54,48 @@ class DeviceRepository {
     bool isMainDevice = false,
   }) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
+    final currentDeviceRef = itemsBackend.doc(deviceId);
 
-    await itemsBackend.doc(deviceId).set(
+    if (!isMainDevice) {
+      await currentDeviceRef.set(
+        {
+          "battery_level": batteryStatus,
+          "network_type": networkTypeStatus,
+          "is_main_device": false,
+          "date_update_info": FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+      return;
+    }
+
+    final snapshot = await itemsBackend.get();
+    final batch = _firebaseApi.firestore.batch();
+
+    for (final device in snapshot.docs) {
+      if (device.id == deviceId) continue;
+      batch.set(
+        device.reference,
+        {
+          "is_main_device": false,
+          "date_update_info": FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+    }
+
+    batch.set(
+      currentDeviceRef,
       {
         "battery_level": batteryStatus,
         "network_type": networkTypeStatus,
-        "is_main_device": isMainDevice,
+        "is_main_device": true,
         "date_update_info": FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
     );
+
+    await batch.commit();
   }
 
   Future<void> delete(String deviceId) async {

@@ -7,7 +7,7 @@ import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 
 class MessageDetailsWidget extends StatelessWidget {
-  final MessageDetails message;
+  final Message message;
 
   const MessageDetailsWidget({super.key, required this.message});
 

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 
@@ -20,7 +18,6 @@ class BackgroundWidget extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColor.orange,
       body: SafeArea(
-        bottom: !Platform.isIOS,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

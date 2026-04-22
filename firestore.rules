@@ -2,8 +2,44 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /devices/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /items/{deviceId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    match /user_messages/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /messages/{conversationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /message/{containerId} {
+        allow read, write: if isOwner(userId);
+
+        match /{conversationId}/{messageId} {
+          allow read, write: if isOwner(userId);
+        }
+      }
+    }
+
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

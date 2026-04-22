@@ -5,31 +5,40 @@ import 'package:another_telephony/telephony.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/repositories/device_repository.dart';
+import 'package:simply/security/secure_storage_service.dart';
+import 'package:uuid/uuid.dart';
 
 part 'check_device_state.dart';
 
 class CheckDeviceCubit extends Cubit<CheckDeviceState> {
-  final DeviceRepository _deviceRepository = DeviceRepository();
-  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  final DeviceRepository _deviceRepository;
+  final SecureStorageService _secureStorageService;
+  final DeviceInfoPlugin deviceInfo;
+  final Uuid _uuid;
 
-  CheckDeviceCubit() : super(CheckDeviceState());
+  CheckDeviceCubit({
+    DeviceRepository? deviceRepository,
+    SecureStorageService? secureStorageService,
+    DeviceInfoPlugin? deviceInfo,
+    Uuid? uuid,
+  })  : _deviceRepository = deviceRepository ?? DeviceRepository(),
+        _secureStorageService = secureStorageService ?? SecureStorageService(),
+        deviceInfo = deviceInfo ?? DeviceInfoPlugin(),
+        _uuid = uuid ?? const Uuid(),
+        super(CheckDeviceState());
 
-  Future checkDevice() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final isNewDevice = prefs.getBool('is_new_device');
+  Future<void> checkDevice() async {
+    final stableDeviceId = await _stableDeviceId();
+    final existingDevices = await _deviceRepository.fetch();
+    final hasCurrentDevice = existingDevices.any(
+      (device) => device.deviceId == stableDeviceId,
+    );
 
-    if (isNewDevice == null || isNewDevice) {
-      await setBaseInfoForDevice();
-      await prefs.setBool('is_new_device', false);
+    await setBaseInfoForDevice(deviceId: stableDeviceId);
 
-      if (Platform.isIOS) return;
-
-      // Проверить есть ли is_new_device в фаербейс, если нет то выводим модалку
-      // если маин девайс есть но нет сети и зарядки выводить кнопку включить дисплей нетворк и зарядки
-
+    if (!hasCurrentDevice && Platform.isAndroid) {
       emit(state.copyWith(status: DeviceSettingStatus.showModal));
     }
   }
@@ -40,52 +49,98 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
     required bool isChargingEnabled,
     String? deviceId,
   }) async {
-    AndroidDeviceInfo device = await deviceInfo.androidInfo;
+    final resolvedDeviceId = deviceId ?? await _stableDeviceId();
 
     int? batteryLevel;
     String? network;
 
     if (isChargingEnabled) {
-      var battery = Battery();
-      batteryLevel = await battery.batteryLevel;
+      batteryLevel = await Battery().batteryLevel;
     }
 
-    if (isNetworkEnabled) {
-      final Telephony telephony = Telephony.instance;
-      final NetworkType networkType = await telephony.dataNetworkType;
+    if (Platform.isAndroid && isNetworkEnabled) {
+      final networkType = await Telephony.instance.dataNetworkType;
       network = networkType.name;
     }
 
-    _deviceRepository.addBatteryAndNetworkStatus(
+    await _deviceRepository.addBatteryAndNetworkStatus(
       isMainDevice: isSMSEnabled,
       batteryStatus: batteryLevel,
       networkTypeStatus: network,
-      deviceId: deviceId ?? device.id,
+      deviceId: resolvedDeviceId,
     );
   }
 
-  Future<void> setBaseInfoForDevice() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    final String id;
-    final String name;
+  Future<void> setBaseInfoForDevice({String? deviceId}) async {
+    final resolvedDeviceId = deviceId ?? await _stableDeviceId();
+    final info = await _readDeviceInfo();
 
-    if (Platform.isIOS) {
-      IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
-      id = iosDeviceInfo.identifierForVendor ?? '';
-      name = iosDeviceInfo.name;
-    } else {
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      id = androidInfo.id;
-      name = androidInfo.model;
-    }
-
-    _deviceRepository.update(
+    await _deviceRepository.update(
       device: Device(
         userId: _deviceRepository.id,
-        deviceId: id,
-        deviceName: name,
+        deviceId: resolvedDeviceId,
+        deviceName: info.name,
         platform: Platform.operatingSystem,
       ),
     );
   }
+
+  Future<String> _stableDeviceId() async {
+    final storedDeviceId = await _secureStorageService.readDeviceId();
+    if (storedDeviceId != null && storedDeviceId.isNotEmpty) {
+      return storedDeviceId;
+    }
+
+    final generatedDeviceId = await _generateStableDeviceId();
+    await _secureStorageService.writeDeviceId(generatedDeviceId);
+    return generatedDeviceId;
+  }
+
+  Future<String> _generateStableDeviceId() async {
+    if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      final vendorId = iosInfo.identifierForVendor?.trim();
+      if (vendorId != null && vendorId.isNotEmpty) {
+        return vendorId;
+      }
+
+      return _uuid.v5(
+        Namespace.url.value,
+        'ios:${iosInfo.model}:${iosInfo.name}:${iosInfo.systemVersion}:${iosInfo.utsname.machine}',
+      );
+    }
+
+    final androidInfo = await deviceInfo.androidInfo;
+    final fingerprintSeed = [
+      androidInfo.manufacturer,
+      androidInfo.model,
+      androidInfo.device,
+      androidInfo.fingerprint,
+      androidInfo.hardware,
+      androidInfo.host,
+      androidInfo.serialNumber,
+    ].where((value) => value.trim().isNotEmpty).join('|');
+
+    if (fingerprintSeed.isNotEmpty) {
+      return _uuid.v5(Namespace.url.value, 'android:$fingerprintSeed');
+    }
+
+    return _uuid.v4();
+  }
+
+  Future<_ResolvedDeviceInfo> _readDeviceInfo() async {
+    if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      return _ResolvedDeviceInfo(name: iosInfo.name);
+    }
+
+    final androidInfo = await deviceInfo.androidInfo;
+    return _ResolvedDeviceInfo(name: androidInfo.model);
+  }
+}
+
+class _ResolvedDeviceInfo {
+  final String name;
+
+  const _ResolvedDeviceInfo({required this.name});
 }

@@ -14,6 +14,16 @@ class FirebaseApi {
 
   String? get userId => _auth.currentUser?.uid;
 
+  FirebaseFirestore get firestore => _firestore;
+
+  String requireUserId() {
+    final uid = userId;
+    if (uid == null || uid.isEmpty) {
+      throw StateError('User is not logged in.');
+    }
+    return uid;
+  }
+
   Future<DocumentSnapshot<Map<String, dynamic>>> getDocument(
       String path) async {
     try {
@@ -53,7 +63,7 @@ class FirebaseApi {
     String path, [
     String? documentId,
   ]) {
-    return _firestore.collection(path).doc(documentId ?? userId);
+    return _firestore.collection(path).doc(documentId ?? requireUserId());
   }
 
   CollectionReference<Map<String, dynamic>> itemsCollection(String path) {

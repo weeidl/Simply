@@ -1,8 +1,10 @@
-class MessageDetails {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Message {
   final String text;
   final DateTime date;
 
-  MessageDetails({
+  Message({
     required this.text,
     required this.date,
   });
@@ -10,19 +12,33 @@ class MessageDetails {
   Map<String, dynamic> toJson() {
     return {
       'text': text,
-      'date': date.toIso8601String(),
+      'date': Timestamp.fromDate(date.toUtc()),
     };
   }
 
-  factory MessageDetails.fromJson(Map<String, dynamic> json) {
-    return MessageDetails(
+  factory Message.fromJson(Map<String, dynamic> json) {
+    return Message(
       text: json['text'],
-      date: DateTime.parse(json['date']),
+      date: _readDate(json['date']),
     );
   }
 
-  static MessageDetails updateFireStore(msg) => MessageDetails(
-        text: msg.body ?? '',
+  static Message fromSms(dynamic sms) => Message(
+        text: sms.body ?? '',
         date: DateTime.now(),
       );
+
+  static DateTime _readDate(dynamic rawValue) {
+    if (rawValue is Timestamp) {
+      return rawValue.toDate();
+    }
+    if (rawValue is DateTime) {
+      return rawValue;
+    }
+    if (rawValue is String) {
+      return DateTime.tryParse(rawValue) ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+    }
+    return DateTime.fromMillisecondsSinceEpoch(0);
+  }
 }

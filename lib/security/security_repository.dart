@@ -1,0 +1,159 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:simply/repositories/firebase_api.dart';
+import 'package:simply/security/crypto_service.dart';
+import 'package:simply/security/encryption_readiness.dart';
+import 'package:simply/security/key_envelope.dart';
+import 'package:simply/security/secure_storage_service.dart';
+
+class SecurityRepository {
+  static final Map<String, List<int>> _memoryCache = {};
+
+  final FirebaseApi _firebaseApi;
+  final CryptoService _cryptoService;
+  final SecureStorageService _secureStorageService;
+
+  SecurityRepository({
+    FirebaseApi? firebaseApi,
+    CryptoService? cryptoService,
+    SecureStorageService? secureStorageService,
+  })  : _firebaseApi = firebaseApi ?? FirebaseApi(),
+        _cryptoService = cryptoService ?? CryptoService(),
+        _secureStorageService = secureStorageService ?? SecureStorageService();
+
+  Future<void> unlockOrInitializeUser({
+    required String uid,
+    required String password,
+  }) async {
+    final userData = await _firebaseApi.getUserData(uid) ?? const {};
+    final security = _readSecurityMap(userData);
+
+    if (security == null || security['key_envelope'] == null) {
+      await provisionUserSecurity(uid: uid, password: password);
+      return;
+    }
+
+    final envelope = KeyEnvelope.fromJson(
+      Map<String, dynamic>.from(
+        security['key_envelope'] as Map<dynamic, dynamic>,
+      ),
+    );
+    final masterKey = await _cryptoService.unwrapMasterKey(
+      password: password,
+      envelope: envelope,
+    );
+
+    await cacheMasterKey(uid: uid, masterKey: masterKey);
+    await _firebaseApi.setUserData(
+      uid,
+      {
+        'security': {
+          'is_enabled': true,
+          'schema_version': 1,
+          'last_unlocked_at': FieldValue.serverTimestamp(),
+        },
+      },
+    );
+  }
+
+  Future<void> provisionUserSecurity({
+    required String uid,
+    required String password,
+  }) async {
+    final generated = await _cryptoService.createMasterKeyEnvelope(
+      password: password,
+    );
+
+    await _firebaseApi.setUserData(
+      uid,
+      {
+        'security': {
+          'is_enabled': true,
+          'schema_version': 1,
+          'key_envelope': generated.envelope.toJson(),
+          'updated_at': FieldValue.serverTimestamp(),
+        },
+      },
+    );
+    await cacheMasterKey(uid: uid, masterKey: generated.masterKey);
+  }
+
+  Future<bool> canRestoreSession(String uid) async {
+    final remoteEnvelopePresent = await hasRemoteEnvelope(uid: uid);
+    final hasLocalMasterKey = (await readMasterKey(uid: uid)) != null;
+
+    return EncryptionReadiness.isReady(
+      hasRemoteEnvelope: remoteEnvelopePresent,
+      hasLocalMasterKey: hasLocalMasterKey,
+    );
+  }
+
+  Future<bool> isSecurityEnabled({String? uid}) async {
+    return hasRemoteEnvelope(uid: uid);
+  }
+
+  Future<bool> hasRemoteEnvelope({String? uid}) async {
+    final userId = uid ?? _firebaseApi.requireUserId();
+    final userData = await _firebaseApi.getUserData(userId);
+    final security = _readSecurityMap(userData);
+    return security != null && security['key_envelope'] != null;
+  }
+
+  Future<void> cacheMasterKey({
+    required String uid,
+    required List<int> masterKey,
+  }) async {
+    final cachedKey = List<int>.unmodifiable(masterKey);
+    _memoryCache[uid] = cachedKey;
+    await _secureStorageService.writeMasterKey(uid, cachedKey);
+  }
+
+  Future<List<int>?> readMasterKey({String? uid}) async {
+    final userId = uid ?? _firebaseApi.requireUserId();
+    final cached = _memoryCache[userId];
+    if (cached != null) return cached;
+
+    final stored = await _secureStorageService.readMasterKey(userId);
+    if (stored == null) return null;
+
+    final cachedKey = List<int>.unmodifiable(stored);
+    _memoryCache[userId] = cachedKey;
+    return cachedKey;
+  }
+
+  Future<List<int>> requireMasterKey({String? uid}) async {
+    final masterKey = await readMasterKey(uid: uid);
+    if (masterKey == null) {
+      throw StateError('Master key is not available.');
+    }
+    return masterKey;
+  }
+
+  Future<List<int>> requireEncryptionReady({String? uid}) async {
+    final userId = uid ?? _firebaseApi.requireUserId();
+    final remoteEnvelopePresent = await hasRemoteEnvelope(uid: userId);
+    final masterKey = await readMasterKey(uid: userId);
+
+    if (!EncryptionReadiness.isReady(
+      hasRemoteEnvelope: remoteEnvelopePresent,
+      hasLocalMasterKey: masterKey != null,
+    )) {
+      throw StateError(
+        'Encryption is not initialized. Sign in again to enable encrypted storage.',
+      );
+    }
+
+    return masterKey!;
+  }
+
+  Future<void> clearCachedSecrets(String uid) async {
+    _memoryCache.remove(uid);
+    await _secureStorageService.deleteMasterKey(uid);
+  }
+
+  Map<String, dynamic>? _readSecurityMap(Map<String, dynamic>? userData) {
+    if (userData == null) return null;
+    final security = userData['security'];
+    if (security is! Map) return null;
+    return Map<String, dynamic>.from(security);
+  }
+}

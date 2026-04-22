@@ -71,17 +71,14 @@ void initStream() {
 
 ---
 
-### B-003. Нет live-обновления на других устройствах
-**Файл**: `lib/bloc/update_message_stream.dart` + `messages_list_cubit.dart`
+### B-003. Нет live-обновления на других устройствах · ✅ FIXED (итерация 3)
+**Файлы**: `lib/repositories/messages_repository.dart`,
+`lib/screens/messages_list/cubit/messages_list_cubit.dart`,
+`lib/screens/message_details/cubit/message_details_cubit.dart`
 
-`UpdateMessageStream` — это `StreamController.broadcast()` **внутри процесса**.
-Он срабатывает только когда SMS приходит на устройство с запущенным приложением.
-На iPhone, который читает переписку Android-устройства, новые сообщения
-появляются только после pull-to-refresh.
-
-**Как исправить**: перейти на `FirebaseFirestore.snapshots()` в
-`MessagesRepository.fetchMessages` (вернуть `Stream<PaginatedResponse>` или
-отдельный `watchMessages()`), в cubit держать Firestore-подписку.
+`UpdateMessageStream` удалён. Список диалогов и экран переписки теперь
+слушают Firestore `snapshots()` напрямую, поэтому новые сообщения и изменения
+`unread_messages_count` приходят между устройствами без ручного refresh.
 
 ---
 
@@ -329,34 +326,26 @@ Future сам по себе не может быть null у async-функци�
 
 ---
 
-### B-022. `CheckDeviceCubit` может затереть `isMainDevice` другого устройства
+### B-022. `CheckDeviceCubit` может затереть `isMainDevice` другого устройства · ✅ FIXED (итерация 4)
 **Файл**: `lib/screens/devices/add_new_device/check_device_cubit.dart:20-35`
 
-Логика «если `is_new_device == null || true`» → при каждой переустановке
-приложения вызывается модалка с `isSMSEnabled = true` по умолчанию, и при
-save другое устройство теряет статус «главного» не автоматически — но
-пользователь может его отметить по ошибке.
-
-**Хуже**: комментарий в коде (строки 30-31):
-```
-// Проверить есть ли is_new_device в фаербейс, если нет то выводим модалку
-// если маин девайс есть но нет сети и зарядки выводить кнопку ...
-```
-показывает, что логика **недоделана**: должна быть проверка на сервере,
-а её нет.
+Логика больше не опирается на `is_new_device` в `SharedPreferences`.
+`CheckDeviceCubit` теперь сверяет текущий `stable deviceId` с серверным
+списком устройств, а `DeviceRepository.addBatteryAndNetworkStatus()` при
+выборе нового main device снимает этот флаг с остальных устройств в одном
+batch.
 
 ---
 
-### B-023. `deviceId` может меняться
+### B-023. `deviceId` может меняться · ✅ FIXED (итерация 4)
 **Файл**: `check_device_cubit.dart:67-90`
 
-- Android: `androidInfo.id` — это `Build.ID` (прошивка). Меняется при
-  обновлении ОС → создаются дубликаты.
-- iOS: `identifierForVendor` меняется при переустановке приложения (если
-  удалены все приложения от этого вендора).
+Локальная логика переписана: `deviceId` теперь хранится в
+`flutter_secure_storage`, а при первом получении собирается более стабильным
+способом и потом переиспользуется.
 
-**Как исправить**: сгенерировать UUID при первом запуске и сохранить в
-`SharedPreferences`.
+Это не даёт идеальной аппаратной идентификации на всех платформах, но убирает
+основной баг с постоянным дрейфом `deviceId` и ложными новыми устройствами.
 
 ---
 

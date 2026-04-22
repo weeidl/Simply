@@ -66,7 +66,6 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
               ),
               const Gap(30),
               BuildSwitchTile(
-                context: context,
                 title: "Sending SMS",
                 subtitle: "Allow the app to send messages from this device",
                 value: isSMSEnabled,
@@ -78,7 +77,6 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
               ),
               const SizedBox(height: 10),
               BuildSwitchTile(
-                context: context,
                 title: "Display network",
                 subtitle: "The application will show the current "
                     "network status and signal quality",
@@ -91,7 +89,6 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
               ),
               const SizedBox(height: 10),
               BuildSwitchTile(
-                context: context,
                 title: "Charging level",
                 subtitle: "The app will display the current charge "
                     "level of your device in the 'Devices' tab",
@@ -108,17 +105,23 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
                 buttonColor: AppColor.green,
                 textStyle: AppTextStyle.title5(AppColor.white),
                 onPressed: () async {
-                  await context.read<CheckDeviceCubit>().saveSettingDevice(
-                        isSMSEnabled: isSMSEnabled,
-                        isNetworkEnabled: isNetworkEnabled,
-                        isChargingEnabled: isChargingEnabled,
-                        deviceId: widget.device?.deviceId,
-                      );
+                  final navigator = Navigator.of(context);
+                  final checkDeviceCubit = context.read<CheckDeviceCubit>();
+                  final deviceCubit = context.read<DeviceCubit>();
+
+                  await checkDeviceCubit.saveSettingDevice(
+                    isSMSEnabled: isSMSEnabled,
+                    isNetworkEnabled: isNetworkEnabled,
+                    isChargingEnabled: isChargingEnabled,
+                    deviceId: widget.device?.deviceId,
+                  );
+                  if (!mounted) return;
                   if (widget.device != null) {
-                    await context.read<DeviceCubit>().updateDevice();
+                    await deviceCubit.updateDevice();
+                    if (!mounted) return;
                   }
                   // Make logic so that you can delete the device
-                  Navigator.pop(context);
+                  navigator.pop();
                 },
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
                 text: 'Save',
@@ -132,10 +135,11 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
                     AppColor.magenta.withValues(alpha: 0.7),
                   ),
                   onPressed: () async {
-                    await context
-                        .read<DeviceCubit>()
-                        .deleteDevice(widget.device!.deviceId);
-                    Navigator.pop(context);
+                    final navigator = Navigator.of(context);
+                    final deviceCubit = context.read<DeviceCubit>();
+                    await deviceCubit.deleteDevice(widget.device!.deviceId);
+                    if (!mounted) return;
+                    navigator.pop();
                   },
                   borderRadius: const BorderRadius.all(Radius.circular(12)),
                   text: 'Delete Device',

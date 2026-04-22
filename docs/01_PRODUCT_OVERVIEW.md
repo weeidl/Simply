@@ -26,10 +26,10 @@ Android, сохраняются в Firestore и доступны в реальн
 | 3 | Восстановление пароля («Forget password?») | ✅ `AuthCubit.sendPasswordReset()` отправляет ссылку на email |
 | 4 | Перехват входящих SMS в фоне (Android only) через `another_telephony` | ✅ Реализовано |
 | 5 | Сохранение SMS в Firestore, сгруппированное по отправителю | ✅ Реализовано |
-| 6 | Live-обновление списка SMS через `StreamController` (in-process) | ⚠️ Работает только в пределах одного процесса; новые сообщения с других устройств НЕ подтягиваются live (план перехода на Firestore snapshots — Итерация 2) |
+| 6 | Live-обновление списка SMS и диалога между устройствами | ✅ Реализовано через Firestore `snapshots()` |
 | 7 | Список устройств аккаунта, отображение заряда/сети для «главного» | ✅ Реализовано частично (данные обновляются только при сохранении настроек) |
 | 8 | Авто-распознавание 6-значных кодов в SMS и копирование в буфер по тапу | ✅ Реализовано в `message_details_widget.dart` |
-| 9 | Отметка «прочитано» при открытии чата | ✅ Инкремент вынесен в `MessagesRepository.sendMessageFirebase` (атомарно на стороне Firestore), `markConversationRead` сбрасывает счётчик |
+| 9 | Отметка «прочитано» при открытии чата | ✅ `markConversationRead` синхронизируется через Firestore и live-обновляется на других устройствах |
 | 10 | Настройки устройства (SMS-sender, отображение заряда/сети) | ✅ Реализовано |
 | 11 | Удаление устройства | ✅ Реализовано |
 | 12 | Privacy Policy | ❌ Экран-заглушка «Coming Soon» (блокер публикации, см. `04_SECURITY_AUDIT.md` S-004) |
@@ -78,9 +78,8 @@ lib/
 ├── main.dart                  — bootstrap: Firebase + MultiBlocProvider
 ├── extensions.dart            — форматирование DateTime
 ├── bloc/
-│   ├── update_message_stream.dart       — глобальный StreamController (анти-паттерн, план замены в Итерации 2)
 │   └── notification/background_message.dart — обработчик SMS в isolate
-├── models/                    — Device, Messages, MessageDetails, PaginatedResponse (чистые DTO)
+├── models/                    — Device, Conversation, Message, PaginatedResponse (чистые DTO)
 ├── repositories/              — FirebaseApi, MessagesRepository, DeviceRepository (все принимают deps через конструктор)
 ├── themes/                    — colors.dart + text_style.dart
 └── screens/
@@ -111,10 +110,10 @@ user_messages/{userId}/
          text, date
 ```
 
-> **Починено**: `FieldValue.increment(1)` вынесен из `Messages.toJson()`
-> и применяется явно только в `MessagesRepository.sendMessageFirebase`
-> (один раз на входящий SMS). Модель снова чистый DTO. Сбрасывается счётчик
-> через `markConversationRead(title)`. См. закрытое B-001 в `03_BUGS_AND_ISSUES.md`.
+> **Починено**: инкремент unread-счётчика больше не живёт в модели.
+> Он применяется явно в `MessagesRepository.saveIncomingMessage`, а сброс
+> делается через `markConversationRead(conversationId)`. Список диалогов и
+> экран переписки теперь получают live-обновления через Firestore snapshots.
 
 ---
 

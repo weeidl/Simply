@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simply/screens/auth/screen/auth_screen.dart';
 import 'package:simply/screens/settings/widget/setting_widget.dart';
 import 'package:simply/screens/splash/cubit/splash_cubit.dart';
@@ -26,9 +25,6 @@ class SettingsScreen extends StatelessWidget {
       onTapButtonOne: () async {
         final splashCubit = context.read<SplashCubit>();
         final navigator = Navigator.of(context);
-
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('is_new_device', true);
 
         final signedOut = await splashCubit.signOut();
         if (!signedOut) return;

@@ -3,19 +3,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/repositories/messages_repository.dart';
+import 'package:simply/security/security_repository.dart';
 
 part 'auth_state.dart';
 
-final _emailRegex =
-    RegExp(r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$");
+final _emailRegex = RegExp(
+    r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$");
 
 class AuthCubit extends Cubit<AuthState> {
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
+  final SecurityRepository _securityRepository;
+  final MessagesRepository _messagesRepository;
 
-  AuthCubit({FirebaseAuth? auth, FirebaseFirestore? firestore})
-      : _auth = auth ?? FirebaseAuth.instance,
+  AuthCubit({
+    FirebaseAuth? auth,
+    FirebaseFirestore? firestore,
+    SecurityRepository? securityRepository,
+    MessagesRepository? messagesRepository,
+  })  : _auth = auth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance,
+        _securityRepository = securityRepository ?? SecurityRepository(),
+        _messagesRepository = messagesRepository ?? MessagesRepository(),
         super(
           AuthState(
             status: AuthStatus.login,
@@ -48,15 +58,26 @@ class AuthCubit extends Cubit<AuthState> {
       return false;
     }
     try {
-      await _auth.signInWithEmailAndPassword(
+      final credential = await _auth.signInWithEmailAndPassword(
         email: state.emailController.text.trim(),
         password: state.passwordController.text,
       );
+      final user = credential.user;
+      if (user == null) {
+        throw StateError('User is missing after sign-in.');
+      }
+
+      await _securityRepository.unlockOrInitializeUser(
+        uid: user.uid,
+        password: state.passwordController.text,
+      );
+      await _messagesRepository.migrateLegacyDataIfNeeded();
       return true;
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
       return false;
     } catch (_) {
+      await _auth.signOut();
       emit(state.copyWith(authErrorMessage: 'Something went wrong'));
       return false;
     }
@@ -90,11 +111,17 @@ class AuthCubit extends Cubit<AuthState> {
         SetOptions(merge: true),
       );
 
+      await _securityRepository.provisionUserSecurity(
+        uid: user.uid,
+        password: state.passwordController.text,
+      );
+
       return _auth.currentUser;
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
       return null;
     } catch (_) {
+      await _auth.signOut();
       emit(state.copyWith(authErrorMessage: 'Something went wrong'));
       return null;
     }
@@ -117,7 +144,13 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> logout() => _auth.signOut();
+  Future<void> logout() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      await _securityRepository.clearCachedSecrets(uid);
+    }
+    await _auth.signOut();
+  }
 
   String _mapAuthError(FirebaseAuthException e) {
     switch (e.code) {

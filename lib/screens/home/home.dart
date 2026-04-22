@@ -7,9 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:simply/screens/devices/settings/device_settings_modal.dart';
 import 'package:simply/screens/devices/screen/devices_screen.dart';
+import 'package:simply/screens/home/cubit/fcm_cubit.dart';
+import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:simply/screens/settings/settings_screen.dart';
 import 'package:simply/themes/colors.dart';
@@ -17,7 +20,17 @@ import 'package:simply/themes/colors.dart';
 class HomePage extends StatefulWidget {
   static Route route() {
     return MaterialPageRoute(
-      builder: (context) => const HomePage(),
+      builder: (context) => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => FcmCubit()..init()),
+          BlocProvider(
+            create: (_) => MessagesListCubit(
+              messagesRepository: MessagesRepository(),
+            ),
+          ),
+        ],
+        child: const HomePage(),
+      ),
     );
   }
 
@@ -30,6 +43,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
   late final List<Widget> _tabs;
+  bool _didRequestInitialDeviceCheck = false;
 
   Future<void> requestPermissions() async {
     if (!Platform.isAndroid) return;
@@ -51,6 +65,11 @@ class HomePageState extends State<HomePage> {
       const MessagesListScreen(),
       const SettingsScreen(),
     ];
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _didRequestInitialDeviceCheck) return;
+      _didRequestInitialDeviceCheck = true;
+      context.read<CheckDeviceCubit>().checkDevice();
+    });
   }
 
   Widget buildNavItem({
@@ -137,7 +156,10 @@ class HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          body: _tabs[_selectedIndex],
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: _tabs,
+          ),
         ),
       ),
     );

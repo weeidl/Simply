@@ -155,7 +155,7 @@ Enum почищен: `initial / loading / loaded / empty / error`.
 ### UI
 - `BackgroundWidget` (оранжевый header + белый контент со скруглённым верхом).
 - `AppBarWidget`: заголовок «Messages», иконка «people» (без действия).
-- `CubitListView<Messages, MessagesListCubit>`:
+- `BlocBuilder<MessagesListCubit, MessagesListState>`:
   - `placeHolder`: `NoMessagesAvailable` (SVG + текст).
   - `itemBuilder`: `MessagesListWidget` на каждую переписку-отправителя.
 
@@ -166,21 +166,17 @@ Enum почищен: `initial / loading / loaded / empty / error`.
 - Название (номер/имя отправителя).
 - Дата последнего сообщения (`formatDateTime`).
 - Текст последнего сообщения (maxLines=2).
-- По тапу → `MessageDetailsScreen` + `updatedUnreadMessagesCount` (сбрасывает
-  счётчик в Firestore).
+- По тапу → `MessageDetailsScreen`; unread-счётчик сбрасывается через Firestore
+  и приезжает обратно в UI уже из live stream.
 
-### Пагинация
-- Через `CubitListView` + `StandardListCubit.onScroll` → инкрементальная
-  подгрузка.
-- `RefreshIndicator` для pull-to-refresh.
+### Обновление данных
+- Список диалогов подписан на Firestore `snapshots()`.
+- `RefreshIndicator` оставлен как ручной re-subscribe / retry.
 
-### Проблемы
-- Нет реального live-обновления из Firestore: `UpdateMessageStream` — это
-  in-process stream, работает только когда SMS принимается этим же процессом.
-  На iPhone новые SMS НЕ отображаются без ручного pull-to-refresh. План —
-  переход на `Firestore.snapshots()` в Итерации 2.
-- ✅ Дубликаты при новом SMS исправлены: `MessagesListCubit._incomingSub`
-  теперь **заменяет** `state.items` свежим ответом, а не конкатенирует.
+### Текущее состояние
+- Live-обновление между устройствами работает.
+- Unread/read синхронизируется через Firestore, а не через локальный `setState`.
+- Пагинация в этом экране пока убрана в пользу более простого и надёжного live flow.
 
 ---
 

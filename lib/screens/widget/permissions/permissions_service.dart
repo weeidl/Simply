@@ -19,6 +19,7 @@ class PermissionsService {
     if (!Platform.isAndroid) return true;
 
     PermissionStatus status = await permission.status;
+    if (!context.mounted) return false;
 
     if (status.isGranted) {
       return true;
@@ -26,6 +27,7 @@ class PermissionsService {
 
     if (status.isDenied || status.isLimited) {
       PermissionStatus newStatus = await permission.request();
+      if (!context.mounted) return false;
       if (newStatus.isGranted) {
         return true;
       } else if (newStatus.isPermanentlyDenied) {
@@ -48,6 +50,7 @@ class PermissionsService {
 
   Future<void> _showPermissionRationale(
       BuildContext context, String permissionName) async {
+    if (!context.mounted) return;
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -76,6 +79,7 @@ class PermissionsService {
 
   Future<void> _showPermissionSettingsDialog(
       BuildContext context, String permissionName) async {
+    if (!context.mounted) return;
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -104,6 +108,7 @@ class PermissionsService {
 
   Future<void> _showPermissionRestrictedDialog(
       BuildContext context, String permissionName) async {
+    if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(

@@ -38,8 +38,8 @@
 
 ### Group B — Model & Repository
 
-- [x] **B-001** `FieldValue.increment(1)` вынесен из `Messages.toJson()`.
-      Модель стала чистым DTO. Инкремент делается в `MessagesRepository.sendMessageFirebase`.
+- [x] **B-001** `FieldValue.increment(1)` вынесен из DTO.
+      Инкремент теперь делается явно в message-repository слое, а не в модели.
 - [x] **B-019** `DeviceRepository.fetch()` — убран ошибочный nullable `Future<List<Device>>?`.
 - [x] **B-020** `getTokensForAllDevices(String userId)` переименован в
       `getTokensForCurrentUser()`, убран параметр `userId`, который не использовался.
@@ -165,16 +165,105 @@ debug — нормально, release будет меньше после R8 mini
 
 ---
 
+## Итерация 3 (2026-04-22)
+
+Фокус: синхронизация сообщений между устройствами и очистка app lifecycle.
+
+- [x] **B-003** `UpdateMessageStream` удалён. Список диалогов и экран диалога
+      переведены на Firestore `snapshots()`, так что новые сообщения и
+      изменения `unread_messages_count` теперь приезжают между устройствами
+      без ручного pull-to-refresh.
+
+- [x] Live `read / unread` синхронизация: `MessagesListWidget` больше не держит
+      локальный `setState`-счётчик unread как отдельный источник истины.
+      Сброс unread идёт через Firestore, а UI перечитывает его из live stream.
+
+- [x] Нейминг модели сообщений выровнен:
+      `Messages` → `Conversation`,
+      `MessageDetails` → `Message`.
+      Это сделано сейчас, пока база маленькая и rename ещё дешёвый.
+
+- [x] Запись входящего SMS переведена на транзакционный сценарий в
+      `MessagesRepository.saveIncomingMessage`: preview диалога и само сообщение
+      пишутся вместе.
+      Частично закрывает **S-019**. Полный переход дат на server timestamps
+      отложен в отдельную миграцию, чтобы не смешивать типы данных со старой
+      историей сообщений.
+
+- [x] `MessagesListCubit` больше не создаётся глобально до логина.
+      Он перенесён в auth-scoped `HomePage.route()`, чтобы не стартовать без
+      валидного `uid`.
+
+- [x] **FcmCubit lifecycle**: eager-init убран из `MyApp`; `FcmCubit`
+      создаётся при входе в `HomePage.route()` и уничтожается при выходе из
+      auth-части приложения.
+
+- [x] `HomePage` переведён на `IndexedStack`, чтобы вкладки не зависели от
+      повторного монтирования.
+
+- [x] `BackgroundWidget` больше не использует platform-specific ветку для
+      нижнего `SafeArea`; поведение выровнено между платформами.
+
+---
+
+## Итерация 4 (2026-04-22)
+
+Фокус: security hardening, encrypted SMS storage и стабильная идентичность
+устройства.
+
+- [x] **S-001** В коде включено клиентское шифрование SMS:
+      добавлены `CryptoService`, `SecurityRepository`, password-wrapped
+      master key, локальный secure-cache ключа и encrypted schema для
+      conversations/messages.
+
+- [x] Plaintext fallback для новых SMS удалён:
+      `MessagesRepository.saveIncomingMessage()` теперь требует готового
+      encryption state и больше не пишет `text/title/last_message` в Firestore
+      как запасной сценарий.
+
+- [x] `MessagesRepository` теперь умеет:
+      live-читать encrypted payload,
+      писать новые SMS в encrypted-виде,
+      лениво мигрировать старые plaintext-диалоги и сообщения после логина.
+
+- [x] Auto-login ужесточён:
+      восстановленная сессия считается валидной только если есть и remote
+      `key_envelope`, и локальный master key. Это убирает тихий режим, где
+      приложение ещё работало, но могло остаться без корректно инициализированного
+      шифрования.
+
+- [x] `AuthCubit` на `signIn / signUp` инициализирует или открывает
+      пользовательский master key, а на logout очищает локальный key cache.
+      `SplashCubit` больше не пускает в home-session без локального ключа,
+      если remote security уже включён.
+
+- [x] **S-002** Локальный `firestore.rules` переписан на owner-scoped правила
+      для `users`, `devices` и `user_messages`.
+      Деплой в реальный Firebase-проект всё ещё внешний шаг автора.
+
+- [x] **B-022 / B-023** `CheckDeviceCubit` переписан:
+      убран `SharedPreferences is_new_device`,
+      добавлен stable `deviceId` через `flutter_secure_storage`,
+      сохранения теперь `await`-safe,
+      first-run modal больше не теряется из-за навигационной гонки.
+
+- [x] `DeviceRepository.addBatteryAndNetworkStatus()` теперь безопаснее
+      переключает `is_main_device`: при выборе нового main device остальные
+      устройства снимаются с этого флага в одном batch.
+
+- [x] `dart analyze lib test` снова чистый: дочищены оставшиеся
+      `use_build_context_synchronously`, deprecated `activeColor` и
+      `withOpacity` замечания в UI-слое.
+
+---
+
 ## Что НЕ сделано в этой итерации (следующий заход)
 
 Это осознанно отложено, потому что требует более масштабной работы, бэкенд-части
 или внешних учётных данных.
 
-### Будет в Итерации 2
+### Следующий заход
 
-- [ ] **B-003** Реактивные Firestore streams вместо in-process StreamController.
-      Нужен переход `MessagesRepository.fetchMessages → watchConversations`,
-      `MessageDetailsCubit → watchMessages`. Средняя сложность, ~1-2 дня.
 - [ ] **B-004 / S-018** FCM pipeline: сохранение токена в `devices.token`,
       подписка на `onMessage`, `onMessageOpenedApp`, показ через
       `flutter_local_notifications`. Требует Cloud Function для sender-side
@@ -182,8 +271,6 @@ debug — нормально, release будет меньше после R8 mini
 - [ ] **B-009** Убрать `fetch()` из `build()` в `CubitListView`.
       `DevicesScreen` уже переведён на `initState`, но общий список всё ещё
       держит initial-fetch внутри `build()`.
-- [ ] **B-022 / B-023** Стабильный `deviceId` через UUID в
-      `flutter_secure_storage` (связано с S-007).
 - [ ] **B-029** Пересмотреть `StandardListCubit` с учётом реактивности.
 - [ ] **B-047 / B-048 / B-049** Дочистить оставшиеся русские комментарии,
       мелкие закомментированные фрагменты и неудачный нейминг.
@@ -192,11 +279,9 @@ debug — нормально, release будет меньше после R8 mini
 
 - [ ] **B-005 / S-003** Release signing — нужен keystore (ключ не в репо).
       Актуально только если проект пойдёт в стор.
-- [ ] **S-002** Firestore Security Rules — нужны проект-ID и firebase CLI.
-      Файл `firestore.rules` добавлен в репо как baseline.
+- [ ] **S-002** Firestore Security Rules — задеплоить обновлённый
+      owner-scoped `firestore.rules` в реальный Firebase-проект.
 - [ ] **S-004** Текст Privacy Policy — юридический документ, нужен от продакта.
-- [ ] **S-001** E2E-шифрование SMS — требует миграции схемы, дизайна KDF,
-      UX для повторного входа (что делать, если пароль забыт → данные теряются).
 - [ ] **S-015** Obfuscation — `flutter build --obfuscate --split-debug-info`.
 - [ ] **S-017** Firebase App Check.
 

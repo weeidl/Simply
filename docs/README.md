@@ -13,6 +13,8 @@
 | [04_SECURITY_AUDIT.md](./04_SECURITY_AUDIT.md) | Аудит безопасности. 24 пункта, включая E2EE, Firestore Rules, Google Play policy. |
 | [05_ARCHITECTURE_IMPROVEMENTS.md](./05_ARCHITECTURE_IMPROVEMENTS.md) | План рефакторинга на 8 спринтов, от гигиены до CI/CD. |
 | [06_FIX_PROGRESS.md](./06_FIX_PROGRESS.md) | Live-трекер: что уже исправлено в итерациях. |
+| [07_EXECUTION_PLAN.md](./07_EXECUTION_PLAN.md) | Практический план ближайшей серии правок: streams, stable deviceId, lifecycle fixes. |
+| [08_SECURITY_DEVICE_PLAN.md](./08_SECURITY_DEVICE_PLAN.md) | План security/device hardening: encryption, rules, stable device identity. |
 
 ## Как пользоваться
 
@@ -56,6 +58,8 @@ App Store пока не планируется. Соответственно rel
 ### Что осталось, если когда-то захочется в стор
 - Release-сборка подписана debug-ключом (B-005).
 - Privacy Policy пустая (B-042 / S-004).
-- SMS хранятся без шифрования (S-001).
-- Baseline `firestore.rules` лежит в репозитории, но не задеплоен (S-002).
+- Firestore rules уже ужесточены в репозитории, но их деплой в реальный
+  Firebase-проект нужно подтвердить отдельно (S-002).
+- Шифрование SMS включается через password-wrapped master key после следующего
+  логина пользователя; rollout/миграцию стоит проверить на живом проекте (S-001).
 - SMS / foreground-service policy для Google Play (S-005, S-006).

@@ -1,41 +1,57 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simply/bloc/update_message_stream.dart';
-import 'package:simply/models/messages.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/models/conversation.dart';
 import 'package:simply/repositories/messages_repository.dart';
-import 'package:simply/screens/common/standard_list_cubit.dart';
-import 'package:simply/screens/common/status.dart';
 
-class MessagesListCubit extends StandardListCubit<Messages> {
+part 'messages_list_state.dart';
+
+class MessagesListCubit extends Cubit<MessagesListState> {
   final MessagesRepository messagesRepository;
-  StreamSubscription<String>? _incomingSub;
+  StreamSubscription<List<Conversation>>? _conversationsSub;
 
   MessagesListCubit({required this.messagesRepository})
-      : super(
-          fetch: ({DocumentSnapshot? startAfter}) {
-            return messagesRepository.fetchMessages(startAfter: startAfter);
-          },
-        ) {
-    fetch();
-    _incomingSub = UpdateMessageStream.stream.listen((_) async {
-      final response = await messagesRepository.fetchMessages();
-      emit(state.copyWith(
-        items: response.items,
-        lastDocument: response.lastDocument,
-        status: StandardStatus.loaded,
-        hasNext: response.items.isNotEmpty,
-      ));
-    });
+      : super(const MessagesListState()) {
+    _bindConversations();
   }
 
-  Future<void> updatedUnreadMessagesCount(Messages message) async {
-    await messagesRepository.markConversationRead(message.title);
+  Future<void> refresh() async {
+    await _bindConversations();
+  }
+
+  Future<void> markConversationRead(String conversationId) {
+    return messagesRepository.markConversationRead(conversationId);
+  }
+
+  Future<void> _bindConversations() async {
+    emit(state.copyWith(
+      status: MessagesListStatus.loading,
+      clearError: true,
+    ));
+
+    await _conversationsSub?.cancel();
+    _conversationsSub = messagesRepository.watchConversations().listen(
+      (items) {
+        emit(state.copyWith(
+          status: MessagesListStatus.loaded,
+          items: items,
+          clearError: true,
+        ));
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        emit(state.copyWith(
+          status: MessagesListStatus.error,
+          errorMessage: error.toString(),
+        ));
+      },
+    );
   }
 
   @override
-  Future<void> close() {
-    _incomingSub?.cancel();
+  Future<void> close() async {
+    await _conversationsSub?.cancel();
     return super.close();
   }
 }

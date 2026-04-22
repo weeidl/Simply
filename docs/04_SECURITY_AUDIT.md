@@ -13,16 +13,21 @@
 
 ---
 
-## 🔴 S-001. SMS хранятся в Firestore в plaintext, без E2EE
+## 🔴 S-001. SMS хранились в Firestore в plaintext, без E2EE · частично закрыто локально
 
-**Где**: `lib/models/message.dart`, `messages_repository.dart`.
+**Где**: `lib/security/crypto_service.dart`,
+`lib/security/security_repository.dart`,
+`lib/repositories/messages_repository.dart`.
 
-Текст сообщения (`MessageDetails.text`) записывается в Firestore как обычная
-строка. Firebase-оператор, сотрудник Google, владелец украденных креденшелов
-сервис-аккаунта, или злоумышленник с доступом к Firestore видит:
-- OTP-коды от банков / бирж.
-- Пароли от Apple ID / Google (если восстанавливаются по SMS).
-- Коды подтверждения 2FA от Telegram / WhatsApp.
+Текущее локальное состояние лучше прежнего: в код добавлен password-wrapped
+master key, `AES-GCM` для conversations/messages и lazy migration старых
+plaintext записей после логина.
+
+Оставшийся риск:
+- rollout нужно проверить на живом Firebase-проекте;
+- пока `firestore.rules` не задеплоены, зашифрованные данные всё ещё доступны
+  в самом Firestore как ciphertext;
+- после сброса/забывания пароля старый архив SMS восстановить нельзя.
 
 **Минимум**: клиентское шифрование симметричным ключом, производным от
 пароля пользователя (`PBKDF2 / Argon2id` → AES-GCM-256). Ключ никогда не
@@ -33,15 +38,11 @@
 
 ---
 
-## 🔴 S-002. Baseline Firestore Security Rules уже добавлены в репозиторий, но их деплой не подтверждён
+## 🔴 S-002. Firestore Rules ужесточены локально, но их деплой не подтверждён
 
-Файл `firestore.rules` в корне проекта уже существует. Это хорошо, потому что
-базовые user-scoped правила теперь описаны рядом с кодом. Но если в реальном
-Firebase-проекте всё ещё оставлены старые/дефолтные правила после `firebase init`:
-```
-allow read, write: if request.auth != null;
-```
-— **любой авторизованный пользователь может читать все чужие SMS**.
+`firestore.rules` в репозитории уже переведён на owner-scoped модель для
+`users`, `devices` и `user_messages`. Но пока эти правила не задеплоены в
+реальный Firebase-проект, фактическая защита данных не гарантирована.
 
 **Что сделать**:
 1. В Firebase Console проверить текущие правила.
@@ -102,13 +103,12 @@ Google Play SMS/Call Log Permissions Policy требует подать форм
 
 ---
 
-## 🟠 S-007. Нет механизма шифрования SharedPreferences
+## 🟠 S-007. Нет механизма шифрования SharedPreferences · ✅ FIXED (итерация 4)
 
 **Файл**: `check_device_cubit.dart`, `settings_screen.dart`
 
-`is_new_device` — не чувствительный флаг. Но если в будущем будет хранится
-токен/ключ — `SharedPreferences` (на Android) / `NSUserDefaults` (iOS)
-**читаемы** при root / jailbreak. Использовать `flutter_secure_storage`.
+Чувствительные локальные данные из нового security/device flow переведены в
+`flutter_secure_storage`: там лежат master key cache и stable `deviceId`.
 
 ---
 
@@ -312,13 +312,13 @@ Firebase Console требования: ≥ 8 символов, mixed case, digit
 
 ## Сводка (checklist перед публикацией)
 
-- [ ] **S-001** — E2E-шифрование SMS.
+- [~] **S-001** — E2E-шифрование SMS (локально реализовано, нужен rollout).
 - [ ] **S-002** — Firestore Security Rules.
 - [ ] **S-003** — Release signing key.
 - [ ] **S-004** — Privacy Policy (текст + экран).
 - [ ] **S-005** — Чистка разрешений Android.
 - [ ] **S-006** — Google Play Permissions Declaration.
-- [ ] **S-007** — `flutter_secure_storage`.
+- [x] **S-007** — `flutter_secure_storage`.
 - [ ] **S-008** — iOS onboarding, Info.plist keys.
 - [ ] **S-009** — Санитизация логов.
 - [ ] **S-010** — Email Enumeration Protection.

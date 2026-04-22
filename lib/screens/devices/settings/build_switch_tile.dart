@@ -3,7 +3,6 @@ import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 
 class BuildSwitchTile extends StatelessWidget {
-  final BuildContext context;
   final String title;
   final String subtitle;
   final bool value;
@@ -11,7 +10,6 @@ class BuildSwitchTile extends StatelessWidget {
 
   const BuildSwitchTile({
     super.key,
-    required this.context,
     required this.title,
     required this.subtitle,
     required this.value,
@@ -53,7 +51,7 @@ class BuildSwitchTile extends StatelessWidget {
             child: Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColor.white,
+              activeThumbColor: AppColor.white,
               activeTrackColor: AppColor.green,
               inactiveThumbColor: AppColor.grey2,
               inactiveTrackColor: AppColor.greyLight,

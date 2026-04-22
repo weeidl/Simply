@@ -1,9 +1,10 @@
 import 'package:another_telephony/telephony.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:simply/models/conversation.dart';
 import 'package:simply/models/message.dart';
-import 'package:simply/models/messages.dart';
+import 'package:simply/repositories/firebase_api.dart';
+import 'package:simply/repositories/messages_repository.dart';
 
 @pragma('vm:entry-point')
 Future<void> onBackgroundMessage(SmsMessage msg) async {
@@ -20,22 +21,16 @@ Future<void> onBackgroundMessage(SmsMessage msg) async {
 
   if (user == null) return;
 
-  final messages = Messages.updateFireStore(msg);
-  final messageTitle = MessageDetails.updateFireStore(msg);
+  final firebaseApi = FirebaseApi(auth: FirebaseAuth.instance);
+  final repository = MessagesRepository(firebaseApi: firebaseApi);
 
-  final userDoc =
-      FirebaseFirestore.instance.collection('user_messages').doc(user.uid);
-
-  await userDoc.collection('messages').doc(messages.title).set({
-    'messages': {
-      ...messages.toJson(),
-      'unread_messages_count': FieldValue.increment(1),
-    },
-  }, SetOptions(merge: true));
-
-  await userDoc
-      .collection('message')
-      .doc('items')
-      .collection(messages.id)
-      .add(messageTitle.toJson());
+  try {
+    await repository.saveIncomingMessage(
+      conversation: Conversation.fromSms(msg),
+      message: Message.fromSms(msg),
+    );
+  } catch (_) {
+    // The app can safely skip the write here when the encryption key is not
+    // available yet. This avoids leaking plaintext to Firestore.
+  }
 }

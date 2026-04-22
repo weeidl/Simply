@@ -1,23 +1,56 @@
+import 'dart:async';
+
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/models/message.dart';
 import 'package:simply/repositories/messages_repository.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:simply/screens/common/standard_list_cubit.dart';
 
-class MessageDetailsCubit extends StandardListCubit<MessageDetails> {
+part 'message_details_state.dart';
+
+class MessageDetailsCubit extends Cubit<MessageDetailsState> {
   final MessagesRepository messagesRepository;
-  final String id;
+  final String conversationId;
+  StreamSubscription<List<Message>>? _messagesSub;
 
   MessageDetailsCubit({
     required this.messagesRepository,
-    required this.id,
-  }) : super(
-          fetch: ({DocumentSnapshot? startAfter}) {
-            return messagesRepository.fetchMessage(
-              id,
-              startAfter: startAfter,
-            );
-          },
-        ) {
-    fetch();
+    required this.conversationId,
+  }) : super(const MessageDetailsState()) {
+    _bindMessages();
+  }
+
+  Future<void> refresh() async {
+    await _bindMessages();
+  }
+
+  Future<void> _bindMessages() async {
+    emit(state.copyWith(
+      status: MessageDetailsStatus.loading,
+      clearError: true,
+    ));
+
+    await _messagesSub?.cancel();
+    _messagesSub = messagesRepository.watchMessages(conversationId).listen(
+      (items) {
+        emit(state.copyWith(
+          status: MessageDetailsStatus.loaded,
+          items: items,
+          clearError: true,
+        ));
+      },
+      onError: (Object error, StackTrace stackTrace) {
+        emit(state.copyWith(
+          status: MessageDetailsStatus.error,
+          errorMessage: error.toString(),
+        ));
+      },
+    );
+  }
+
+  @override
+  Future<void> close() async {
+    await _messagesSub?.cancel();
+    return super.close();
   }
 }

@@ -4,11 +4,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    hide Message;
 import 'package:simply/bloc/notification/background_message.dart';
-import 'package:simply/bloc/update_message_stream.dart';
+import 'package:simply/models/conversation.dart';
 import 'package:simply/models/message.dart';
-import 'package:simply/models/messages.dart';
 import 'package:simply/repositories/messages_repository.dart';
 
 part 'fcm_state.dart';
@@ -19,10 +19,14 @@ class FcmCubit extends Cubit<FcmState> {
   final telephony = Telephony.instance;
   final _messagesRepository = MessagesRepository();
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  bool _isInitialized = false;
 
   FcmCubit() : super(FcmState());
 
   Future<void> init() async {
+    if (_isInitialized) return;
+    _isInitialized = true;
+
     if (Platform.isAndroid) {
       await telephony.requestPhoneAndSmsPermissions;
       telephony.listenIncomingSms(
@@ -68,16 +72,18 @@ class FcmCubit extends Cubit<FcmState> {
 
   Future<void> onNewMessage(SmsMessage msg) async {
     try {
-      final messages = Messages.updateFireStore(msg);
-      final MessageDetails messageTitle = MessageDetails.updateFireStore(msg);
-
-      await _messagesRepository.sendMessageFirebase(
-        messages: messages,
-        messageTitle: messageTitle,
+      await _messagesRepository.saveIncomingMessage(
+        conversation: Conversation.fromSms(msg),
+        message: Message.fromSms(msg),
       );
-      UpdateMessageStream.controller.add('');
     } catch (e) {
       debugPrint('Error handling new message: $e');
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await flutterLocalNotificationsPlugin.cancel(0);
+    return super.close();
   }
 }

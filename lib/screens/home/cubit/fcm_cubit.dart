@@ -10,7 +10,6 @@ import 'package:simply/bloc/update_message_stream.dart';
 import 'package:simply/models/message.dart';
 import 'package:simply/models/messages.dart';
 import 'package:simply/repositories/messages_repository.dart';
-import 'package:workmanager/workmanager.dart';
 
 part 'fcm_state.dart';
 
@@ -33,7 +32,6 @@ class FcmCubit extends Cubit<FcmState> {
       );
       await _initNotifications();
       await FirebaseMessaging.instance.requestPermission();
-      _scheduleBackgroundTask();
       _showNotification();
     }
   }
@@ -48,14 +46,6 @@ class FcmCubit extends Cubit<FcmState> {
       alert: true,
       badge: true,
       sound: true,
-    );
-  }
-
-  void _scheduleBackgroundTask() {
-    Workmanager().registerPeriodicTask(
-      "1",
-      "sendFirebaseMessageTask",
-      frequency: const Duration(minutes: 15),
     );
   }
 

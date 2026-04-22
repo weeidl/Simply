@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
-import 'package:simply/screens/widget/bacgraund_widget.dart';
+import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,10 +15,13 @@ class ContactUsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (!await launchUrl(uri)) {
-      throw Exception('Could not launch $url');
+  Future<void> _launchUrl(BuildContext context, String url) async {
+    final uri = Uri.parse(url);
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open $url')),
+      );
     }
   }
 
@@ -52,7 +55,7 @@ class ContactUsScreen extends StatelessWidget {
               'Email',
               'weeidlone@gmail.com',
               'assets/icons/email.svg',
-              () => _launchUrl('mailto:weeidlone@gmail.com'),
+              () => _launchUrl(context, 'mailto:weeidlone@gmail.com'),
             ),
             const SizedBox(height: 16),
             _buildContactCard(
@@ -60,7 +63,7 @@ class ContactUsScreen extends StatelessWidget {
               'Website',
               'weeidl.com',
               'assets/icons/website.svg',
-              () => _launchUrl('https://weeidl.com'),
+              () => _launchUrl(context, 'https://weeidl.com'),
             ),
             const SizedBox(height: 16),
             _buildContactCard(
@@ -68,7 +71,7 @@ class ContactUsScreen extends StatelessWidget {
               'Social Media',
               'Follow us on social media',
               'assets/icons/social.svg',
-              () => _launchUrl('https://www.instagram.com/weeidl'),
+              () => _launchUrl(context, 'https://www.instagram.com/weeidl'),
             ),
             const SizedBox(height: 32),
             Text(

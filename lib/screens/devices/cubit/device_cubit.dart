@@ -5,21 +5,24 @@ import 'package:simply/repositories/device_repository.dart';
 part 'device_state.dart';
 
 class DeviceCubit extends Cubit<DeviceState> {
-  final DeviceRepository _deviceRepository = DeviceRepository();
+  final DeviceRepository _deviceRepository;
 
-  DeviceCubit() : super(DeviceState(status: DeviceStatus.initial));
+  DeviceCubit({DeviceRepository? deviceRepository})
+      : _deviceRepository = deviceRepository ?? DeviceRepository(),
+        super(DeviceState(status: DeviceStatus.initial));
 
-  Future fetch() async {
+  Future<void> fetch() async {
     emit(state.copyWith(status: DeviceStatus.loading));
     try {
       final response = await _deviceRepository.fetch();
       emit(
         state.copyWith(
-          status: DeviceStatus.loaded,
+          status:
+              response.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
           items: response,
         ),
       );
-    } catch (e) {
+    } catch (_) {
       emit(state.copyWith(status: DeviceStatus.error));
     }
   }
@@ -27,8 +30,12 @@ class DeviceCubit extends Cubit<DeviceState> {
   Future<void> updateDevice() async {
     try {
       final response = await _deviceRepository.fetch();
-      emit(state.copyWith(items: response));
-    } catch (e) {
+      emit(state.copyWith(
+        items: response,
+        status:
+            response.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
+      ));
+    } catch (_) {
       emit(state.copyWith(status: DeviceStatus.error));
     }
   }
@@ -38,8 +45,13 @@ class DeviceCubit extends Cubit<DeviceState> {
       await _deviceRepository.delete(deviceId);
       final updatedDevices =
           state.items.where((device) => device.deviceId != deviceId).toList();
-      emit(state.copyWith(items: updatedDevices));
-    } catch (e) {
+      emit(state.copyWith(
+        items: updatedDevices,
+        status: updatedDevices.isEmpty
+            ? DeviceStatus.empty
+            : DeviceStatus.loaded,
+      ));
+    } catch (_) {
       emit(state.copyWith(status: DeviceStatus.error));
     }
   }

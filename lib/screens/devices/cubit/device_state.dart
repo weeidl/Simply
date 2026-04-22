@@ -4,9 +4,6 @@ enum DeviceStatus {
   initial,
   loading,
   loaded,
-  waiting,
-  redirect,
-  success,
   empty,
   error,
 }
@@ -19,7 +16,7 @@ class DeviceState {
     required DeviceStatus status,
     List<Device>? items,
   })  : _status = status,
-        _items = items ?? [];
+        _items = items ?? const [];
 
   List<Device> get items => _items;
 

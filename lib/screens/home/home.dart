@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,14 +31,14 @@ class HomePageState extends State<HomePage> {
   int _selectedIndex = 1;
   late final List<Widget> _tabs;
 
-  void requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
+  Future<void> requestPermissions() async {
+    if (!Platform.isAndroid) return;
+    final statuses = await [
       Permission.sms,
-      Permission.locationWhenInUse,
+      Permission.notification,
     ].request();
-    final smsPermission = statuses[Permission.sms];
-    if (smsPermission != PermissionStatus.granted) {
-      log('Разрешение на SMS не получено');
+    if (statuses[Permission.sms] != PermissionStatus.granted) {
+      log('SMS permission not granted');
     }
   }
 

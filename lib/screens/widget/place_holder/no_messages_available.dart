@@ -11,17 +11,21 @@ class NoMessagesAvailable extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
             'assets/icons/message.svg',
+            width: 64,
+            height: 64,
             colorFilter: const ColorFilter.mode(
               AppColor.greyDarkInverted,
               BlendMode.srcIn,
             ),
           ),
+          const SizedBox(height: 12),
           Text(
             'No messages available',
-            style: AppTextStyle.paragraph(AppColor.greyDarkInverted),
+            style: AppTextStyle.paragraph(AppColor.grey),
             textAlign: TextAlign.center,
           ),
         ],

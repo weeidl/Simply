@@ -7,14 +7,20 @@ import 'package:simply/themes/text_style.dart';
 class SettingWidget extends StatelessWidget {
   final String title;
   final String icon;
+  final bool comingSoon;
+
   const SettingWidget({
     super.key,
     required this.title,
     required this.icon,
+    this.comingSoon = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final mainColor =
+        comingSoon ? AppColor.greyDark2.withValues(alpha: 0.4) : AppColor.greyDark2;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Container(
@@ -23,24 +29,31 @@ class SettingWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
           color: AppColor.greyLight,
-          borderRadius: BorderRadius.all(
-            Radius.circular(12),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
         child: Row(
           children: [
             SvgPicture.asset(
               icon,
-              colorFilter: const ColorFilter.mode(
-                AppColor.greyDark2,
-                BlendMode.srcIn,
-              ),
+              colorFilter: ColorFilter.mode(mainColor, BlendMode.srcIn),
             ),
             const Gap(12),
-            Text(
-              title,
-              style: AppTextStyle.paragraphM(AppColor.greyDark2),
-            ),
+            Text(title, style: AppTextStyle.paragraphM(mainColor)),
+            if (comingSoon) ...[
+              const Gap(8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColor.orange.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'Soon',
+                  style: AppTextStyle.captionS(AppColor.orange),
+                ),
+              ),
+            ],
             const Spacer(),
             SvgPicture.asset(
               'assets/icons/arrow_right.svg',

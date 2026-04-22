@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -12,27 +10,14 @@ import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/splash/cubit/splash_cubit.dart';
 import 'package:simply/screens/splash/splash_screen.dart';
 import 'package:simply/themes/colors.dart';
-import 'package:workmanager/workmanager.dart';
 
 Future<void> _firebaseMessagingBackground(RemoteMessage message) async {}
-
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    // if (task == "sendFirebaseMessageTask") {
-    // await sendMessagesToFirebase();
-    // }
-    return Future.value(true);
-  });
-}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackground);
-  if (Platform.isAndroid) {
-    Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
-  }
   runApp(const MyApp());
 }
 
@@ -43,24 +28,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => SplashCubit(),
-        ),
-        BlocProvider(
-          create: (context) => FcmCubit()..init(),
-        ),
+        BlocProvider(create: (context) => SplashCubit()),
+        BlocProvider(create: (context) => FcmCubit()..init()),
         BlocProvider(
           create: (context) => MessagesListCubit(
             messagesRepository: MessagesRepository(),
           ),
         ),
-        BlocProvider(
-          create: (context) => DeviceCubit(),
-          // child: const DevicesScreen(),
-        ),
-        BlocProvider(
-          create: (context) => CheckDeviceCubit(),
-        ),
+        BlocProvider(create: (context) => DeviceCubit()),
+        BlocProvider(create: (context) => CheckDeviceCubit()),
       ],
       child: BlocBuilder<FcmCubit, FcmState>(
         builder: (context, state) {

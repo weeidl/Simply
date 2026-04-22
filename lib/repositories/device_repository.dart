@@ -5,8 +5,11 @@ import 'package:simply/models/device.dart';
 import 'package:simply/repositories/firebase_api.dart';
 
 class DeviceRepository {
-  final FirebaseApi _firebaseApi = FirebaseApi();
+  final FirebaseApi _firebaseApi;
   static const _url = "devices";
+
+  DeviceRepository({FirebaseApi? firebaseApi})
+      : _firebaseApi = firebaseApi ?? FirebaseApi();
 
   String get id => _firebaseApi.userId ?? '';
 
@@ -19,38 +22,26 @@ class DeviceRepository {
         );
   }
 
-  Future<List<String>> getTokensForAllDevices(String userId) async {
+  Future<List<String>> getTokensForCurrentUser() async {
     try {
-      final CollectionReference<Map<String, dynamic>> collectionReference =
-          _firebaseApi.itemsCollection(_url);
-
+      final collectionReference = _firebaseApi.itemsCollection(_url);
       final querySnapshot = await collectionReference.get();
 
-      final List<String> tokens = [];
-
-      for (var document in querySnapshot.docs) {
-        final deviceData = document.data();
-        final token = deviceData['token'] as String;
-
-        tokens.add(token);
-      }
-
-      return tokens;
+      return querySnapshot.docs
+          .map((doc) => doc.data()['token'] as String?)
+          .whereType<String>()
+          .toList();
     } catch (e) {
-      log("Произошла ошибка при получении токенов устройств: $e");
+      log('Failed to fetch device tokens: $e');
       return [];
     }
   }
 
-  Future<List<Device>>? fetch() async {
+  Future<List<Device>> fetch() async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
     final snapshot = await itemsBackend.get();
 
-    List<Device> device = snapshot.docs.map((doc) {
-      return Device.fromMap(doc.data());
-    }).toList();
-
-    return device;
+    return snapshot.docs.map((doc) => Device.fromMap(doc.data())).toList();
   }
 
   Future<void> addBatteryAndNetworkStatus({
@@ -66,7 +57,7 @@ class DeviceRepository {
         "battery_level": batteryStatus,
         "network_type": networkTypeStatus,
         "is_main_device": isMainDevice,
-        "date_update_info": DateTime.now(),
+        "date_update_info": FieldValue.serverTimestamp(),
       },
       SetOptions(merge: true),
     );

@@ -139,9 +139,25 @@ class AuthScreen extends StatelessWidget {
           if (state.status == AuthStatus.login)
             Align(
               alignment: Alignment.centerRight,
-              child: Text(
-                'Forget password?',
-                style: AppTextStyle.captionS(AppColor.orange),
+              child: InkWell(
+                onTap: () async {
+                  final ok = await cubit.sendPasswordReset();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        ok
+                            ? 'Password reset email sent'
+                            : cubit.state.authErrorMessage ??
+                                'Could not send reset email',
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  'Forget password?',
+                  style: AppTextStyle.captionS(AppColor.orange),
+                ),
               ),
             ),
           const Gap(20),
@@ -158,10 +174,9 @@ class AuthScreen extends StatelessWidget {
                 final success = await cubit.signIn();
                 if (!success) {
                   if (!context.mounted) return;
-
                   await MessageDialog.show(
                     context: context,
-                    text: 'Failed to sign in',
+                    text: cubit.state.authErrorMessage ?? 'Failed to sign in',
                     buttonText: 'OK',
                   );
                   return;
@@ -172,13 +187,14 @@ class AuthScreen extends StatelessWidget {
                   if (!context.mounted) return;
                   await MessageDialog.show(
                     context: context,
-                    text: 'Failed to sign up',
+                    text: cubit.state.authErrorMessage ?? 'Failed to sign up',
                     buttonText: 'OK',
                   );
                   return;
                 }
               }
 
+              if (!context.mounted) return;
               Navigator.pushAndRemoveUntil(
                 context,
                 HomePage.route(),

@@ -23,10 +23,12 @@ class SplashScreen extends StatelessWidget {
           context.read<CheckDeviceCubit>().checkDevice();
           await Navigator.pushReplacement(context, HomePage.route());
         } else if (state is AuthUnauthenticated) {
-          await Navigator.push(context, AuthScreen.route());
+          await Navigator.pushReplacement(context, AuthScreen.route());
         }
       },
-      child: const Scaffold(body: CircularProgressIndicator()),
+      child: const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }

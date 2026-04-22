@@ -1,4 +1,3 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
@@ -38,43 +37,37 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints.tightFor(
-        width: width,
-        height: height,
-      ),
-      child: InkWell(
-        onTap: onPressed != null ? () {} : null,
-        child: ElevatedButton(
-          onPressed: onPressed,
-          style: ButtonStyle(
-            padding: WidgetStateProperty.all(paddingButton),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            side:
-                borderSide != null ? WidgetStateProperty.all(borderSide) : null,
-            elevation: WidgetStateProperty.all(elevated ? 2 : 0),
-            shape: WidgetStateProperty.all(
-              borderRadius != null
-                  ? RoundedRectangleBorder(borderRadius: borderRadius!)
-                  : const StadiumBorder(),
-            ),
-            backgroundColor: WidgetStateProperty.resolveWith<Color>(
-              (Set<WidgetState> states) {
-                if (states.contains(WidgetState.disabled)) {
-                  return disabledBackgroundColor ?? AppColor.orange;
-                }
-                return buttonColor ?? AppColor.orange;
-              },
-            ),
+      constraints: BoxConstraints.tightFor(width: width, height: height),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(paddingButton),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          side:
+              borderSide != null ? WidgetStateProperty.all(borderSide) : null,
+          elevation: WidgetStateProperty.all(elevated ? 2 : 0),
+          shape: WidgetStateProperty.all(
+            borderRadius != null
+                ? RoundedRectangleBorder(borderRadius: borderRadius!)
+                : const StadiumBorder(),
           ),
-          child: Container(
-            padding: padding,
-            child: FittedBox(
-              child: child ??
-                  Text(
-                    text!,
-                    style: textStyle ?? AppTextStyle.title4(AppColor.white),
-                  ),
-            ),
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+            (states) {
+              if (states.contains(WidgetState.disabled)) {
+                return disabledBackgroundColor ?? AppColor.orange;
+              }
+              return buttonColor ?? AppColor.orange;
+            },
+          ),
+        ),
+        child: Container(
+          padding: padding,
+          child: FittedBox(
+            child: child ??
+                Text(
+                  text ?? '',
+                  style: textStyle ?? AppTextStyle.title4(AppColor.white),
+                ),
           ),
         ),
       ),

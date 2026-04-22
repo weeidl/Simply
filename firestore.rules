@@ -1,0 +1,37 @@
+rules_version = '2';
+
+// Baseline security rules for Simply.
+// Deploy with:  firebase deploy --only firestore:rules
+//
+// Principle: every document in Firestore is scoped to one user and is
+// readable/writable only by that user. No public reads. No cross-user
+// access. Unauthenticated clients cannot read anything.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Per-user profile document: users/{uid}
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Per-user conversations and messages.
+    // Structure:
+    //   user_messages/{uid}/messages/{address}                 (conversation preview)
+    //   user_messages/{uid}/message/items/{address}/{autoId}   (actual messages)
+    match /user_messages/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Per-user devices.
+    // Structure: devices/{uid}/items/{deviceId}
+    match /devices/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Everything else is denied by default.
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -21,13 +21,15 @@ class AuthState {
   AuthState copyWith({
     AuthStatus? status,
     String? authErrorMessage,
+    bool clearError = false,
   }) {
     return AuthState(
       status: status ?? this.status,
       emailController: emailController,
       passwordController: passwordController,
       nameController: nameController,
-      authErrorMessage: authErrorMessage ?? this.authErrorMessage,
+      authErrorMessage:
+          clearError ? null : (authErrorMessage ?? this.authErrorMessage),
     );
   }
 }

@@ -21,16 +21,15 @@ class Messages {
       'title': title,
       'last_message': lastMessage,
       'last_message_date': lastMessageDate.toIso8601String(),
-      'unread_messages_count': FieldValue.increment(1),
       'createdAt': FieldValue.serverTimestamp(),
     };
   }
 
   factory Messages.fromJson(Map<String, dynamic> json) {
     return Messages(
-      id: json['id'],
-      title: json['title'],
-      lastMessage: json['last_message'],
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      lastMessage: json['last_message'] ?? '',
       lastMessageDate: DateTime.parse(json['last_message_date']),
       unreadMessagesCount: json['unread_messages_count'] ?? 0,
     );

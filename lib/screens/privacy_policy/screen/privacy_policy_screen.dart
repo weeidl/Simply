@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
-import 'package:simply/screens/widget/bacgraund_widget.dart';
+import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 

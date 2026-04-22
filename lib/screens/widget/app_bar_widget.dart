@@ -29,7 +29,7 @@ class AppBarWidget extends StatelessWidget {
               child: const Icon(
                 Icons.arrow_back_ios,
                 color: AppColor.white,
-                weight: 24,
+                size: 20,
               ),
             ),
           if (showBackButton) const SizedBox(width: 8),

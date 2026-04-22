@@ -5,10 +5,13 @@ import 'package:simply/models/messages.dart';
 import '../models/message.dart';
 
 class MessagesRepository {
-  final FirebaseApi _firebaseApi = FirebaseApi();
+  final FirebaseApi _firebaseApi;
   static const _url = "user_messages";
   static const _messages = "messages";
   static const _message = "message";
+
+  MessagesRepository({FirebaseApi? firebaseApi})
+      : _firebaseApi = firebaseApi ?? FirebaseApi();
 
   Future<PaginatedResponse<Messages>> fetchMessages({
     int limit = 20,
@@ -17,15 +20,13 @@ class MessagesRepository {
     final documentReference = _firebaseApi.documentReference(_url);
     final collection = documentReference.collection(_messages);
 
-    final response = await _firebaseApi.fetchPaginatedData(
+    return _firebaseApi.fetchPaginatedData(
       collection: collection,
-      fromJson: (data) => Messages.fromJson(data[_messages]),
+      fromJson: (data) => Messages.fromJson(data[_messages] ?? data),
       limit: limit,
       startAfter: startAfter,
       orderByField: 'messages.last_message_date',
     );
-
-    return response;
   }
 
   Future<PaginatedResponse<MessageDetails>> fetchMessage(
@@ -37,59 +38,55 @@ class MessagesRepository {
     final collection =
         documentReference.collection(_message).doc('items').collection(id);
 
-    final response = await _firebaseApi.fetchPaginatedData(
+    return _firebaseApi.fetchPaginatedData(
       collection: collection,
       fromJson: (data) => MessageDetails.fromJson(data),
       limit: limit,
-      // descending: false,
       startAfter: startAfter,
       orderByField: 'date',
     );
-
-    return response;
   }
 
-  Future<void> update(String id, String title) async {
+  /// Resets the unread counter for a conversation when the user opens it.
+  Future<void> markConversationRead(String title) async {
     final documentReference = _firebaseApi.documentReference(_url);
-    DocumentReference docRef =
-        documentReference.collection(_messages).doc(title);
+    final docRef = documentReference.collection(_messages).doc(title);
 
-    await _setData(
-      docRef: docRef,
-      data: {
-        _messages: {"unread_messages_count": 0},
+    await docRef.set(
+      {
+        _messages: {'unread_messages_count': 0},
       },
+      SetOptions(merge: true),
     );
   }
 
+  /// Persists an incoming SMS: updates the conversation preview and appends
+  /// the message body. The unread counter is incremented atomically via
+  /// [FieldValue.increment] so the client never races with other writers.
   Future<void> sendMessageFirebase({
     required MessageDetails messageTitle,
     required Messages messages,
   }) async {
     final documentReference = _firebaseApi.documentReference(_url);
 
-    DocumentReference docRef =
+    final previewRef =
         documentReference.collection(_messages).doc(messages.title);
 
-    await _setData(
-      docRef: docRef,
-      data: {
-        _messages: messages.toJson(),
+    await previewRef.set(
+      {
+        _messages: {
+          ...messages.toJson(),
+          'unread_messages_count': FieldValue.increment(1),
+        },
       },
+      SetOptions(merge: true),
     );
 
-    CollectionReference messagesCollection = documentReference
+    final messagesCollection = documentReference
         .collection(_message)
         .doc('items')
         .collection(messages.id);
-    await messagesCollection.add(messageTitle.toJson());
-  }
 
-  Future<void> _setData({
-    required DocumentReference docRef,
-    required Map<String, dynamic> data,
-    bool merge = true,
-  }) async {
-    await docRef.set(data, SetOptions(merge: merge));
+    await messagesCollection.add(messageTitle.toJson());
   }
 }

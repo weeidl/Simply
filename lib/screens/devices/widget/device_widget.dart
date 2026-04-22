@@ -9,23 +9,10 @@ class DeviceWidget extends StatelessWidget {
 
   const DeviceWidget({super.key, required this.device});
 
-  String imageDevice() {
-    if (device.platform == "android") {
-      return 'android.png';
-    } else {
-      return 'iphone.png';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        DeviceSettingsModal.show(
-          context: context,
-          device: device,
-        );
-      },
+      onTap: () => DeviceSettingsModal.show(context: context, device: device),
       child: Container(
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -33,9 +20,7 @@ class DeviceWidget extends StatelessWidget {
           color: AppColor.greyMedium,
           borderRadius: BorderRadius.circular(15),
         ),
-        child: DeviceInfoWidget(
-          device: device,
-        ),
+        child: DeviceInfoWidget(device: device),
       ),
     );
   }

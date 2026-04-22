@@ -4,7 +4,7 @@ import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/common/cubit_list_view.dart';
 import 'package:simply/screens/messages_list/widget/messages_list_widget.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
-import 'package:simply/screens/widget/bacgraund_widget.dart';
+import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/place_holder/no_messages_available.dart';
 
 class MessagesListScreen extends StatelessWidget {

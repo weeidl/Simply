@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
+import 'package:simply/screens/widget/platform_tap_scale.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -11,7 +12,7 @@ class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
 
   static Route route() {
-    return MaterialPageRoute(
+    return platformPageRoute(
       builder: (context) => const ContactUsScreen(),
     );
   }
@@ -70,7 +71,8 @@ class ContactUsScreen extends StatelessWidget {
             subtitle: 'instagram.com/weeidl',
             iconBg: const Color(0xFFF5E8FB),
             iconFg: const Color(0xFF8B3FB5),
-            onTap: () => _launchUrl(context, 'https://www.instagram.com/weeidl'),
+            onTap: () =>
+                _launchUrl(context, 'https://www.instagram.com/weeidl'),
           ),
           const SizedBox(height: 28),
           Text('Команда', style: AppTextStyle.title(AppColor.ink)),

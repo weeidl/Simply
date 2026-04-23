@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
+import 'package:simply/screens/widget/platform_tap_scale.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -10,7 +11,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
   static Route route() {
-    return MaterialPageRoute(
+    return platformPageRoute(
       builder: (context) => const PrivacyPolicyScreen(),
     );
   }

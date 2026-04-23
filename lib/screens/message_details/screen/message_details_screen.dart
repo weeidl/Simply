@@ -8,6 +8,8 @@ import 'package:simply/screens/message_details/cubit/message_details_cubit.dart'
 import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
+import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/services/ui_preferences_service.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -29,7 +31,7 @@ class MessageDetailsScreen extends StatelessWidget {
     required String title,
     String? sourcePlatform,
   }) {
-    return MaterialPageRoute(
+    return platformPageRoute(
       builder: (context) {
         return BlocProvider(
           create: (context) => MessageDetailsCubit(
@@ -76,7 +78,11 @@ class MessageDetailsScreen extends StatelessWidget {
             ],
           ),
         ),
-        trailing: _DotsButton(),
+        trailing: Builder(
+          builder: (context) => _DotsButton(
+            onTap: () => _showMoreActions(context),
+          ),
+        ),
       ),
       child: BlocBuilder<MessageDetailsCubit, MessageDetailsState>(
         builder: (context, state) {
@@ -100,6 +106,23 @@ class MessageDetailsScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Future<void> _showMoreActions(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColor.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        return _MoreActionsSheet(
+          conversationTitle: title,
+          sourcePlatformLabel: _platformLabel(),
+        );
+      },
     );
   }
 
@@ -127,12 +150,12 @@ class _MessagesList extends StatelessWidget {
         if (index == 0) return const _InfoBanner();
         final message = messages[index - 1];
         final prev = index > 1 ? messages[index - 2] : null;
-        final showDivider = prev == null ||
-            !_sameDay(prev.date, message.date);
+        final showDivider = prev == null || !_sameDay(prev.date, message.date);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (showDivider) _DateDivider(label: message.date.formatChatDivider()),
+            if (showDivider)
+              _DateDivider(label: message.date.formatChatDivider()),
             const SizedBox(height: 6),
             _MessageBubble(message: message),
             const SizedBox(height: 8),
@@ -146,15 +169,184 @@ class _MessagesList extends StatelessWidget {
       a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
-class _InfoBanner extends StatelessWidget {
+/// Dismissible info card shown above the message list.
+///
+/// Once dismissed it is never shown again on this device (persisted via
+/// [UiPreferencesService]); the full copy is still reachable through the
+/// ⋯ menu → "Как работает Simply".
+class _InfoBanner extends StatefulWidget {
   const _InfoBanner();
 
   @override
+  State<_InfoBanner> createState() => _InfoBannerState();
+}
+
+class _InfoBannerState extends State<_InfoBanner> {
+  final UiPreferencesService _preferences = UiPreferencesService();
+
+  /// `null` → still loading the persisted flag. Avoids flashing the banner
+  /// on repeat users who previously dismissed it.
+  bool? _dismissed;
+
+  @override
+  void initState() {
+    super.initState();
+    _hydrate();
+  }
+
+  Future<void> _hydrate() async {
+    final dismissed = await _preferences.isMessagesInfoBannerDismissed();
+    if (!mounted) return;
+    setState(() => _dismissed = dismissed);
+  }
+
+  Future<void> _dismiss() async {
+    setState(() => _dismissed = true);
+    await _preferences.setMessagesInfoBannerDismissed(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_dismissed == null || _dismissed == true) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        alignment: Alignment.topCenter,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(14, 12, 6, 12),
+          decoration: const BoxDecoration(
+            color: AppColor.accentSoft,
+            borderRadius: AppRadii.brR3,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: const BoxDecoration(
+                  color: AppColor.accent,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.sync_rounded,
+                    size: 15, color: AppColor.white),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 2, right: 4),
+                  child: Text(
+                    'Simply пересылает SMS с устройства и автоматически копирует найденные коды в буфер обмена.',
+                    style: AppTextStyle.bodySm(AppColor.accentInk),
+                  ),
+                ),
+              ),
+              PlatformTapScale(
+                child: Semantics(
+                  button: true,
+                  label: 'Скрыть подсказку',
+                  child: InkResponse(
+                    onTap: _dismiss,
+                    radius: 20,
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(
+                        Icons.close_rounded,
+                        size: 18,
+                        color: AppColor.accentInk,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bottom sheet behind the ⋯ button. Keeps the primary chat area uncluttered
+/// while still surfacing "how it works" + a few useful extras.
+class _MoreActionsSheet extends StatelessWidget {
+  final String conversationTitle;
+  final String sourcePlatformLabel;
+
+  const _MoreActionsSheet({
+    required this.conversationTitle,
+    required this.sourcePlatformLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 38,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColor.divider,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            _HowItWorksCard(),
+            const SizedBox(height: 8),
+            _ActionRow(
+              icon: Icons.content_copy_rounded,
+              label: 'Скопировать адрес отправителя',
+              onTap: () async {
+                await Clipboard.setData(
+                  ClipboardData(text: conversationTitle),
+                );
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColor.ink,
+                    content: Text(
+                      'Отправитель скопирован',
+                      style: AppTextStyle.bodySm(AppColor.white),
+                    ),
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              },
+            ),
+            _ActionRow(
+              icon: Icons.devices_rounded,
+              label: 'Источник: $sourcePlatformLabel',
+              onTap: null,
+              subtle: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HowItWorksCard extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+      decoration: const BoxDecoration(
         color: AppColor.accentSoft,
         borderRadius: AppRadii.brR3,
       ),
@@ -162,24 +354,79 @@ class _InfoBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
+            width: 30,
+            height: 30,
+            decoration: const BoxDecoration(
               color: AppColor.accent,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: const Icon(Icons.sync_rounded,
-                size: 15, color: AppColor.white),
+            child:
+                const Icon(Icons.sync_rounded, size: 16, color: AppColor.white),
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              'Simply пересылает SMS с устройства и автоматически копирует найденные коды в буфер обмена.',
-              style: AppTextStyle.bodySm(AppColor.accentInk),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Как работает Simply',
+                    style: AppTextStyle.titleSm(AppColor.accentInk)),
+                const SizedBox(height: 4),
+                Text(
+                  'Simply пересылает SMS с устройства и автоматически копирует найденные коды в буфер обмена.',
+                  style: AppTextStyle.bodySm(AppColor.accentInk),
+                ),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool subtle;
+
+  const _ActionRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.subtle = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = subtle ? AppColor.inkTertiary : AppColor.ink;
+    return PlatformTapScale(
+      pressedScale: 0.98,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, size: 20, color: color),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyle.body(color),
+                ),
+              ),
+              if (onTap != null)
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppColor.inkPlaceholder,
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -213,49 +460,67 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final code = CodeExtractor.extract(message.text);
+    final timeLabel = message.date.formatTime();
+
     return Align(
       alignment: Alignment.centerLeft,
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: MediaQuery.of(context).size.width * 0.86,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-              decoration: BoxDecoration(
-                color: AppColor.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6),
-                  topRight: Radius.circular(22),
-                  bottomLeft: Radius.circular(22),
-                  bottomRight: Radius.circular(22),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+          decoration: BoxDecoration(
+            color: AppColor.surface,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(6),
+              topRight: Radius.circular(22),
+              bottomLeft: Radius.circular(22),
+              bottomRight: Radius.circular(22),
+            ),
+            boxShadow: AppShadows.s,
+            border: Border.all(color: const Color(0x0A281910)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  message.text,
+                  style: AppTextStyle.bodyM(AppColor.ink),
                 ),
-                boxShadow: AppShadows.s,
-                border: Border.all(color: const Color(0x0A281910)),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(message.text, style: AppTextStyle.bodyM(AppColor.ink)),
-                  if (code != null) ...[
-                    const SizedBox(height: 12),
-                    _CodeBlock(code: code),
-                  ],
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 6, top: 4),
-              child: Text(
-                message.date.formatTime(),
-                style: AppTextStyle.caption(AppColor.inkTertiary),
-              ),
-            ),
-          ],
+              if (code != null) ...[
+                const SizedBox(height: 12),
+                _CodeBlock(code: code),
+                // After the code block we put the timestamp on its own line so
+                // it doesn't visually compete with the "Copy" action.
+                const SizedBox(height: 8),
+                _TimeLabel(label: timeLabel),
+              ] else ...[
+                // Without the code block the timestamp hugs the bottom-right of
+                // the same bubble — classic chat affordance, no extra height.
+                const SizedBox(height: 4),
+                _TimeLabel(label: timeLabel),
+              ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _TimeLabel extends StatelessWidget {
+  final String label;
+  const _TimeLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: AppTextStyle.caption(AppColor.inkTertiary),
     );
   }
 }
@@ -285,8 +550,7 @@ class _CodeBlock extends StatelessWidget {
                 Text('Найден код',
                     style: AppTextStyle.micro(AppColor.inkTertiary)),
                 const SizedBox(height: 2),
-                Text(_spaced(code),
-                    style: AppTextStyle.codeMono(AppColor.ink)),
+                Text(_spaced(code), style: AppTextStyle.codeMono(AppColor.ink)),
               ],
             ),
           ),
@@ -309,32 +573,33 @@ class _CopyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColor.accent,
-      borderRadius: AppRadii.brPill,
-      child: InkWell(
+    return PlatformTapScale(
+      child: Material(
+        color: AppColor.accent,
         borderRadius: AppRadii.brPill,
-        onTap: () {
-          Clipboard.setData(ClipboardData(text: code));
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppColor.ink,
-              content: Text('Код скопирован',
-                  style: AppTextStyle.bodySm(AppColor.white)),
-              duration: const Duration(seconds: 2),
+        child: InkWell(
+          borderRadius: AppRadii.brPill,
+          onTap: () {
+            Clipboard.setData(ClipboardData(text: code));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: AppColor.ink,
+                content: Text('Код скопирован',
+                    style: AppTextStyle.bodySm(AppColor.white)),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.copy_rounded, size: 13, color: AppColor.white),
+                const SizedBox(width: 6),
+                Text('Копировать', style: AppTextStyle.button(AppColor.white)),
+              ],
             ),
-          );
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.copy_rounded, size: 13, color: AppColor.white),
-              const SizedBox(width: 6),
-              Text('Копировать',
-                  style: AppTextStyle.button(AppColor.white)),
-            ],
           ),
         ),
       ),
@@ -343,20 +608,34 @@ class _CopyButton extends StatelessWidget {
 }
 
 class _DotsButton extends StatelessWidget {
+  final VoidCallback? onTap;
+
+  const _DotsButton({this.onTap});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColor.surface,
-        shape: BoxShape.circle,
-        boxShadow: AppShadows.s,
-        border: Border.all(color: const Color(0x0A281910)),
+    return PlatformTapScale(
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: AppRadii.brPill,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: AppRadii.brPill,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppColor.surface,
+              shape: BoxShape.circle,
+              boxShadow: AppShadows.s,
+              border: Border.all(color: const Color(0x0A281910)),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(Icons.more_horiz_rounded,
+                size: 18, color: AppColor.inkSecondary),
+          ),
+        ),
       ),
-      alignment: Alignment.center,
-      child: const Icon(Icons.more_horiz_rounded,
-          size: 18, color: AppColor.inkSecondary),
     );
   }
 }
@@ -383,8 +662,7 @@ class _EmptyView extends StatelessWidget {
                   color: AppColor.accentDeep, size: 38),
             ),
             const SizedBox(height: 16),
-            Text('Сообщений нет',
-                style: AppTextStyle.title(AppColor.ink)),
+            Text('Сообщений нет', style: AppTextStyle.title(AppColor.ink)),
             const SizedBox(height: 6),
             Text(
               'Они появятся здесь, когда придут на устройство.',
@@ -408,8 +686,7 @@ class _ErrorView extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Не удалось загрузить',
-              style: AppTextStyle.title(AppColor.ink)),
+          Text('Не удалось загрузить', style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 8),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColor.accent),

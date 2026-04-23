@@ -6,6 +6,7 @@ import 'package:simply/models/conversation.dart';
 import 'package:simply/screens/message_details/screen/message_details_screen.dart';
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
+import 'package:simply/screens/widget/platform_tap_scale.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
@@ -21,48 +22,51 @@ class MessagesListWidget extends StatelessWidget {
     final unread = conversation.unreadMessagesCount > 0;
     final code = CodeExtractor.extract(conversation.lastMessage);
 
-    return Material(
-      color: Colors.transparent,
-      borderRadius: AppRadii.brR3,
-      child: InkWell(
+    return PlatformTapScale(
+      pressedScale: 0.98,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: AppRadii.brR3,
-        onTap: () => _open(context),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
-          decoration: BoxDecoration(
-            color: unread
-                ? AppColor.accent.withValues(alpha: 0.06)
-                : Colors.transparent,
-            borderRadius: AppRadii.brR3,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AvatarWithIndicator(
-                title: conversation.title,
-                devicePlatform: conversation.sourcePlatform,
-              ),
-              const SizedBox(width: 14),
-              Expanded(child: _content(context, unread, code)),
-              if (unread) const SizedBox(width: 8),
-              if (unread)
-                Container(
-                  margin: const EdgeInsets.only(top: 18),
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: AppColor.accent,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColor.accent.withValues(alpha: 0.35),
-                        blurRadius: 0,
-                        spreadRadius: 3,
-                      ),
-                    ],
-                  ),
+        child: InkWell(
+          borderRadius: AppRadii.brR3,
+          onTap: () => _open(context),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
+            decoration: BoxDecoration(
+              color: unread
+                  ? AppColor.accent.withValues(alpha: 0.06)
+                  : Colors.transparent,
+              borderRadius: AppRadii.brR3,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AvatarWithIndicator(
+                  title: conversation.title,
+                  devicePlatform: conversation.sourcePlatform,
                 ),
-            ],
+                const SizedBox(width: 14),
+                Expanded(child: _content(context, unread, code)),
+                if (unread) const SizedBox(width: 8),
+                if (unread)
+                  Container(
+                    margin: const EdgeInsets.only(top: 18),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: AppColor.accent,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColor.accent.withValues(alpha: 0.35),
+                          blurRadius: 0,
+                          spreadRadius: 3,
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),

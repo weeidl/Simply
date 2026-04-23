@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/repositories/messages_repository.dart';
+import 'package:simply/security/security_exceptions.dart';
 import 'package:simply/security/security_repository.dart';
 
 part 'auth_state.dart';
@@ -75,6 +76,10 @@ class AuthCubit extends Cubit<AuthState> {
       return true;
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
+      return false;
+    } on EncryptionUnlockFailedException catch (e) {
+      await _auth.signOut();
+      emit(state.copyWith(authErrorMessage: e.userMessage));
       return false;
     } catch (_) {
       await _auth.signOut();

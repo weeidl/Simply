@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cryptography/cryptography.dart';
 import 'package:simply/repositories/firebase_api.dart';
 import 'package:simply/security/crypto_service.dart';
 import 'package:simply/security/encryption_readiness.dart';
+import 'package:simply/security/security_exceptions.dart';
 import 'package:simply/security/key_envelope.dart';
 import 'package:simply/security/secure_storage_service.dart';
 
@@ -37,7 +39,7 @@ class SecurityRepository {
         security['key_envelope'] as Map<dynamic, dynamic>,
       ),
     );
-    final masterKey = await _cryptoService.unwrapMasterKey(
+    final masterKey = await _unwrapMasterKeyOrThrow(
       password: password,
       envelope: envelope,
     );
@@ -155,5 +157,25 @@ class SecurityRepository {
     final security = userData['security'];
     if (security is! Map) return null;
     return Map<String, dynamic>.from(security);
+  }
+
+  Future<List<int>> _unwrapMasterKeyOrThrow({
+    required String password,
+    required KeyEnvelope envelope,
+  }) async {
+    try {
+      return await _cryptoService.unwrapMasterKey(
+        password: password,
+        envelope: envelope,
+      );
+    } on SecretBoxAuthenticationError {
+      throw const EncryptionUnlockFailedException(
+        'Encryption key does not match this password. This usually happens after a password reset.',
+      );
+    } on FormatException {
+      throw const EncryptionUnlockFailedException(
+        'Encrypted account data is damaged and could not be opened.',
+      );
+    }
   }
 }

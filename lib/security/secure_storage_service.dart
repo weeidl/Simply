@@ -18,27 +18,39 @@ class SecureStorageService {
             );
 
   Future<void> writeMasterKey(String userId, List<int> masterKey) {
-    return _storage.write(
-      key: '$_masterKeyPrefix$userId',
-      value: base64Encode(masterKey),
+    return writeValue(
+      '$_masterKeyPrefix$userId',
+      base64Encode(masterKey),
     );
   }
 
   Future<List<int>?> readMasterKey(String userId) async {
-    final encoded = await _storage.read(key: '$_masterKeyPrefix$userId');
+    final encoded = await readValue('$_masterKeyPrefix$userId');
     if (encoded == null || encoded.isEmpty) return null;
     return base64Decode(encoded);
   }
 
   Future<void> deleteMasterKey(String userId) {
-    return _storage.delete(key: '$_masterKeyPrefix$userId');
+    return deleteValue('$_masterKeyPrefix$userId');
   }
 
   Future<void> writeDeviceId(String deviceId) {
-    return _storage.write(key: _deviceIdKey, value: deviceId);
+    return writeValue(_deviceIdKey, deviceId);
   }
 
   Future<String?> readDeviceId() {
-    return _storage.read(key: _deviceIdKey);
+    return readValue(_deviceIdKey);
+  }
+
+  Future<void> writeValue(String key, String value) {
+    return _storage.write(key: key, value: value);
+  }
+
+  Future<String?> readValue(String key) {
+    return _storage.read(key: key);
+  }
+
+  Future<void> deleteValue(String key) {
+    return _storage.delete(key: key);
   }
 }

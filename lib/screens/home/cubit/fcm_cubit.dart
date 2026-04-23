@@ -7,9 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
     hide Message;
 import 'package:simply/bloc/notification/background_message.dart';
-import 'package:simply/models/conversation.dart';
-import 'package:simply/models/message.dart';
-import 'package:simply/repositories/messages_repository.dart';
+import 'package:simply/bloc/notification/incoming_sms_sync_service.dart';
+import 'package:simply/models/incoming_sms_payload.dart';
 
 part 'fcm_state.dart';
 
@@ -17,30 +16,41 @@ const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
 
 class FcmCubit extends Cubit<FcmState> {
   final telephony = Telephony.instance;
-  final _messagesRepository = MessagesRepository();
+  final IncomingSmsSyncService _incomingSmsSyncService;
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
+  bool _notificationsInitialized = false;
 
-  FcmCubit() : super(FcmState());
+  FcmCubit({
+    IncomingSmsSyncService? incomingSmsSyncService,
+  })  : _incomingSmsSyncService =
+            incomingSmsSyncService ?? IncomingSmsSyncService(),
+        super(FcmState());
 
   Future<void> init() async {
-    if (_isInitialized) return;
-    _isInitialized = true;
+    if (!Platform.isAndroid) return;
 
-    if (Platform.isAndroid) {
-      await telephony.requestPhoneAndSmsPermissions;
-      telephony.listenIncomingSms(
-        onNewMessage: onNewMessage,
-        onBackgroundMessage: onBackgroundMessage,
-        listenInBackground: true,
-      );
+    if (!_isInitialized) {
+      _isInitialized = true;
       await _initNotifications();
       await FirebaseMessaging.instance.requestPermission();
-      _showNotification();
     }
+
+    await _registerSmsRuntime();
+    await _incomingSmsSyncService.flushPending();
+    await _showNotification();
+  }
+
+  Future<void> refreshRuntime() async {
+    if (!Platform.isAndroid) return;
+    await _registerSmsRuntime();
+    await _incomingSmsSyncService.flushPending();
   }
 
   Future<void> _initNotifications() async {
+    if (_notificationsInitialized) return;
+    _notificationsInitialized = true;
+
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidSettings);
@@ -53,10 +63,19 @@ class FcmCubit extends Cubit<FcmState> {
     );
   }
 
+  Future<void> _registerSmsRuntime() async {
+    await telephony.requestPhoneAndSmsPermissions;
+    telephony.listenIncomingSms(
+      onNewMessage: onNewMessage,
+      onBackgroundMessage: onBackgroundMessage,
+      listenInBackground: true,
+    );
+  }
+
   Future<void> _showNotification() async {
     const androidDetails = AndroidNotificationDetails(
       'foreground_channel_id',
-      'Foreground Service',
+      'SMS monitoring',
       importance: Importance.low,
       priority: Priority.low,
       ongoing: true,
@@ -64,17 +83,16 @@ class FcmCubit extends Cubit<FcmState> {
     const platformDetails = NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
       0,
-      'Running in the background',
-      'For the application to function stably, make sure it remains in the list of background running apps',
+      'SMS monitoring is enabled',
+      'Incoming SMS will sync automatically when the app can reach your account.',
       platformDetails,
     );
   }
 
   Future<void> onNewMessage(SmsMessage msg) async {
     try {
-      await _messagesRepository.saveIncomingMessage(
-        conversation: Conversation.fromSms(msg),
-        message: Message.fromSms(msg),
+      await _incomingSmsSyncService.handleIncomingSms(
+        IncomingSmsPayload.fromSmsMessage(msg),
       );
     } catch (e) {
       debugPrint('Error handling new message: $e');

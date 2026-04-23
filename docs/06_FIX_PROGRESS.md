@@ -439,6 +439,45 @@ debug — нормально, release будет меньше после R8 mini
 
 ---
 
+## Итерация 6 — SMS runtime hardening (2026-04-23)
+
+Фокус: убрать тихую потерю SMS, когда запись в Firestore временно невозможна,
+и упростить Android runtime, чтобы фоновый приём сообщений был предсказуемее.
+
+- [x] Добавлен новый app-level payload `IncomingSmsPayload` и единый
+      `IncomingSmsSyncService`, через который теперь проходят и foreground,
+      и background SMS.
+- [x] Добавлен `PendingIncomingSmsRepository`: входящие SMS больше не
+      теряются при сбое sync-а, а сохраняются в локальную secure queue и
+      повторно отправляются позже.
+- [x] `background_message.dart` больше не зависит от мгновенно готового
+      `FirebaseAuth.currentUser` в фоновом изоляте. Вместо тихого drop-а
+      сообщение либо синкается сразу, либо уходит в локальную очередь.
+- [x] `FcmCubit` теперь использует единый sync service, при инициализации
+      и после `resume` заново регистрирует SMS runtime и пытается
+      `flushPending()`.
+- [x] `AuthCubit` и `SplashCubit` после успешного восстановления
+      encrypted-session теперь тоже вызывают `flushPending()`, так что
+      сообщения, застрявшие до готовности ключа/сессии, доходят в Firestore
+      после следующего входа.
+- [x] Android cleanup: из `AndroidManifest.xml` удалён несуществующий
+      `.ForegroundService` и связанные foreground-service permissions,
+      которые только создавали ложное ощущение "реального" сервиса.
+- [x] Android toolchain: `compileSdkVersion` поднят до **36**,
+      добавлен `android.suppressUnsupportedCompileSdk=36`, чтобы проект
+      соответствовал текущим требованиям `flutter_secure_storage`.
+- [x] Добавлены regression-тесты:
+      `test/repositories/pending_incoming_sms_repository_test.dart` и
+      `test/notification/incoming_sms_sync_service_test.dart`.
+
+**Проверено после правок:**
+- `flutter test` — PASS
+- `dart analyze` — 0 errors / 0 warnings, остались только 32 старых info-level
+  `prefer_const*` замечания
+- `./gradlew :app:assembleDebug` — PASS
+
+---
+
 ## Что НЕ сделано в этой итерации (следующий заход)
 
 Это осознанно отложено, потому что требует более масштабной работы, бэкенд-части

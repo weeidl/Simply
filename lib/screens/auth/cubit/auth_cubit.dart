@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/bloc/notification/incoming_sms_sync_service.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/security/security_exceptions.dart';
 import 'package:simply/security/security_repository.dart';
@@ -17,16 +18,20 @@ class AuthCubit extends Cubit<AuthState> {
   final FirebaseFirestore _firestore;
   final SecurityRepository _securityRepository;
   final MessagesRepository _messagesRepository;
+  final IncomingSmsSyncService _incomingSmsSyncService;
 
   AuthCubit({
     FirebaseAuth? auth,
     FirebaseFirestore? firestore,
     SecurityRepository? securityRepository,
     MessagesRepository? messagesRepository,
+    IncomingSmsSyncService? incomingSmsSyncService,
   })  : _auth = auth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance,
         _securityRepository = securityRepository ?? SecurityRepository(),
         _messagesRepository = messagesRepository ?? MessagesRepository(),
+        _incomingSmsSyncService =
+            incomingSmsSyncService ?? IncomingSmsSyncService(),
         super(
           AuthState(
             status: AuthStatus.login,
@@ -105,6 +110,7 @@ class AuthCubit extends Cubit<AuthState> {
     // Best-effort: legacy-data migration should never block login.
     try {
       await _messagesRepository.migrateLegacyDataIfNeeded();
+      await _incomingSmsSyncService.flushPending();
     } catch (e, stack) {
       debugPrint('[AuthCubit.signIn] migration skipped: $e\n$stack');
     }
@@ -158,6 +164,7 @@ class AuthCubit extends Cubit<AuthState> {
         uid: user.uid,
         password: state.passwordController.text,
       );
+      await _incomingSmsSyncService.flushPending();
     } on FirebaseException catch (e, stack) {
       debugPrint('[AuthCubit.signUp] firestore after create: ${e.code} '
           '${e.message}\n$stack');

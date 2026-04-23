@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/bloc/notification/incoming_sms_sync_service.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/security/security_repository.dart';
 
@@ -12,15 +13,19 @@ class SplashCubit extends Cubit<SplashState> {
   final FirebaseAuth _auth;
   final SecurityRepository _securityRepository;
   final MessagesRepository _messagesRepository;
+  final IncomingSmsSyncService _incomingSmsSyncService;
   StreamSubscription<User?>? _authSubscription;
 
   SplashCubit({
     FirebaseAuth? auth,
     SecurityRepository? securityRepository,
     MessagesRepository? messagesRepository,
+    IncomingSmsSyncService? incomingSmsSyncService,
   })  : _auth = auth ?? FirebaseAuth.instance,
         _securityRepository = securityRepository ?? SecurityRepository(),
         _messagesRepository = messagesRepository ?? MessagesRepository(),
+        _incomingSmsSyncService =
+            incomingSmsSyncService ?? IncomingSmsSyncService(),
         super(SplashState()) {
     _bootstrap();
   }
@@ -45,6 +50,7 @@ class SplashCubit extends Cubit<SplashState> {
         } else {
           try {
             await _messagesRepository.migrateLegacyDataIfNeeded();
+            await _incomingSmsSyncService.flushPending();
           } catch (e, stack) {
             debugPrint('[SplashCubit] migration skipped: $e\n$stack');
           }

@@ -28,7 +28,7 @@ class MessagesListWidget extends StatelessWidget {
         borderRadius: AppRadii.brR3,
         onTap: () => _open(context),
         child: Container(
-          padding: const EdgeInsets.fromLTRB(10, 12, 10, 12),
+          padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
           decoration: BoxDecoration(
             color: unread
                 ? AppColor.accent.withValues(alpha: 0.06)
@@ -42,7 +42,7 @@ class MessagesListWidget extends StatelessWidget {
                 title: conversation.title,
                 devicePlatform: conversation.sourcePlatform,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(child: _content(context, unread, code)),
               if (unread) const SizedBox(width: 8),
               if (unread)
@@ -70,6 +70,8 @@ class MessagesListWidget extends StatelessWidget {
   }
 
   Widget _content(BuildContext context, bool unread, String? code) {
+    final sourceSummary = _sourceSummary();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -86,8 +88,7 @@ class MessagesListWidget extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 15,
-                        fontWeight:
-                            unread ? FontWeight.w700 : FontWeight.w600,
+                        fontWeight: unread ? FontWeight.w700 : FontWeight.w600,
                         color: AppColor.ink,
                         letterSpacing: -0.3,
                       ),
@@ -115,12 +116,46 @@ class MessagesListWidget extends StatelessWidget {
           style: AppTextStyle.bodySm(
               unread ? AppColor.inkSecondary : AppColor.inkTertiary),
         ),
-        if (code != null) ...[
-          const SizedBox(height: 8),
-          _CodeChip(code: code),
+        if (sourceSummary != null || code != null) ...[
+          const SizedBox(height: 9),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (sourceSummary != null) _SourceMetaChip(text: sourceSummary),
+              if (code != null) _CodeChip(code: code),
+            ],
+          ),
         ],
       ],
     );
+  }
+
+  String? _sourceSummary() {
+    final parts = <String>[];
+
+    final deviceName = conversation.sourceDeviceName?.trim();
+    if (deviceName != null && deviceName.isNotEmpty) {
+      parts.add(deviceName);
+    }
+
+    final simSlot = conversation.sourceSimSlot;
+    if (simSlot != null) {
+      parts.add('SIM $simSlot');
+    }
+
+    final carrier = conversation.sourceCarrier?.trim();
+    if (carrier != null && carrier.isNotEmpty) {
+      parts.add(carrier);
+    } else {
+      final platform = conversation.sourcePlatform?.trim();
+      if (parts.isEmpty && platform != null && platform.isNotEmpty) {
+        parts.add(platform.toUpperCase());
+      }
+    }
+
+    if (parts.isEmpty) return null;
+    return parts.join(' · ');
   }
 
   Future<void> _open(BuildContext context) async {
@@ -219,6 +254,38 @@ class _CodeChip extends StatelessWidget {
         content: Text('Код $code скопирован',
             style: AppTextStyle.bodySm(AppColor.white)),
         duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+}
+
+class _SourceMetaChip extends StatelessWidget {
+  final String text;
+
+  const _SourceMetaChip({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColor.bgAlt,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(
+            Icons.devices_rounded,
+            size: 13,
+            color: AppColor.inkTertiary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: AppTextStyle.micro(AppColor.inkSecondary),
+          ),
+        ],
       ),
     );
   }

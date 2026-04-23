@@ -1,25 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/repositories/device_repository.dart';
+import 'package:simply/security/secure_storage_service.dart';
 
 part 'device_state.dart';
 
 class DeviceCubit extends Cubit<DeviceState> {
   final DeviceRepository _deviceRepository;
+  final SecureStorageService _secureStorageService;
 
-  DeviceCubit({DeviceRepository? deviceRepository})
-      : _deviceRepository = deviceRepository ?? DeviceRepository(),
+  DeviceCubit({
+    DeviceRepository? deviceRepository,
+    SecureStorageService? secureStorageService,
+  })  : _deviceRepository = deviceRepository ?? DeviceRepository(),
+        _secureStorageService = secureStorageService ?? SecureStorageService(),
         super(DeviceState(status: DeviceStatus.initial));
 
   Future<void> fetch() async {
     emit(state.copyWith(status: DeviceStatus.loading));
     try {
       final response = await _deviceRepository.fetch();
+      final currentDeviceId = await _secureStorageService.readDeviceId();
+      final normalized = await _normalizeOrder(response);
       emit(
         state.copyWith(
-          status:
-              response.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
-          items: response,
+          status: normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
+          items: normalized,
+          currentDeviceId: currentDeviceId,
         ),
       );
     } catch (_) {
@@ -30,10 +37,12 @@ class DeviceCubit extends Cubit<DeviceState> {
   Future<void> updateDevice() async {
     try {
       final response = await _deviceRepository.fetch();
+      final currentDeviceId = await _secureStorageService.readDeviceId();
+      final normalized = await _normalizeOrder(response);
       emit(state.copyWith(
-        items: response,
-        status:
-            response.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
+        items: normalized,
+        currentDeviceId: currentDeviceId,
+        status: normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
       ));
     } catch (_) {
       emit(state.copyWith(status: DeviceStatus.error));
@@ -45,14 +54,84 @@ class DeviceCubit extends Cubit<DeviceState> {
       await _deviceRepository.delete(deviceId);
       final updatedDevices =
           state.items.where((device) => device.deviceId != deviceId).toList();
+      final normalized = await _persistOrder(updatedDevices);
       emit(state.copyWith(
-        items: updatedDevices,
-        status: updatedDevices.isEmpty
-            ? DeviceStatus.empty
-            : DeviceStatus.loaded,
+        items: normalized,
+        status: normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
       ));
     } catch (_) {
       emit(state.copyWith(status: DeviceStatus.error));
     }
+  }
+
+  Future<void> moveUp(String deviceId) async {
+    final index =
+        state.items.indexWhere((device) => device.deviceId == deviceId);
+    if (index <= 0) return;
+    final reordered = [...state.items];
+    final item = reordered.removeAt(index);
+    reordered.insert(index - 1, item);
+    final normalized = await _persistOrder(reordered);
+    emit(state.copyWith(items: normalized));
+  }
+
+  Future<void> moveDown(String deviceId) async {
+    final index =
+        state.items.indexWhere((device) => device.deviceId == deviceId);
+    if (index == -1 || index >= state.items.length - 1) return;
+    final reordered = [...state.items];
+    final item = reordered.removeAt(index);
+    reordered.insert(index + 1, item);
+    final normalized = await _persistOrder(reordered);
+    emit(state.copyWith(items: normalized));
+  }
+
+  Future<List<Device>> _normalizeOrder(List<Device> devices) async {
+    final ordered = [...devices]..sort(_deviceComparator);
+    final needsNormalization = ordered.asMap().entries.any(
+          (entry) => entry.value.sortOrder != entry.key,
+        );
+    if (!needsNormalization) return ordered;
+    return _persistOrder(ordered);
+  }
+
+  Future<List<Device>> _persistOrder(List<Device> devices) async {
+    if (devices.isEmpty) return const [];
+    final normalized = [
+      for (var i = 0; i < devices.length; i++)
+        devices[i].copyWith(sortOrder: i),
+    ];
+    await _deviceRepository.saveOrder(normalized);
+    return normalized;
+  }
+
+  int _deviceComparator(Device a, Device b) {
+    final aOrder = a.sortOrder;
+    final bOrder = b.sortOrder;
+    if (aOrder != null && bOrder != null) {
+      final compare = aOrder.compareTo(bOrder);
+      if (compare != 0) return compare;
+    } else if (aOrder != null) {
+      return -1;
+    } else if (bOrder != null) {
+      return 1;
+    }
+
+    final aMain = a.isMainDevice ? 0 : 1;
+    final bMain = b.isMainDevice ? 0 : 1;
+    if (aMain != bMain) return aMain.compareTo(bMain);
+
+    final aReceiver = a.isReceiverOnly ? 1 : 0;
+    final bReceiver = b.isReceiverOnly ? 1 : 0;
+    if (aReceiver != bReceiver) return aReceiver.compareTo(bReceiver);
+
+    final aDate = a.dateUpdateInfo?.toDate();
+    final bDate = b.dateUpdateInfo?.toDate();
+    if (aDate != null && bDate != null) {
+      final compare = bDate.compareTo(aDate);
+      if (compare != 0) return compare;
+    }
+
+    return a.deviceName.toLowerCase().compareTo(b.deviceName.toLowerCase());
   }
 }

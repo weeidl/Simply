@@ -10,12 +10,16 @@ abstract class AppColor {
   static const Color accentDeep = Color(0xFFE87A58);
   static const Color accentSoft = Color(0xFFFEE6DC);
   static const Color accentInk = Color(0xFF5A2A18);
+  static const Color accentGlow = Color(0xFFFFC5B2);
 
   // Surfaces (warm neutrals)
   static const Color bg = Color(0xFFFAF6F2);
   static const Color bgAlt = Color(0xFFF3ECE4);
   static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceSoft = Color(0xFFFFFBF8);
   static const Color divider = Color(0x0F281910);
+  static const Color glass = Color(0xD9FFF9F5);
+  static const Color glassBorder = Color(0x1AF59B7E);
 
   // Text
   static const Color ink = Color(0xFF1D1410);

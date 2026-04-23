@@ -38,6 +38,13 @@ class MessagesCodec {
       'last_message_date':
           Timestamp.fromDate(conversation.lastMessageDate.toUtc()),
       'unread_messages_count': conversation.unreadMessagesCount,
+      'source_platform': conversation.sourcePlatform,
+      'source_device_id': conversation.sourceDeviceId,
+      'source_device_name': conversation.sourceDeviceName,
+      'source_subscription_id': conversation.sourceSubscriptionId,
+      'source_sim_slot': conversation.sourceSimSlot,
+      'source_carrier': conversation.sourceCarrier,
+      'category': conversation.category,
     };
   }
 
@@ -70,6 +77,13 @@ class MessagesCodec {
         unreadMessagesCount:
             (raw['unread_messages_count'] as num?)?.toInt() ?? 0,
         lastMessageDate: _readDate(raw['last_message_date']),
+        sourcePlatform: raw['source_platform'] as String?,
+        sourceDeviceId: raw['source_device_id'] as String?,
+        sourceDeviceName: raw['source_device_name'] as String?,
+        sourceSubscriptionId: (raw['source_subscription_id'] as num?)?.toInt(),
+        sourceSimSlot: (raw['source_sim_slot'] as num?)?.toInt(),
+        sourceCarrier: raw['source_carrier'] as String?,
+        category: raw['category'] as String?,
       );
     }
 
@@ -90,6 +104,12 @@ class MessagesCodec {
       'is_encrypted': true,
       'encrypted_text': encryptedText.toJson(),
       'date': Timestamp.fromDate(message.date.toUtc()),
+      'source_device_id': message.sourceDeviceId,
+      'source_device_name': message.sourceDeviceName,
+      'source_platform': message.sourcePlatform,
+      'source_subscription_id': message.sourceSubscriptionId,
+      'source_sim_slot': message.sourceSimSlot,
+      'source_carrier': message.sourceCarrier,
     };
   }
 
@@ -112,6 +132,12 @@ class MessagesCodec {
           masterKey: masterKey,
         ),
         date: _readDate(raw['date']),
+        sourceDeviceId: raw['source_device_id'] as String?,
+        sourceDeviceName: raw['source_device_name'] as String?,
+        sourcePlatform: raw['source_platform'] as String?,
+        sourceSubscriptionId: (raw['source_subscription_id'] as num?)?.toInt(),
+        sourceSimSlot: (raw['source_sim_slot'] as num?)?.toInt(),
+        sourceCarrier: raw['source_carrier'] as String?,
       );
     }
 

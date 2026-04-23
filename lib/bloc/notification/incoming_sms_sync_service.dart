@@ -5,6 +5,7 @@ import 'package:simply/bloc/notification/incoming_sms_contracts.dart';
 import 'package:simply/models/incoming_sms_payload.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/repositories/pending_incoming_sms_repository.dart';
+import 'package:simply/services/device_runtime_service.dart';
 
 class FirestoreIncomingSmsSink implements IncomingSmsSink {
   final MessagesRepository _messagesRepository;
@@ -25,21 +26,26 @@ class FirestoreIncomingSmsSink implements IncomingSmsSink {
 class IncomingSmsSyncService {
   final PendingIncomingSmsQueue _queue;
   final IncomingSmsSink _sink;
+  final DeviceRuntimeService _deviceRuntimeService;
 
   IncomingSmsSyncService({
     PendingIncomingSmsQueue? queue,
     IncomingSmsSink? sink,
+    DeviceRuntimeService? deviceRuntimeService,
   })  : _queue = queue ?? PendingIncomingSmsRepository(),
-        _sink = sink ?? FirestoreIncomingSmsSink();
+        _sink = sink ?? FirestoreIncomingSmsSink(),
+        _deviceRuntimeService = deviceRuntimeService ?? DeviceRuntimeService();
 
   Future<void> handleIncomingSms(IncomingSmsPayload payload) async {
+    final enrichedPayload =
+        await _deviceRuntimeService.enrichIncomingPayload(payload);
     try {
-      await _sink.save(payload);
+      await _sink.save(enrichedPayload);
     } catch (e, stack) {
       debugPrint(
-        '[IncomingSmsSyncService] immediate sync failed; queued ${payload.dedupeKey}: $e\n$stack',
+        '[IncomingSmsSyncService] immediate sync failed; queued ${enrichedPayload.dedupeKey}: $e\n$stack',
       );
-      await _queue.enqueue(payload);
+      await _queue.enqueue(enrichedPayload);
     }
   }
 
@@ -50,12 +56,14 @@ class IncomingSmsSyncService {
     final processed = <String>[];
 
     for (final payload in pending) {
+      final enrichedPayload =
+          await _deviceRuntimeService.enrichIncomingPayload(payload);
       try {
-        await _sink.save(payload);
-        processed.add(payload.dedupeKey);
+        await _sink.save(enrichedPayload);
+        processed.add(enrichedPayload.dedupeKey);
       } catch (e, stack) {
         debugPrint(
-          '[IncomingSmsSyncService] pending sync failed for ${payload.dedupeKey}: $e\n$stack',
+          '[IncomingSmsSyncService] pending sync failed for ${enrichedPayload.dedupeKey}: $e\n$stack',
         );
       }
     }

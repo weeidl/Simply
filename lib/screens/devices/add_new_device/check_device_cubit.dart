@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:another_telephony/telephony.dart';
-import 'package:battery_plus/battery_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/repositories/device_repository.dart';
+import 'package:simply/services/device_runtime_service.dart';
 import 'package:simply/security/secure_storage_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -15,17 +14,20 @@ part 'check_device_state.dart';
 class CheckDeviceCubit extends Cubit<CheckDeviceState> {
   final DeviceRepository _deviceRepository;
   final SecureStorageService _secureStorageService;
-  final DeviceInfoPlugin deviceInfo;
+  final DeviceRuntimeService _deviceRuntimeService;
+  final DeviceInfoPlugin _deviceInfo;
   final Uuid _uuid;
 
   CheckDeviceCubit({
     DeviceRepository? deviceRepository,
     SecureStorageService? secureStorageService,
+    DeviceRuntimeService? deviceRuntimeService,
     DeviceInfoPlugin? deviceInfo,
     Uuid? uuid,
   })  : _deviceRepository = deviceRepository ?? DeviceRepository(),
         _secureStorageService = secureStorageService ?? SecureStorageService(),
-        deviceInfo = deviceInfo ?? DeviceInfoPlugin(),
+        _deviceRuntimeService = deviceRuntimeService ?? DeviceRuntimeService(),
+        _deviceInfo = deviceInfo ?? DeviceInfoPlugin(),
         _uuid = uuid ?? const Uuid(),
         super(CheckDeviceState());
 
@@ -50,37 +52,60 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
     String? deviceId,
   }) async {
     final resolvedDeviceId = deviceId ?? await _stableDeviceId();
-
-    int? batteryLevel;
-    String? network;
-
-    if (isChargingEnabled) {
-      batteryLevel = await Battery().batteryLevel;
-    }
-
-    if (Platform.isAndroid && isNetworkEnabled) {
-      final networkType = await Telephony.instance.dataNetworkType;
-      network = networkType.name;
-    }
+    final identity = await _deviceRuntimeService.readDeviceIdentity();
+    final runtime = await _deviceRuntimeService.readRuntimeSnapshot(
+      includeBattery: isChargingEnabled,
+      includeNetwork: isNetworkEnabled,
+    );
 
     await _deviceRepository.addBatteryAndNetworkStatus(
       isMainDevice: isSMSEnabled,
-      batteryStatus: batteryLevel,
-      networkTypeStatus: network,
+      batteryStatus: runtime.batteryLevel,
+      networkTypeStatus: runtime.networkType,
+      simCount: runtime.simCount,
+      activeSimSlot: runtime.activeSimSlot,
+      simCards: runtime.simCards,
       deviceId: resolvedDeviceId,
+    );
+
+    await _deviceRuntimeService.writeCurrentContext(
+      CurrentDeviceContext(
+        deviceId: resolvedDeviceId,
+        deviceName: identity.name,
+        platform: identity.platform,
+        activeSimSlot: runtime.activeSimSlot,
+        simCards: runtime.simCards,
+      ),
     );
   }
 
   Future<void> setBaseInfoForDevice({String? deviceId}) async {
     final resolvedDeviceId = deviceId ?? await _stableDeviceId();
-    final info = await _readDeviceInfo();
+    final identity = await _deviceRuntimeService.readDeviceIdentity();
+    final runtime = await _deviceRuntimeService.readRuntimeSnapshot(
+      includeBattery: false,
+      includeNetwork: false,
+    );
 
     await _deviceRepository.update(
       device: Device(
         userId: _deviceRepository.id,
         deviceId: resolvedDeviceId,
-        deviceName: info.name,
-        platform: Platform.operatingSystem,
+        deviceName: identity.name,
+        platform: identity.platform,
+        simCount: runtime.simCount,
+        activeSimSlot: runtime.activeSimSlot,
+        simCards: runtime.simCards,
+      ),
+    );
+
+    await _deviceRuntimeService.writeCurrentContext(
+      CurrentDeviceContext(
+        deviceId: resolvedDeviceId,
+        deviceName: identity.name,
+        platform: identity.platform,
+        activeSimSlot: runtime.activeSimSlot,
+        simCards: runtime.simCards,
       ),
     );
   }
@@ -98,7 +123,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
 
   Future<String> _generateStableDeviceId() async {
     if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
+      final iosInfo = await _deviceInfo.iosInfo;
       final vendorId = iosInfo.identifierForVendor?.trim();
       if (vendorId != null && vendorId.isNotEmpty) {
         return vendorId;
@@ -110,7 +135,7 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
       );
     }
 
-    final androidInfo = await deviceInfo.androidInfo;
+    final androidInfo = await _deviceInfo.androidInfo;
     final fingerprintSeed = [
       androidInfo.manufacturer,
       androidInfo.model,
@@ -127,20 +152,4 @@ class CheckDeviceCubit extends Cubit<CheckDeviceState> {
 
     return _uuid.v4();
   }
-
-  Future<_ResolvedDeviceInfo> _readDeviceInfo() async {
-    if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      return _ResolvedDeviceInfo(name: iosInfo.name);
-    }
-
-    final androidInfo = await deviceInfo.androidInfo;
-    return _ResolvedDeviceInfo(name: androidInfo.model);
-  }
-}
-
-class _ResolvedDeviceInfo {
-  final String name;
-
-  const _ResolvedDeviceInfo({required this.name});
 }

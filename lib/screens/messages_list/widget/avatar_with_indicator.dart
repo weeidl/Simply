@@ -11,7 +11,7 @@ class AvatarWithIndicator extends StatelessWidget {
   const AvatarWithIndicator({
     super.key,
     required this.title,
-    this.size = 46,
+    this.size = 48,
     this.devicePlatform,
   });
 
@@ -59,15 +59,15 @@ class AvatarWithIndicator extends StatelessWidget {
               right: -3,
               bottom: -2,
               child: Container(
-                width: 20,
-                height: 20,
+                width: 21,
+                height: 21,
                 decoration: BoxDecoration(
                   color: AppColor.surface,
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(color: AppColor.bg, width: 2),
                 ),
                 alignment: Alignment.center,
-                child: Icon(badge, size: 10, color: AppColor.inkSecondary),
+                child: Icon(badge, size: 11, color: AppColor.inkSecondary),
               ),
             ),
         ],

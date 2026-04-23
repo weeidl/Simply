@@ -50,4 +50,17 @@ abstract class AppShadows {
           offset: const Offset(0, 8),
         ),
       ];
+
+  static List<BoxShadow> get glass => [
+        BoxShadow(
+          color: _ink.withValues(alpha: 0.05),
+          blurRadius: 10,
+          offset: const Offset(0, 3),
+        ),
+        BoxShadow(
+          color: AppColor.white.withValues(alpha: 0.35),
+          blurRadius: 0,
+          spreadRadius: 1,
+        ),
+      ];
 }

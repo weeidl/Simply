@@ -31,27 +31,36 @@ class PillTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        20,
-        10,
-        20,
-        12 + MediaQuery.of(context).viewPadding.bottom,
+        16,
+        6,
+        16,
+        8 + MediaQuery.of(context).viewPadding.bottom,
       ),
       child: DecoratedBox(
         decoration: BoxDecoration(
           borderRadius: AppRadii.brPill,
-          boxShadow: AppShadows.m,
+          boxShadow: [
+            ...AppShadows.glass,
+            ...AppShadows.m,
+          ],
         ),
         child: ClipRRect(
           borderRadius: AppRadii.brPill,
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
               decoration: BoxDecoration(
-                color: AppColor.surface.withValues(alpha: 0.78),
+                gradient: LinearGradient(
+                  colors: [
+                    AppColor.glass,
+                    AppColor.surface.withValues(alpha: 0.78),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: AppRadii.brPill,
-                border: Border.all(color: const Color(0x14281910)),
+                border: Border.all(color: AppColor.glassBorder),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -68,7 +77,7 @@ class PillTabBar extends StatelessWidget {
                         duration: const Duration(milliseconds: 200),
                         curve: Curves.easeOut,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 14),
+                            horizontal: 16, vertical: 11),
                         decoration: BoxDecoration(
                           color: on ? AppColor.accent : Colors.transparent,
                           borderRadius: AppRadii.brPill,
@@ -79,7 +88,7 @@ class PillTabBar extends StatelessWidget {
                           children: [
                             Icon(
                               tab.icon,
-                              size: 20,
+                              size: 19,
                               color: on ? AppColor.white : AppColor.inkTertiary,
                             ),
                             if (on) ...[

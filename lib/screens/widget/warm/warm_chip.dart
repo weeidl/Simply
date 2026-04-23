@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
-import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
 
 /// Pill chip used as a filter tag. Active state fills with brand accent and
@@ -23,6 +22,19 @@ class WarmChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fg = active ? AppColor.white : AppColor.inkSecondary;
+    final activeShadow = [
+      BoxShadow(
+        color: AppColor.accent.withValues(alpha: 0.16),
+        blurRadius: 14,
+        offset: const Offset(0, 5),
+      ),
+      BoxShadow(
+        color: AppColor.white.withValues(alpha: 0.55),
+        blurRadius: 0,
+        spreadRadius: 1,
+      ),
+    ];
+
     return Material(
       color: Colors.transparent,
       borderRadius: AppRadii.brPill,
@@ -36,9 +48,11 @@ class WarmChip extends StatelessWidget {
             color: active ? AppColor.accent : AppColor.surface,
             borderRadius: AppRadii.brPill,
             border: Border.all(
-              color: active ? Colors.transparent : const Color(0x0F281910),
+              color: active
+                  ? AppColor.accent.withValues(alpha: 0.18)
+                  : const Color(0x0F281910),
             ),
-            boxShadow: active ? AppShadows.accent : null,
+            boxShadow: active ? activeShadow : null,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,

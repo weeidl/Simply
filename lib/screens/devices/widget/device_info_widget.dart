@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:simply/models/device.dart';
+import 'package:simply/models/device_sim_card.dart';
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
 
-/// Three-column live stats footer: battery, signal, sync count.
 class DeviceInfoWidget extends StatelessWidget {
   final Device device;
   final bool online;
@@ -16,24 +17,50 @@ class DeviceInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    if (!device.supportsRuntimeDetails) {
+      return _ReceiverOnlyBody(device: device, online: online);
+    }
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: _BatteryStat(
-            level: device.batteryLevel,
-            online: online,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _TodayStat(device: device)),
+            const _StatDivider(),
+            Expanded(
+              child: _BatteryStat(
+                level: device.batteryLevel,
+                online: online,
+              ),
+            ),
+            const _StatDivider(),
+            Expanded(
+              child: _SimStat(
+                device: device,
+                online: online,
+              ),
+            ),
+          ],
         ),
-        const _StatDivider(),
-        Expanded(
-          child: _SignalStat(
-            type: device.networkType,
-            online: online,
-          ),
-        ),
-        const _StatDivider(),
-        const Expanded(child: _SyncStat()),
+        if (device.simCards.isNotEmpty) ...[
+          const SizedBox(height: 18),
+          const Divider(height: 1, color: AppColor.divider),
+          const SizedBox(height: 14),
+          for (var i = 0; i < device.simCards.length; i++) ...[
+            _SimRow(
+              card: device.simCards[i],
+              online: online,
+              networkType: device.networkType,
+            ),
+            if (i < device.simCards.length - 1) ...[
+              const SizedBox(height: 10),
+              const Divider(height: 1, color: AppColor.divider),
+              const SizedBox(height: 10),
+            ],
+          ],
+        ],
       ],
     );
   }
@@ -46,8 +73,8 @@ class _StatDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 1,
-      height: 36,
-      margin: const EdgeInsets.symmetric(horizontal: 8),
+      height: 72,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       color: AppColor.divider,
     );
   }
@@ -62,7 +89,88 @@ class _StatLabel extends StatelessWidget {
     return Text(
       label,
       style: AppTextStyle.micro(AppColor.inkTertiary).copyWith(
-        letterSpacing: 0.4,
+        letterSpacing: 0.8,
+      ),
+    );
+  }
+}
+
+class _TodayStat extends StatelessWidget {
+  final Device device;
+
+  const _TodayStat({required this.device});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const _StatLabel('СЕГОДНЯ'),
+        const SizedBox(height: 8),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: '${device.todayMessageCount}',
+                style: AppTextStyle.h1(AppColor.accentDeep),
+              ),
+              TextSpan(
+                text: ' SMS',
+                style: AppTextStyle.bodySm(AppColor.inkTertiary).copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _Sparkline(values: device.normalizedSparkline),
+      ],
+    );
+  }
+}
+
+class _Sparkline extends StatelessWidget {
+  final List<int> values;
+
+  const _Sparkline({required this.values});
+
+  @override
+  Widget build(BuildContext context) {
+    final maxValue = values.fold<int>(0, (current, value) {
+      return value > current ? value : current;
+    });
+
+    return SizedBox(
+      height: 22,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          for (var i = 0; i < values.length; i++) ...[
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: maxValue == 0
+                      ? 4
+                      : 4 + ((values[i] / maxValue) * 18).roundToDouble(),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColor.accent.withValues(alpha: 0.35),
+                        AppColor.accentDeep,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                ),
+              ),
+            ),
+            if (i < values.length - 1) const SizedBox(width: 4),
+          ],
+        ],
       ),
     );
   }
@@ -85,28 +193,48 @@ class _BatteryStat extends StatelessWidget {
             : (value != null && value <= 40
                 ? AppColor.amber
                 : AppColor.success));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _StatLabel('БАТАРЕЯ'),
-        const SizedBox(height: 6),
-        Text(
-          value != null ? '$value%' : '—',
-          style: AppTextStyle.titleSm(AppColor.ink),
-        ),
         const SizedBox(height: 8),
+        Row(
+          children: [
+            Text(
+              value != null ? '$value%' : '—',
+              style: AppTextStyle.h1(AppColor.ink),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: fill.withValues(alpha: 0.14),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.bolt_rounded,
+                size: 14,
+                color: fill,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         ClipRRect(
           borderRadius: BorderRadius.circular(999),
           child: Stack(
             children: [
               Container(
-                height: 4,
+                height: 6,
                 color: AppColor.bg,
               ),
               FractionallySizedBox(
                 widthFactor: ratio,
                 child: Container(
-                  height: 4,
+                  height: 6,
                   color: fill,
                 ),
               ),
@@ -118,92 +246,206 @@ class _BatteryStat extends StatelessWidget {
   }
 }
 
-class _SignalStat extends StatelessWidget {
-  final String? type;
+class _SimStat extends StatelessWidget {
+  final Device device;
   final bool online;
 
-  const _SignalStat({required this.type, required this.online});
+  const _SimStat({
+    required this.device,
+    required this.online,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bars = _bars(type);
+    final activeSlot = device.activeSimSlot;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StatLabel('СЕТЬ'),
-        const SizedBox(height: 6),
+        const _StatLabel('SIM'),
+        const SizedBox(height: 8),
         Text(
-          (type == null || type!.isEmpty) ? '—' : type!.toUpperCase(),
-          style: AppTextStyle.titleSm(AppColor.ink),
+          device.simLabel,
+          style: AppTextStyle.h1(AppColor.ink),
         ),
         const SizedBox(height: 8),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: List.generate(4, (i) {
-            final active = online && i < bars;
-            return Padding(
-              padding: EdgeInsets.only(right: i == 3 ? 0 : 3),
-              child: Container(
-                width: 4,
-                height: 4.0 + i * 3,
-                decoration: BoxDecoration(
-                  color: active ? AppColor.accent : AppColor.bg,
-                  borderRadius: BorderRadius.circular(1),
-                ),
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            _MiniPill(
+              label: activeSlot != null ? 'SIM $activeSlot' : 'авто',
+              active: online,
+            ),
+            if ((device.networkType?.trim().isNotEmpty ?? false))
+              _MiniPill(
+                label: device.networkType!.toUpperCase(),
+                active: online,
               ),
-            );
-          }),
+          ],
         ),
       ],
     );
   }
-
-  int _bars(String? type) {
-    if (type == null || type.isEmpty) return 0;
-    final t = type.toLowerCase();
-    if (t.contains('5g')) return 4;
-    if (t.contains('lte') || t.contains('4g')) return 3;
-    if (t.contains('3g')) return 2;
-    if (t.contains('wifi') || t.contains('wi-fi')) return 4;
-    return 1;
-  }
 }
 
-class _SyncStat extends StatelessWidget {
-  const _SyncStat();
+class _MiniPill extends StatelessWidget {
+  final String label;
+  final bool active;
+
+  const _MiniPill({
+    required this.label,
+    required this.active,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const _StatLabel('СИНХР.'),
-        const SizedBox(height: 6),
-        Text(
-          'В реал-тайм',
-          style: AppTextStyle.titleSm(AppColor.ink),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: active
+            ? AppColor.accentSoft
+            : AppColor.bgAlt.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: AppTextStyle.micro(
+          active ? AppColor.accentDeep : AppColor.inkTertiary,
         ),
-        const SizedBox(height: 8),
+      ),
+    );
+  }
+}
+
+class _SimRow extends StatelessWidget {
+  final DeviceSimCard card;
+  final bool online;
+  final String? networkType;
+
+  const _SimRow({
+    required this.card,
+    required this.online,
+    required this.networkType,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final statusLabel =
+        card.isActive ? (networkType?.toUpperCase() ?? 'АКТИВНА') : 'ГОТОВА';
+
+    return Row(
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          decoration: const BoxDecoration(
+            color: AppColor.bgAlt,
+            borderRadius: AppRadii.brR1,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            '${card.slot}',
+            style: AppTextStyle.bodySmBold(AppColor.inkSecondary),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Row(
+            children: [
+              Flexible(
+                child: Text(
+                  card.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyle.body(AppColor.ink),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: card.isActive
+                      ? AppColor.success
+                      : AppColor.inkPlaceholder,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
         Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: AppColor.success,
-                shape: BoxShape.circle,
+            for (var i = 0; i < 4; i++) ...[
+              Container(
+                width: 3,
+                height: 5.0 + (i * 3),
+                margin: EdgeInsets.only(right: i == 3 ? 6 : 2),
+                decoration: BoxDecoration(
+                  color: online && card.isActive && i >= 1
+                      ? AppColor.success
+                      : AppColor.bgAlt,
+                  borderRadius: BorderRadius.circular(1),
+                ),
               ),
-            ),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                'активна',
-                style: AppTextStyle.micro(AppColor.inkTertiary),
-              ),
+            ],
+            Text(
+              statusLabel,
+              style: AppTextStyle.micro(AppColor.inkTertiary),
             ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _ReceiverOnlyBody extends StatelessWidget {
+  final Device device;
+  final bool online;
+
+  const _ReceiverOnlyBody({
+    required this.device,
+    required this.online,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColor.bgAlt.withValues(alpha: 0.72),
+        borderRadius: AppRadii.brR2,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Только получает сообщения',
+            style: AppTextStyle.titleSm(AppColor.ink),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Для iPhone показываем только имя, платформу и статус устройства.',
+            style: AppTextStyle.bodySm(AppColor.inkTertiary),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _MiniPill(label: device.platformLabel, active: false),
+              _MiniPill(
+                label: online ? 'в сети' : 'приём',
+                active: online,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

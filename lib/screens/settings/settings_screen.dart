@@ -70,8 +70,8 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Политика конфиденциальности',
                   iconBg: const Color(0xFFE2F5EB),
                   iconFg: const Color(0xFF1A7F4B),
-                  onTap: () => Navigator.push(
-                      context, PrivacyPolicyScreen.route()),
+                  onTap: () =>
+                      Navigator.push(context, PrivacyPolicyScreen.route()),
                 ),
                 const _Divider(),
                 SettingsRow(
@@ -79,8 +79,7 @@ class SettingsScreen extends StatelessWidget {
                   title: 'Связаться с нами',
                   iconBg: AppColor.accentSoft,
                   iconFg: AppColor.accentDeep,
-                  onTap: () =>
-                      Navigator.push(context, ContactUsScreen.route()),
+                  onTap: () => Navigator.push(context, ContactUsScreen.route()),
                 ),
               ]),
               const SizedBox(height: 24),
@@ -88,7 +87,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 18),
               Center(
                 child: Text(
-                  'Создано с ♥ командой Simply',
+                  'Создано с любовью weeidl',
                   style: AppTextStyle.caption(AppColor.inkTertiary),
                 ),
               ),
@@ -168,8 +167,7 @@ class _ProfileCard extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: Text(_initials,
-                style: AppTextStyle.title(AppColor.white)),
+            child: Text(_initials, style: AppTextStyle.title(AppColor.white)),
           ),
           const SizedBox(width: 14),
           Expanded(

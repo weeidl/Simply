@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:simply/models/device.dart';
+import 'package:simply/models/device_sim_card.dart';
 import 'package:simply/repositories/firebase_api.dart';
 
 class DeviceRepository {
@@ -51,19 +52,26 @@ class DeviceRepository {
     required String deviceId,
     int? batteryStatus,
     String? networkTypeStatus,
+    int? simCount,
+    int? activeSimSlot,
+    List<DeviceSimCard> simCards = const [],
     bool isMainDevice = false,
   }) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
     final currentDeviceRef = itemsBackend.doc(deviceId);
+    final runtimePayload = {
+      "battery_level": batteryStatus,
+      "network_type": networkTypeStatus,
+      "sim_count": simCount,
+      "active_sim_slot": activeSimSlot,
+      "sim_cards": simCards.map((item) => item.toMap()).toList(),
+      "is_main_device": isMainDevice,
+      "date_update_info": FieldValue.serverTimestamp(),
+    };
 
     if (!isMainDevice) {
       await currentDeviceRef.set(
-        {
-          "battery_level": batteryStatus,
-          "network_type": networkTypeStatus,
-          "is_main_device": false,
-          "date_update_info": FieldValue.serverTimestamp(),
-        },
+        runtimePayload,
         SetOptions(merge: true),
       );
       return;
@@ -86,12 +94,7 @@ class DeviceRepository {
 
     batch.set(
       currentDeviceRef,
-      {
-        "battery_level": batteryStatus,
-        "network_type": networkTypeStatus,
-        "is_main_device": true,
-        "date_update_info": FieldValue.serverTimestamp(),
-      },
+      runtimePayload,
       SetOptions(merge: true),
     );
 
@@ -101,5 +104,23 @@ class DeviceRepository {
   Future<void> delete(String deviceId) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
     await itemsBackend.doc(deviceId).delete();
+  }
+
+  Future<void> saveOrder(List<Device> devices) async {
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
+    final batch = _firebaseApi.firestore.batch();
+
+    for (var i = 0; i < devices.length; i++) {
+      final device = devices[i];
+      batch.set(
+        itemsBackend.doc(device.deviceId),
+        {
+          'sort_order': i,
+        },
+        SetOptions(merge: true),
+      );
+    }
+
+    await batch.commit();
   }
 }

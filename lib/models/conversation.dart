@@ -12,6 +12,11 @@ class Conversation {
   final DateTime lastMessageDate;
   final int unreadMessagesCount;
   final String? sourcePlatform;
+  final String? sourceDeviceId;
+  final String? sourceDeviceName;
+  final int? sourceSubscriptionId;
+  final int? sourceSimSlot;
+  final String? sourceCarrier;
   final String? category;
 
   Conversation({
@@ -21,6 +26,11 @@ class Conversation {
     this.unreadMessagesCount = 0,
     required this.lastMessageDate,
     this.sourcePlatform,
+    this.sourceDeviceId,
+    this.sourceDeviceName,
+    this.sourceSubscriptionId,
+    this.sourceSimSlot,
+    this.sourceCarrier,
     this.category,
   });
 
@@ -32,6 +42,12 @@ class Conversation {
       'last_message_date': Timestamp.fromDate(lastMessageDate.toUtc()),
       'createdAt': FieldValue.serverTimestamp(),
       if (sourcePlatform != null) 'source_platform': sourcePlatform,
+      if (sourceDeviceId != null) 'source_device_id': sourceDeviceId,
+      if (sourceDeviceName != null) 'source_device_name': sourceDeviceName,
+      if (sourceSubscriptionId != null)
+        'source_subscription_id': sourceSubscriptionId,
+      if (sourceSimSlot != null) 'source_sim_slot': sourceSimSlot,
+      if (sourceCarrier != null) 'source_carrier': sourceCarrier,
       if (category != null) 'category': category,
     };
   }
@@ -45,6 +61,11 @@ class Conversation {
       unreadMessagesCount:
           (json['unread_messages_count'] as num?)?.toInt() ?? 0,
       sourcePlatform: json['source_platform'] as String?,
+      sourceDeviceId: json['source_device_id'] as String?,
+      sourceDeviceName: json['source_device_name'] as String?,
+      sourceSubscriptionId: (json['source_subscription_id'] as num?)?.toInt(),
+      sourceSimSlot: (json['source_sim_slot'] as num?)?.toInt(),
+      sourceCarrier: json['source_carrier'] as String?,
       category: json['category'] as String?,
     );
   }

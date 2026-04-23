@@ -121,23 +121,23 @@ class _WarmSearchFieldState extends State<WarmSearchField> {
           hintText: widget.hint,
           hintStyle: AppTextStyle.bodyM(AppColor.inkPlaceholder),
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 18),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
           prefixIcon: const Padding(
-            padding: EdgeInsetsDirectional.only(start: 18, end: 10),
+            padding: EdgeInsetsDirectional.only(start: 16, end: 8),
             child: Icon(
               Icons.search_rounded,
-              size: 20,
+              size: 18,
               color: AppColor.inkTertiary,
             ),
           ),
-          prefixIconConstraints: const BoxConstraints(minWidth: 52),
+          prefixIconConstraints: const BoxConstraints(minWidth: 48),
           suffixIcon: trailingIcon == null
               ? null
               : _SearchTrailingAction(
                   icon: trailingIcon,
                   onTap: trailingTap,
                 ),
-          suffixIconConstraints: const BoxConstraints(minWidth: 56),
+          suffixIconConstraints: const BoxConstraints(minWidth: 52),
           border: const OutlineInputBorder(
             borderRadius: AppRadii.brPill,
             borderSide: BorderSide.none,
@@ -174,19 +174,19 @@ class _SearchTrailingAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconWidget = Icon(
       icon,
-      size: 19,
+      size: 18,
       color: AppColor.inkTertiary,
     );
 
     if (onTap == null) {
       return Padding(
-        padding: const EdgeInsetsDirectional.only(end: 16),
+        padding: const EdgeInsetsDirectional.only(end: 14),
         child: iconWidget,
       );
     }
 
     return Padding(
-      padding: const EdgeInsetsDirectional.only(end: 10),
+      padding: const EdgeInsetsDirectional.only(end: 8),
       child: Material(
         color: Colors.transparent,
         child: InkWell(

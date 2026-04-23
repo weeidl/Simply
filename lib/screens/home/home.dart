@@ -54,6 +54,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
     if (!Platform.isAndroid) return;
     final statuses = await [
       Permission.sms,
+      Permission.phone,
       Permission.notification,
     ].request();
     if (statuses[Permission.sms] != PermissionStatus.granted) {

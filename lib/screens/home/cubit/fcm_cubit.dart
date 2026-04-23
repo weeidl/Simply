@@ -9,6 +9,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart'
 import 'package:simply/bloc/notification/background_message.dart';
 import 'package:simply/bloc/notification/incoming_sms_sync_service.dart';
 import 'package:simply/models/incoming_sms_payload.dart';
+import 'package:simply/screens/home/foreground_runtime_notice.dart';
+import 'package:simply/themes/colors.dart';
 
 part 'fcm_state.dart';
 
@@ -74,17 +76,22 @@ class FcmCubit extends Cubit<FcmState> {
 
   Future<void> _showNotification() async {
     const androidDetails = AndroidNotificationDetails(
-      'foreground_channel_id',
-      'SMS monitoring',
+      ForegroundRuntimeNotice.channelId,
+      ForegroundRuntimeNotice.channelName,
+      channelDescription: ForegroundRuntimeNotice.channelDescription,
+      icon: ForegroundRuntimeNotice.smallIcon,
+      largeIcon:
+          DrawableResourceAndroidBitmap(ForegroundRuntimeNotice.largeIcon),
       importance: Importance.low,
       priority: Priority.low,
       ongoing: true,
+      color: AppColor.accentDeep,
     );
     const platformDetails = NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
       0,
-      'SMS monitoring is enabled',
-      'Incoming SMS will sync automatically when the app can reach your account.',
+      ForegroundRuntimeNotice.title,
+      ForegroundRuntimeNotice.body,
       platformDetails,
     );
   }

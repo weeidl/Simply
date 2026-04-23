@@ -14,6 +14,7 @@ class MessagesRepository {
   static const _url = "user_messages";
   static const _messages = "messages";
   static const _message = "message";
+  static const _devices = "devices";
 
   MessagesRepository({
     FirebaseApi? firebaseApi,
@@ -104,6 +105,11 @@ class MessagesRepository {
     final previewRef =
         _userDocument().collection(_messages).doc(conversationId);
     final messageRef = _messagesCollection(conversationId).doc();
+    final sourceDeviceId =
+        message.sourceDeviceId ?? conversation.sourceDeviceId;
+    final deviceRef = sourceDeviceId == null || sourceDeviceId.isEmpty
+        ? null
+        : _firebaseApi.itemsCollection(_devices).doc(sourceDeviceId);
 
     await _firebaseApi.firestore.runTransaction((transaction) async {
       transaction.set(
@@ -126,6 +132,15 @@ class MessagesRepository {
           'date': FieldValue.serverTimestamp(),
         },
       );
+
+      if (deviceRef != null) {
+        final snapshot = await transaction.get(deviceRef);
+        final nextStats = _nextDeviceStats(
+          existing: snapshot.data() ?? const <String, dynamic>{},
+          messageDate: message.date,
+        );
+        transaction.set(deviceRef, nextStats, SetOptions(merge: true));
+      }
     });
   }
 
@@ -303,6 +318,42 @@ class MessagesRepository {
       'title': FieldValue.delete(),
       'last_message': FieldValue.delete(),
     };
+  }
+
+  Map<String, dynamic> _nextDeviceStats({
+    required Map<String, dynamic> existing,
+    required DateTime messageDate,
+  }) {
+    final local = messageDate.toLocal();
+    final dayKey = _dayKey(local);
+    final rawSparkline = existing['today_sparkline'];
+    final sparkline = rawSparkline is Iterable
+        ? rawSparkline.map((value) => (value as num?)?.toInt() ?? 0).toList()
+        : List<int>.filled(6, 0);
+    final normalizedSparkline = sparkline.length == 6
+        ? List<int>.from(sparkline)
+        : List<int>.filled(6, 0);
+    final existingDay = existing['today_sparkline_day']?.toString();
+    final sameDay = existingDay == dayKey;
+    final nextSparkline =
+        sameDay ? normalizedSparkline : List<int>.filled(6, 0);
+    final bucketIndex = ((local.hour.clamp(0, 23) * 6) / 24).floor();
+    nextSparkline[bucketIndex] = nextSparkline[bucketIndex] + 1;
+
+    return {
+      'today_message_count':
+          (sameDay ? (existing['today_message_count'] as num?)?.toInt() : 0)! +
+              1,
+      'today_sparkline': nextSparkline,
+      'today_sparkline_day': dayKey,
+      'last_message_at': Timestamp.fromDate(messageDate.toUtc()),
+    };
+  }
+
+  String _dayKey(DateTime value) {
+    final month = value.month.toString().padLeft(2, '0');
+    final day = value.day.toString().padLeft(2, '0');
+    return '${value.year}-$month-$day';
   }
 
   dynamic _coerceTimestamp(dynamic rawValue, {required dynamic fallback}) {

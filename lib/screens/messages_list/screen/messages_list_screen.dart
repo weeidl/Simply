@@ -26,10 +26,10 @@ class MessagesListScreen extends StatelessWidget {
               eyebrow: _eyebrow(state),
               title: 'Сообщения',
               trailing: const _ProfileBubble(),
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
               child: WarmSearchField(
                 hint: 'Поиск по сообщениям',
                 trailingIcon: Icons.tune_rounded,
@@ -113,7 +113,8 @@ class _FilterChips extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      clipBehavior: Clip.none,
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
       child: Row(
         children: [
           for (var i = 0; i < entries.length; i++) ...[
@@ -144,9 +145,9 @@ class _ProfileBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
+      width: 42,
+      height: 42,
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColor.accent, AppColor.accentDeep],
           begin: Alignment.topLeft,
@@ -188,7 +189,7 @@ class _EmptyView extends StatelessWidget {
             Container(
               width: 84,
               height: 84,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColor.accentSoft,
                 shape: BoxShape.circle,
               ),

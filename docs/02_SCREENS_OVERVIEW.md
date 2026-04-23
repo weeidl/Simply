@@ -207,7 +207,9 @@ SplashScreen
   - 0 unread, N total → «N в архиве».
   - K unread → «K новых · сегодня».
 - `_ProfileBubble` — круглая 44×44 «таблетка» с градиентом и иконкой `person_outline_rounded`.
-- `WarmSearchField(hint: 'Поиск по сообщениям', onChanged: cubit.setQuery)`.
+- `WarmSearchField(hint: 'Поиск по сообщениям', trailingIcon: Icons.tune_rounded,
+  onChanged: cubit.setQuery)` — единый белый pill-control со встроенными
+  leading/trailing слотами, а не просто decorated container вокруг `TextField`.
 - `_FilterChips` — горизонтальный `SingleChildScrollView` из `WarmChip`-ов:
   «Все» (с total), «Непрочитанные» (с unread), «Коды», «Банки», «Доставка»
   (`MessagesFilter` enum).

@@ -28,9 +28,10 @@ class MessagesListScreen extends StatelessWidget {
               trailing: const _ProfileBubble(),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               child: WarmSearchField(
                 hint: 'Поиск по сообщениям',
+                trailingIcon: Icons.tune_rounded,
                 onChanged: cubit.setQuery,
               ),
             ),

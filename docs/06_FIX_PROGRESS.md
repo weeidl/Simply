@@ -338,6 +338,11 @@ debug — нормально, release будет меньше после R8 mini
       Банки / Доставка), `MessagesListWidget` с буквенным аватаром на
       цвете из `avatarPalette`, опциональным `_CategoryTag`, `_CodeChip`
       для предпросмотра OTP.
+- [x] **WarmSearchField follow-up**: компонент переработан из
+      «container + text field» в единый app-level search-control:
+      цельная белая pill-форма, мягкая тень, встроенные leading/trailing
+      slots, focus-state и API `trailingIcon` / `onTrailingTap` /
+      `readOnly` / `onTap` для переиспользования на следующих экранах.
 - [x] **MessagesListCubit**: добавлены поле `query` (`setQuery`),
       `filter` (`setFilter`, `MessagesFilter` enum), производные
       `filteredItems`, `unreadCount`, `totalCount` для нового UI.

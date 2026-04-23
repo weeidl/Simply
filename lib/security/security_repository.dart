@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cryptography/cryptography.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:simply/repositories/firebase_api.dart';
 import 'package:simply/security/crypto_service.dart';
 import 'package:simply/security/encryption_readiness.dart';
@@ -26,8 +28,17 @@ class SecurityRepository {
     required String uid,
     required String password,
   }) async {
-    final userData = await _firebaseApi.getUserData(uid) ?? const {};
-    final security = _readSecurityMap(userData);
+    // Force the Firebase SDK to hydrate the freshly-signed-in auth token so
+    // Firestore writes see an authenticated request. Without this, the first
+    // write after sign-in can race and come through unauthenticated → rules
+    // reject it as permission-denied.
+    await _primeAuthToken(uid);
+
+    final userData = await _runStep(
+      'read users/$uid',
+      () => _firebaseApi.getUserData(uid),
+    );
+    final security = _readSecurityMap(userData ?? const {});
 
     if (security == null || security['key_envelope'] == null) {
       await provisionUserSecurity(uid: uid, password: password);
@@ -45,15 +56,18 @@ class SecurityRepository {
     );
 
     await cacheMasterKey(uid: uid, masterKey: masterKey);
-    await _firebaseApi.setUserData(
-      uid,
-      {
-        'security': {
-          'is_enabled': true,
-          'schema_version': 1,
-          'last_unlocked_at': FieldValue.serverTimestamp(),
+    await _runStep(
+      'write users/$uid (last_unlocked_at)',
+      () => _firebaseApi.setUserData(
+        uid,
+        {
+          'security': {
+            'is_enabled': true,
+            'schema_version': 1,
+            'last_unlocked_at': FieldValue.serverTimestamp(),
+          },
         },
-      },
+      ),
     );
   }
 
@@ -61,20 +75,24 @@ class SecurityRepository {
     required String uid,
     required String password,
   }) async {
+    await _primeAuthToken(uid);
     final generated = await _cryptoService.createMasterKeyEnvelope(
       password: password,
     );
 
-    await _firebaseApi.setUserData(
-      uid,
-      {
-        'security': {
-          'is_enabled': true,
-          'schema_version': 1,
-          'key_envelope': generated.envelope.toJson(),
-          'updated_at': FieldValue.serverTimestamp(),
+    await _runStep(
+      'write users/$uid (provision envelope)',
+      () => _firebaseApi.setUserData(
+        uid,
+        {
+          'security': {
+            'is_enabled': true,
+            'schema_version': 1,
+            'key_envelope': generated.envelope.toJson(),
+            'updated_at': FieldValue.serverTimestamp(),
+          },
         },
-      },
+      ),
     );
     await cacheMasterKey(uid: uid, masterKey: generated.masterKey);
   }
@@ -157,6 +175,29 @@ class SecurityRepository {
     final security = userData['security'];
     if (security is! Map) return null;
     return Map<String, dynamic>.from(security);
+  }
+
+  Future<void> _primeAuthToken(String uid) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null || user.uid != uid) return;
+    try {
+      await user.getIdToken();
+    } catch (e, stack) {
+      debugPrint('[SecurityRepository] getIdToken failed: $e\n$stack');
+    }
+  }
+
+  Future<T> _runStep<T>(String step, Future<T> Function() op) async {
+    try {
+      return await op();
+    } on FirebaseException catch (e, stack) {
+      debugPrint('[SecurityRepository] step "$step" failed: '
+          '${e.plugin}/${e.code} — ${e.message}\n$stack');
+      rethrow;
+    } catch (e, stack) {
+      debugPrint('[SecurityRepository] step "$step" failed: $e\n$stack');
+      rethrow;
+    }
   }
 
   Future<List<int>> _unwrapMasterKeyOrThrow({

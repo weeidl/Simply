@@ -24,39 +24,23 @@ class FirebaseApi {
     return uid;
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> getDocument(
-      String path) async {
-    try {
-      return await _firestore.doc(path).get();
-    } catch (e) {
-      throw Exception("Failed to fetch document: $e");
-    }
+  Future<DocumentSnapshot<Map<String, dynamic>>> getDocument(String path) {
+    return _firestore.doc(path).get();
   }
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getList(
       String collectionPath) async {
-    try {
-      final querySnapshot = await _firestore.collection(collectionPath).get();
-      return querySnapshot.docs;
-    } catch (e) {
-      throw Exception("Failed to fetch documents: $e");
-    }
+    final querySnapshot = await _firestore.collection(collectionPath).get();
+    return querySnapshot.docs;
   }
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>> getListForUser(
       String collectionPath) async {
-    final uid = userId;
-    if (uid == null) throw StateError('User is not logged in.');
-
-    try {
-      final querySnapshot = await _firestore
-          .collection(collectionPath)
-          .where('userId', isEqualTo: uid)
-          .get();
-      return querySnapshot.docs;
-    } catch (e) {
-      throw Exception("Failed to fetch user's documents: $e");
-    }
+    final querySnapshot = await _firestore
+        .collection(collectionPath)
+        .where('userId', isEqualTo: requireUserId())
+        .get();
+    return querySnapshot.docs;
   }
 
   DocumentReference<Map<String, dynamic>> documentReference(
@@ -73,23 +57,15 @@ class FirebaseApi {
   }
 
   Future<Map<String, dynamic>?> getUserData(String uid) async {
-    try {
-      final snapshot = await _firestore.collection('users').doc(uid).get();
-      return snapshot.data();
-    } catch (e) {
-      throw Exception("Failed to fetch user data: $e");
-    }
+    final snapshot = await _firestore.collection('users').doc(uid).get();
+    return snapshot.data();
   }
 
-  Future<void> setUserData(String uid, Map<String, dynamic> data) async {
-    try {
-      await _firestore
-          .collection('users')
-          .doc(uid)
-          .set(data, SetOptions(merge: true));
-    } catch (e) {
-      throw Exception("Failed to set user data: $e");
-    }
+  Future<void> setUserData(String uid, Map<String, dynamic> data) {
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .set(data, SetOptions(merge: true));
   }
 
   Future<UserCredential?> signIn(String email, String password) async {

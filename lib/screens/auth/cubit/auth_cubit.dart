@@ -58,34 +58,58 @@ class AuthCubit extends Cubit<AuthState> {
       emit(state.copyWith(authErrorMessage: error));
       return false;
     }
+
+    final User user;
     try {
       final credential = await _auth.signInWithEmailAndPassword(
         email: state.emailController.text.trim(),
         password: state.passwordController.text,
       );
-      final user = credential.user;
-      if (user == null) {
+      final signedInUser = credential.user;
+      if (signedInUser == null) {
         throw StateError('User is missing after sign-in.');
       }
+      user = signedInUser;
+    } on FirebaseAuthException catch (e) {
+      emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
+      return false;
+    } catch (e, stack) {
+      debugPrint('[AuthCubit.signIn] unexpected: $e\n$stack');
+      emit(state.copyWith(
+          authErrorMessage: 'Sign-in failed: ${_describe(e)}'));
+      return false;
+    }
 
+    try {
       await _securityRepository.unlockOrInitializeUser(
         uid: user.uid,
         password: state.passwordController.text,
       );
-      await _messagesRepository.migrateLegacyDataIfNeeded();
-      return true;
-    } on FirebaseAuthException catch (e) {
-      emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
-      return false;
     } on EncryptionUnlockFailedException catch (e) {
+      // Wrong password for existing envelope — auth session is safe to kill.
       await _auth.signOut();
       emit(state.copyWith(authErrorMessage: e.userMessage));
       return false;
-    } catch (_) {
-      await _auth.signOut();
-      emit(state.copyWith(authErrorMessage: 'Something went wrong'));
+    } on FirebaseException catch (e, stack) {
+      debugPrint('[AuthCubit.signIn] firestore during unlock: ${e.code} '
+          '${e.message}\n$stack');
+      emit(state.copyWith(authErrorMessage: _mapFirestoreError(e)));
+      return false;
+    } catch (e, stack) {
+      debugPrint('[AuthCubit.signIn] unlock failed: $e\n$stack');
+      emit(state.copyWith(
+          authErrorMessage: 'Could not unlock account: ${_describe(e)}'));
       return false;
     }
+
+    // Best-effort: legacy-data migration should never block login.
+    try {
+      await _messagesRepository.migrateLegacyDataIfNeeded();
+    } catch (e, stack) {
+      debugPrint('[AuthCubit.signIn] migration skipped: $e\n$stack');
+    }
+
+    return true;
   }
 
   Future<User?> signUp() async {
@@ -94,15 +118,29 @@ class AuthCubit extends Cubit<AuthState> {
       emit(state.copyWith(authErrorMessage: error));
       return null;
     }
+
+    final User user;
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
         email: state.emailController.text.trim(),
         password: state.passwordController.text,
       );
+      final created = credential.user;
+      if (created == null) {
+        throw StateError('User is missing after sign-up.');
+      }
+      user = created;
+    } on FirebaseAuthException catch (e) {
+      emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
+      return null;
+    } catch (e, stack) {
+      debugPrint('[AuthCubit.signUp] unexpected: $e\n$stack');
+      emit(state.copyWith(
+          authErrorMessage: 'Sign-up failed: ${_describe(e)}'));
+      return null;
+    }
 
-      final user = credential.user;
-      if (user == null) return null;
-
+    try {
       final name = state.nameController.text.trim();
       await user.updateDisplayName(name);
       await user.reload();
@@ -120,16 +158,19 @@ class AuthCubit extends Cubit<AuthState> {
         uid: user.uid,
         password: state.passwordController.text,
       );
-
-      return _auth.currentUser;
-    } on FirebaseAuthException catch (e) {
-      emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
+    } on FirebaseException catch (e, stack) {
+      debugPrint('[AuthCubit.signUp] firestore after create: ${e.code} '
+          '${e.message}\n$stack');
+      emit(state.copyWith(authErrorMessage: _mapFirestoreError(e)));
       return null;
-    } catch (_) {
-      await _auth.signOut();
-      emit(state.copyWith(authErrorMessage: 'Something went wrong'));
+    } catch (e, stack) {
+      debugPrint('[AuthCubit.signUp] post-create failed: $e\n$stack');
+      emit(state.copyWith(
+          authErrorMessage: 'Account created, setup failed: ${_describe(e)}'));
       return null;
     }
+
+    return _auth.currentUser;
   }
 
   Future<bool> sendPasswordReset() async {
@@ -178,6 +219,26 @@ class AuthCubit extends Cubit<AuthState> {
       default:
         return e.message ?? 'Authentication failed';
     }
+  }
+
+  String _mapFirestoreError(FirebaseException e) {
+    switch (e.code) {
+      case 'permission-denied':
+        return 'Access denied. Check that your account is configured '
+            'correctly.';
+      case 'unavailable':
+      case 'deadline-exceeded':
+        return 'Network error. Check your connection and try again.';
+      case 'unauthenticated':
+        return 'Session expired. Sign in again.';
+      default:
+        return 'Database error: ${e.code}';
+    }
+  }
+
+  String _describe(Object error) {
+    final text = error.toString();
+    return text.length > 120 ? '${text.substring(0, 117)}…' : text;
   }
 
   @override

@@ -34,10 +34,12 @@
 - [x] Удалить из `pubspec.yaml` основные неиспользуемые зависимости:
       `grpc`, `flutter_background_service`, `google_fonts`,
       `firebase_storage`, `workmanager`.
-- [ ] Удалить `cupertino_icons`, если пакет действительно не нужен.
-- [ ] Переоценить `auto_size_text`: сейчас пакет всё ещё используется на
-      `AuthScreen`, так что его removal — отдельная задача, а не уже готовый
-      cleanup.
+- [ ] Удалить из `pubspec.yaml` зависимости, которые стали мёртвыми
+      после warm-редизайна (нет ни одного `import` в `lib/`):
+      `cupertino_icons`, `auto_size_text`, `flutter_svg`.
+      Заодно: убрать неиспользуемые `lib/screens/widget/custom_progress_indicator.dart`
+      и `lib/screens/common/cubit_list_view.dart`
+      (`Messages`/`Devices` экраны переписаны без них).
 - [ ] Добавить `.editorconfig` для единообразия.
 
 **Результат**: минус ~15% размера APK/IPA, чище код.

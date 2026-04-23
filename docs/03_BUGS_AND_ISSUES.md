@@ -26,6 +26,18 @@ B-032, B-036, B-037, B-038, B-041, B-043 · 🟢 B-050.
 
 🔴 B-051 (фоновые SMS не доходили до приложения — fixed 2026-04-22).
 
+## Сводка Итерации 5 — Warm redesign (2026-04-23)
+
+UI-итерация (см. `06_FIX_PROGRESS.md` Итерация 5). По багам:
+- 🟡 **B-035** закрыт: `BackgroundWidget` больше не делает
+  `bottom: !Platform.isIOS`, везде единый `SafeArea(bottom: false)`.
+- 🟢 **B-047 / B-048** дополнительно почищены: после переписывания
+  большинства экранов мёртвых русских комментариев и закомментированных
+  блоков почти не осталось.
+- Часть пунктов **обнулилась смыслом** (старые экраны и виджеты,
+  которые они описывали, переписаны или удалены): см. пометки
+  `(redesign)` рядом с каждым.
+
 ---
 
 ## 🔴 Критичные баги логики
@@ -452,10 +464,16 @@ InkWell(
 **Файл**: `pubspec.yaml`
 - Уже удалены из `pubspec.yaml`: `grpc`, `flutter_background_service`,
   `google_fonts`, `firebase_storage`, `workmanager`.
-- `auto_size_text: 3.0.0` всё ещё используется на `AuthScreen`, так что это
-  уже не «мёртвая» зависимость.
-- `cupertino_icons: ^1.0.2` по-прежнему остаётся кандидатом на удаление, если
-  проект окончательно не использует Cupertino-иконки.
+- **После warm-редизайна (2026-04-23) стали полностью мёртвыми
+  (нет ни одного `import` в `lib/`)** — кандидаты на удаление:
+  - `auto_size_text: 3.0.0` (раньше использовался на `AuthScreen`,
+    теперь нет).
+  - `flutter_svg: 2.0.10+1` (раньше — `NoMessagesAvailable` SVG,
+    теперь весь UI на иконках Material и Manrope).
+  - `cupertino_icons: ^1.0.2` (Material-only).
+- Также после редизайна без юзеров остались `lib/screens/widget/custom_progress_indicator.dart`
+  и `lib/screens/common/cubit_list_view.dart` (но это не deps, а наш код —
+  снести вместе с тестами на следующем cleanup).
 
 Каждая зависимость = +размер бандла + риск CVE. Удалить лишнее.
 
@@ -466,13 +484,13 @@ InkWell(
 
 ---
 
-### B-035. `BackgroundWidget` отключает `bottom SafeArea` на iOS
-**Файл**: `lib/screens/widget/background_widget.dart:19`
-```dart
-bottom: !Platform.isIOS,
-```
-Текущий код отключает нижний `SafeArea` не на Android, а на iOS. Это значит,
-что на iPhone контент может оказаться слишком близко к home indicator.
+### B-035. `BackgroundWidget` отключает `bottom SafeArea` на iOS · ✅ FIXED (итерация 5)
+**Файл**: `lib/screens/widget/background_widget.dart`
+
+После warm-редизайна виджет переписан в плоский `Scaffold(bg)` +
+`SafeArea(bottom: false)` без platform-веток. Поведение нижней области
+выровнено для iOS и Android, и оба экрана `MessageDetails`/`PrivacyPolicy`/
+`ContactUs` корректно отдают свой нижний padding в `ListView` сами.
 
 ---
 
@@ -484,10 +502,15 @@ Material) неэффективно. Вероятно, имели в виду `si
 
 ---
 
-### B-037. `NoMessagesAvailable` — размер SVG не задан · ✅ FIXED (итерация 1)
-**Файл**: `lib/screens/widget/place_holder/no_messages_available.dart:15-21`
+### B-037. `NoMessagesAvailable` — размер SVG не задан · ✅ FIXED (итерация 1) · 🗑️ файл удалён в итерации 5
+**Файл**: ранее `lib/screens/widget/place_holder/no_messages_available.dart`.
 
-`SvgPicture.asset` без `width`/`height` → может рендериться огромным.
+`SvgPicture.asset` без `width`/`height` → могло рендериться огромным.
+В итерации 1 был задан 64×64. В итерации 5 (warm-редизайн) сам
+placeholder заменён на встроенный `_EmptyView` в каждом экране (Messages,
+Devices, MessageDetails) — круглая «таблетка» `accentSoft` + иконка
+Material; файл `no_messages_available.dart` удалён, `flutter_svg` больше
+не импортируется.
 
 ---
 
@@ -513,9 +536,13 @@ Material) неэффективно. Вероятно, имели в виду `si
 
 ---
 
-### B-041. `SettingsScreen` — пункты-заглушки без визуального признака «скоро» · ✅ FIXED (итерация 1)
-Edit Profile / Language / Push Notification не кликаются. Пользователь
-тапает и ничего не происходит → фрустрация.
+### B-041. `SettingsScreen` — пункты-заглушки без визуального признака «скоро» · ✅ FIXED (итерация 1, оформление обновлено в итерации 5)
+В итерации 1 у `SettingsRow` появился флаг `comingSoon` с pill-бейджем
+«Soon» и приглушённым цветом. В warm-редизайне `SettingsRow` переписан
+поверх `IconTile` (`lib/screens/widget/warm/icon_tile.dart`) и `_SoonBadge`
+в `lib/screens/settings/widget/setting_widget.dart`; пункты Профиль /
+Уведомления / Язык на `SettingsScreen` помечены `comingSoon: true` и
+`onTap: () {}`.
 
 ---
 
@@ -525,12 +552,17 @@ SMS, ДОЛЖНО иметь политику конфиденциальност
 
 ---
 
-### B-043. Все тексты на английском, один — на русском · ✅ FIXED (итерация 1)
+### B-043. Все тексты на английском, один — на русском · ✅ FIXED (итерация 1) · ⚠️ обратный сдвиг в итерации 5
 **Файл**: `lib/repositories/device_repository.dart:40`
 ```dart
 log("Произошла ошибка при получении токенов устройств: $e");
 ```
 Смесь языков в логах. Логи — тоже часть продукта при краш-репортах.
+
+В итерации 1 исходный лог переведён на английский. В итерации 5 (warm-редизайн)
+весь UI наоборот переведён на русский (`'Привет!'`, `'Создать аккаунт'`,
+`'Сообщения'` и т.д.) — это намеренно, продукт ориентирован на
+русскоязычного пользователя. Полноценный gen-l10n с EN/RU остаётся в Этап 7.
 
 ---
 
@@ -563,14 +595,14 @@ controller в рантайме, `_scrollController` не обновится.
 
 ---
 
-### B-048. Много закомментированного кода — частично закрыто
+### B-048. Много закомментированного кода — почти закрыто
 - Уже удалены/почищены: `lib/screens/home/widget/app_bottom_bar.dart`,
   старые комментарии из `lib/main.dart` и `device_info_widget.dart`.
-- Остались мелкие фрагменты, например `// errorText: ...` в
-  `auth_screen.dart`, `// Replace with a suitable one Place Holder` и
-  `// reverse: true,` в `message_details_screen.dart`, `// Icon(` в `home.dart`.
-
-Удалить или перенести в issue.
+- В warm-редизайне (итерация 5) экраны `auth_screen.dart`,
+  `message_details_screen.dart`, `home.dart` полностью переписаны —
+  старые закомментированные хвосты ушли вместе с ними.
+- Остаточные «to-do» / `// FIXME` фрагменты — точечные, можно дочистить
+  при первом проходе по `dart analyze`.
 
 ---
 
@@ -630,7 +662,7 @@ open-source / передачи проекта — заменить описан�
 | `build.gradle` | 1 (debug signing) |
 | `PrivacyPolicyScreen` | 1 (блокер публикации) |
 | `ContactUsScreen` | 1 (exception) |
-| `background_widget.dart` | 1 (нижний `SafeArea` на iOS) |
+| `background_widget.dart` | 1 (нижний `SafeArea` на iOS) — закрыт в итерации 5 |
 | `extensions.dart` | 1 (future-dates) |
 
 **Итого**: ≈ 50 обнаруженных проблем.

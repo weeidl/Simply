@@ -257,6 +257,188 @@ debug — нормально, release будет меньше после R8 mini
 
 ---
 
+## Итерация 5 — Warm redesign (2026-04-23)
+
+Полная UI-итерация: единый дизайн-язык поверх существующей логики, без
+изменений в репозиториях/моделях/security. Один коммит — `16fd1d1`
+«Warm redesign: tokens, primitives, screens». `dart analyze` остаётся
+чистым (32 info-level prefer_const замечания, 0 errors).
+
+### Group A — Design tokens
+
+- [x] **Шрифт**: подключён локальный Manrope в четырёх весах
+      (`assets/fonts/Manrope-{500,600,700,800}.ttf` + декларация в
+      `pubspec.yaml`). `MaterialApp.theme.fontFamily = 'Manrope'`.
+- [x] **`themes/colors.dart`**: переписан на семантическую warm-coral
+      палитру — `accent` (`#F59B7E`), `accentDeep`, `accentSoft`,
+      `accentInk`; surfaces `bg`/`bgAlt`/`surface`/`divider`; ink-шкала
+      `ink`/`inkSecondary`/`inkTertiary`/`inkPlaceholder`; статусы
+      `success`/`successSoft`/`amber`/`danger`; `avatarPalette` для
+      буквенных аватарок.
+- [x] **`themes/text_style.dart`**: переписан под единые
+      `AppTextStyle.{display,h1,title,titleSm,bodyM,bodySm,bodySmBold,
+      button,caption,captionUpper,micro,codeMono}` — вся типографика
+      централизована.
+- [x] Добавлен **`themes/radii.dart`**: `AppRadii.{r1..r4,pill}` +
+      готовые `BorderRadius` (`brR1..brR4`, `brPill`).
+- [x] Добавлен **`themes/shadows.dart`**: `AppShadows.{s,m,accent}` —
+      три уровня тени (карточки, нав-таблетка, акцент).
+
+### Group B — Новые UI-примитивы (`lib/screens/widget/warm/`)
+
+- [x] `warm_card.dart` — обобщённая карточка
+      `surface + brR3/4 + shadow.s + border(0x0A281910)`.
+- [x] `warm_header.dart` — eyebrow + title + опциональный trailing,
+      используется в верху каждой главной вкладки.
+- [x] `warm_chip.dart` — pill-фильтр с active/inactive состоянием и
+      опциональным count.
+- [x] `warm_search_field.dart` — round-bordered input с иконкой поиска
+      и `onChanged` колбэком.
+- [x] `pill_tab_bar.dart` — плавающая нижняя нав-таблетка
+      (`AppShadows.m`, `AppColor.surface`); активный таб — pill `accent`
+      с иконкой + label, неактивные — только иконка `inkTertiary`.
+- [x] `icon_tile.dart` — квадратная иконка-таблетка с настраиваемыми
+      background/foreground (default `accentSoft / accentDeep`).
+
+### Group C — Утилиты
+
+- [x] **`utils/code_extractor.dart`** (`CodeExtractor.extract`) —
+      heuristic под OTP: ищет 4–8-значные числа с привязкой к cue-словам
+      («код», «code», «otp», «verification», «password», …), чтобы убрать
+      ложные срабатывания на номера заказов и суммы. Используется в
+      `MessagesListWidget._CodeChip` и `MessageDetailsScreen._CodeBlock`.
+
+### Group D — Экраны: переписаны под warm-дизайн
+
+- [x] **SplashScreen**: квадратный градиентный лого 96×96
+      (`accent → accentDeep`) с белым `flash.png`, заголовок «Simply»,
+      подпись «SMS-пересылка между устройствами», тонкий accent-спиннер.
+- [x] **AuthScreen**: плоский `bg`-фон, заголовок-display
+      («Привет!» / «Создать аккаунт»), карточка формы `surface + brR4`,
+      `CustomSegmentedControl` (`bgAlt` + белая активная pill),
+      `CustomTextField` с pill-бордером и focus-outline, pill-кнопка
+      `accent`, `DividerWithText('или через')`, `SignInButton` для
+      Google (белый) и Apple (тёмный). Все строки по-русски.
+- [x] **HomePage**: `IndexedStack` + плавающая `PillTabBar`
+      («Устройства» / «Сообщения» / «Настройки»), `extendBody: true`,
+      `_didRequestInitialDeviceCheck` страхует от повторного триггера
+      `CheckDeviceCubit.checkDevice()` при ребилдах.
+- [x] **DevicesScreen**: `WarmHeader` + pill-кнопка «Добавить»
+      с тенью `accent`, карточки `DeviceWidget` с phone-thumbnail
+      (рамка `accentSoft` + чёрный экран + цветной inset, который для
+      online-устройства градиентный, для offline — серый), бейдж
+      «ГЛАВНОЕ» (`accentSoft`/`accentDeep`), `_StatusPill` («В сети» /
+      «Был {relative}»), tinted footer `bgAlt` со stats grid.
+- [x] **DeviceInfoWidget**: переписан в 3-колоночную сетку
+      Battery / Signal / Sync (раньше — orange CircularProgress + 80%
+      magic).
+- [x] **MessagesListScreen**: `WarmHeader` с динамическим eyebrow
+      («N новых · сегодня» / «N в архиве»), `_ProfileBubble`,
+      `WarmSearchField`, `_FilterChips` (Все / Непрочитанные / Коды /
+      Банки / Доставка), `MessagesListWidget` с буквенным аватаром на
+      цвете из `avatarPalette`, опциональным `_CategoryTag`, `_CodeChip`
+      для предпросмотра OTP.
+- [x] **MessagesListCubit**: добавлены поле `query` (`setQuery`),
+      `filter` (`setFilter`, `MessagesFilter` enum), производные
+      `filteredItems`, `unreadCount`, `totalCount` для нового UI.
+- [x] **MessageDetailsScreen**: `BackgroundWidget` + кастомный
+      `AppBarWidget` с back, `AvatarWithIndicator`-leading, subtitle
+      «● SMS · с iPhone/Android» и `_DotsButton`-trailing; ленту
+      сообщений возглавляет `_InfoBanner` («Simply пересылает SMS
+      и автоматически копирует найденные коды…»); между разными днями —
+      `_DateDivider` (`formatChatDivider`); каждый bubble — карточка
+      `surface` с stair-step углами, под bubble — `formatTime()`.
+      `_CodeBlock` подсвечивает OTP (моно, 4-4 split) и копирует
+      по тапу на pill «Копировать».
+- [x] **DeviceSettingsModal / DeviceSettingsWidget**: переписаны в
+      warm стиль — drag-handle `bgAlt`, заголовок «Настройки устройства»
+      / «Новое устройство», три `BuildSwitchTile` (`bgAlt` / `accent`),
+      `_PrimaryAction` («Сохранить») и `_DangerAction` («Удалить
+      устройство») вместо прежних зелёной/розовой кнопок.
+- [x] **BuildSwitchTile**: оранжевый/серый scheme заменён на
+      warm (`bgAlt` background + `accent` toggle).
+- [x] **SettingsScreen**: `WarmHeader('Аккаунт и приложение',
+      'Настройки')`, `_ProfileCard` (градиентный круг с инициалами,
+      имя, email, кнопка edit), `_PremiumBanner` (градиент
+      `accentDeep → accent`, `AppShadows.accent`, pill «Открыть»),
+      грouped `_Group`/`_SectionTitle`/`_Divider` (Аккаунт / Помощь),
+      красный `_LogoutButton` через `ConfirmationDialog`. Подвал
+      «Создано с ♥ командой Simply».
+- [x] **SettingsRow** (бывший `SettingWidget`): переписан поверх
+      `IconTile`, поддерживает `subtitle`, `trailing`, опциональный
+      `comingSoon` бейдж и кастомные `iconBg`/`iconFg`.
+- [x] **PrivacyPolicyScreen**: `BackgroundWidget` + `AppBarWidget`,
+      плашка `accentSoft` с предупреждением «готовим документ»,
+      раздел «Что будет в политике» с белой карточкой.
+- [x] **ContactUsScreen**: `BackgroundWidget` + `AppBarWidget(back)`,
+      три цветные `_ContactCard`-а (Почта/Сайт/Соцсети), блок «Команда»
+      с `_TeamMember` (градиентный кружок-инициалы).
+- [x] **AvatarWithIndicator**: переписан с SVG-заглушки на буквенный
+      аватар на цвете из `avatarPalette` (стабильный hash от title) +
+      опциональный platform-бейдж в углу.
+- [x] **BackgroundWidget**: переписан в плоский
+      `Scaffold(bg) + SafeArea(bottom: false)` без оранжевого header-sheet
+      и без platform-веток (B-035 закрыт).
+- [x] **AppBarWidget**: round back-кнопка + title + опциональные
+      leading/subtitle/trailing, `AppShadows.s`. Старая «people»-иконка
+      из MessagesList убрана.
+- [x] **RoundedButton / SignInButton / Dialogs / DividerWithText /
+      CustomTextField / CustomSegmentedControl** — выровнены по новой
+      палитре и токенам.
+
+### Group E — Платформенные / lifecycle штрихи
+
+- [x] **`main.dart`**: `await initializeDateFormatting('ru_RU')` перед
+      `runApp`, чтобы все `DateFormat`-ы корректно работали с русской
+      локалью; `MaterialApp.theme` теперь поднимает Manrope, warm
+      `colorScheme`, `elevatedButtonTheme` (pill `accent`),
+      `inputDecorationTheme` (pill outline, focus `accent`).
+- [x] **`extensions.dart`**: добавлены `formatRelativeShort`,
+      `formatChatDivider`, `formatTime` для нового UI; старый
+      `formatDateTime` оставлен для совместимости.
+- [x] **`models/conversation.dart`**: добавлены опциональные
+      `category` и `sourcePlatform`, чтобы UI мог рисовать
+      `_CategoryTag` и platform-бейдж в аватаре.
+
+### Group F — Cleanup, который остался после редизайна
+
+После warm-редизайна в `pubspec.yaml` появились dependencies без
+единого `import` в `lib/`:
+
+- [ ] `flutter_svg: 2.0.10+1` — убрать (раньше использовался в
+      `NoMessagesAvailable`).
+- [ ] `auto_size_text: 3.0.0` — убрать (раньше использовался в
+      `AuthScreen`).
+- [ ] `cupertino_icons: ^1.0.2` — Material-only.
+- [ ] `lib/screens/widget/custom_progress_indicator.dart` — без юзеров.
+- [ ] `lib/screens/common/cubit_list_view.dart` — без юзеров после
+      того, как `Messages` и `Devices` экраны перешли на собственные
+      `BlocBuilder` + `ListView.builder`.
+
+### Group G — Документация (текущий заход, 2026-04-23)
+
+- [x] `docs/README.md`: дата синхронизации обновлена до **2026-04-23**,
+      добавлен note про warm-редизайн.
+- [x] `docs/01_PRODUCT_OVERVIEW.md`: переписаны секции i18n, стек,
+      архитектура (`themes/{radii,shadows}.dart`, `screens/widget/warm/`,
+      `utils/code_extractor.dart`, `security/`), отмечены dead-deps.
+- [x] `docs/02_SCREENS_OVERVIEW.md`: полностью переписан под новый UI
+      (Splash, Auth, Home/PillTabBar, Devices, Messages, MessageDetails,
+      Settings, DeviceSettingsModal, Privacy, Contact, общие примитивы,
+      существующее-но-неиспользуемое).
+- [x] `docs/03_BUGS_AND_ISSUES.md`: B-035 ✅, B-037 помечен «файл удалён»,
+      B-041 переоформлен под `IconTile`/`SettingsRow`, B-043 помечен
+      обратным сдвигом (UI на русском, gen-l10n всё ещё в Этап 7),
+      B-033 расширен dead-deps списком.
+- [x] `docs/05_ARCHITECTURE_IMPROVEMENTS.md`: Этап 0 — пункт по
+      `auto_size_text` заменён общим cleanup-пунктом
+      (`flutter_svg`/`auto_size_text`/`cupertino_icons` +
+      `CubitListView`/`CustomProgressIndicator`).
+- [x] `docs/06_FIX_PROGRESS.md` (этот файл): добавлена Итерация 5 —
+      warm redesign.
+
+---
+
 ## Что НЕ сделано в этой итерации (следующий заход)
 
 Это осознанно отложено, потому что требует более масштабной работы, бэкенд-части
@@ -269,11 +451,17 @@ debug — нормально, release будет меньше после R8 mini
       `flutter_local_notifications`. Требует Cloud Function для sender-side
       (или Firebase Extension «Trigger FCM Notifications»).
 - [ ] **B-009** Убрать `fetch()` из `build()` в `CubitListView`.
-      `DevicesScreen` уже переведён на `initState`, но общий список всё ещё
-      держит initial-fetch внутри `build()`.
-- [ ] **B-029** Пересмотреть `StandardListCubit` с учётом реактивности.
-- [ ] **B-047 / B-048 / B-049** Дочистить оставшиеся русские комментарии,
-      мелкие закомментированные фрагменты и неудачный нейминг.
+      `DevicesScreen` уже переведён на `initState`, но `CubitListView`
+      всё ещё держит initial-fetch внутри `build()`. После warm-редизайна
+      ни один экран `CubitListView` больше не использует, так что,
+      возможно, проще сразу удалить его (см. cleanup в Итерации 5
+      Group F) и закрыть B-009 этим путём.
+- [ ] **B-029** Пересмотреть `StandardListCubit` с учётом реактивности
+      (тоже потенциально удаляется вместе с `CubitListView`).
+- [ ] **B-047 / B-049** Дочистить остатки кириллических комментариев и
+      неудачного нейминга (`DeviceCubit.updateDevice` всё ещё обновляет
+      весь список). `B-048` после редизайна почти закрыт — большинство
+      затронутых экранов переписаны.
 
 ### Требует внешних действий от автора
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/security/security_repository.dart';
@@ -21,31 +22,41 @@ class SplashCubit extends Cubit<SplashState> {
         _securityRepository = securityRepository ?? SecurityRepository(),
         _messagesRepository = messagesRepository ?? MessagesRepository(),
         super(SplashState()) {
-    _authSubscription = _auth.authStateChanges().listen(_handleAuthState);
+    _bootstrap();
   }
 
-  Future<void> _handleAuthState(User? user) async {
-    if (user == null) {
-      emit(AuthUnauthenticated());
-      return;
+  /// Boot sequence:
+  /// 1. If a user was already signed in when the app launched, check whether
+  ///    their encryption state can be restored. If not — the local master
+  ///    key was lost (app reinstall, device switch) and we can't decrypt the
+  ///    cloud data, so force a sign-out to kick them back to the auth screen.
+  /// 2. Then start listening to `authStateChanges` and mirror it into UI
+  ///    state WITHOUT any side effects. The sign-in flow (`AuthCubit`)
+  ///    handles its own envelope provisioning, so we must not race with it.
+  Future<void> _bootstrap() async {
+    final restoredUser = _auth.currentUser;
+    if (restoredUser != null) {
+      try {
+        final canRestore = await _securityRepository.canRestoreSession(
+          restoredUser.uid,
+        );
+        if (!canRestore) {
+          await _auth.signOut();
+        } else {
+          try {
+            await _messagesRepository.migrateLegacyDataIfNeeded();
+          } catch (e, stack) {
+            debugPrint('[SplashCubit] migration skipped: $e\n$stack');
+          }
+        }
+      } catch (e, stack) {
+        debugPrint('[SplashCubit] initial session check failed: $e\n$stack');
+      }
     }
 
-    final canRestoreSession = await _securityRepository.canRestoreSession(
-      user.uid,
-    );
-    if (!canRestoreSession) {
-      await _auth.signOut();
-      return;
-    }
-
-    try {
-      await _messagesRepository.migrateLegacyDataIfNeeded();
-    } catch (_) {
-      // Best-effort migration on restored sessions. New writes are blocked
-      // unless encryption is ready, so a failed migration won't leak plaintext.
-    }
-
-    emit(AuthAuthenticated());
+    _authSubscription = _auth.authStateChanges().listen((user) {
+      emit(user == null ? AuthUnauthenticated() : AuthAuthenticated());
+    });
   }
 
   Future<bool> signOut() async {
@@ -57,7 +68,8 @@ class SplashCubit extends Cubit<SplashState> {
       await _auth.signOut();
       emit(AuthUnauthenticated());
       return true;
-    } catch (_) {
+    } catch (e, stack) {
+      debugPrint('[SplashCubit] signOut failed: $e\n$stack');
       return false;
     }
   }

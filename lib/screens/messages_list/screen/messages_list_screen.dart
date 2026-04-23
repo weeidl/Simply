@@ -26,9 +26,10 @@ class MessagesListScreen extends StatelessWidget {
               eyebrow: _eyebrow(state),
               title: 'Сообщения',
               trailing: const _ProfileBubble(),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: WarmSearchField(
                 hint: 'Поиск по сообщениям',
                 trailingIcon: Icons.tune_rounded,
@@ -41,7 +42,7 @@ class MessagesListScreen extends StatelessWidget {
               unread: state.unreadCount,
               onSelect: cubit.setFilter,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Expanded(child: _list(context, state, filtered)),
           ],
         );

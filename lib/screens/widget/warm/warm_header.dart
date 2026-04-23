@@ -38,7 +38,7 @@ class WarmHeader extends StatelessWidget {
             ),
           ),
           if (trailing != null) ...[
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
             trailing!,
           ],
         ],

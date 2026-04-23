@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
@@ -34,56 +36,68 @@ class PillTabBar extends StatelessWidget {
         20,
         12 + MediaQuery.of(context).viewPadding.bottom,
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+      child: DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColor.surface,
           borderRadius: AppRadii.brPill,
           boxShadow: AppShadows.m,
-          border: Border.all(color: const Color(0x0A281910)),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(tabs.length, (i) {
-            final tab = tabs[i];
-            final on = i == activeIndex;
-            return Material(
-              color: Colors.transparent,
-              borderRadius: AppRadii.brPill,
-              child: InkWell(
+        child: ClipRRect(
+          borderRadius: AppRadii.brPill,
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColor.surface.withValues(alpha: 0.78),
                 borderRadius: AppRadii.brPill,
-                onTap: () => onChanged(i),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOut,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: on ? AppColor.accent : Colors.transparent,
-                    borderRadius: AppRadii.brPill,
-                    boxShadow: on ? AppShadows.accent : null,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        tab.icon,
-                        size: 20,
-                        color: on ? AppColor.white : AppColor.inkTertiary,
-                      ),
-                      if (on) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          tab.label,
-                          style: AppTextStyle.bodySmBold(AppColor.white),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+                border: Border.all(color: const Color(0x14281910)),
               ),
-            );
-          }),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(tabs.length, (i) {
+                  final tab = tabs[i];
+                  final on = i == activeIndex;
+                  return Material(
+                    color: Colors.transparent,
+                    borderRadius: AppRadii.brPill,
+                    child: InkWell(
+                      borderRadius: AppRadii.brPill,
+                      onTap: () => onChanged(i),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: on ? AppColor.accent : Colors.transparent,
+                          borderRadius: AppRadii.brPill,
+                          boxShadow: on ? AppShadows.accent : null,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              tab.icon,
+                              size: 20,
+                              color: on ? AppColor.white : AppColor.inkTertiary,
+                            ),
+                            if (on) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                tab.label,
+                                style: AppTextStyle.bodySmBold(AppColor.white),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
         ),
       ),
     );

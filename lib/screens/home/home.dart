@@ -114,11 +114,15 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Scaffold(
           backgroundColor: AppColor.bg,
           extendBody: true,
-          body: SafeArea(
-            bottom: false,
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _tabs,
+          body: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SafeArea(
+              bottom: false,
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: _tabs,
+              ),
             ),
           ),
           bottomNavigationBar: PillTabBar(

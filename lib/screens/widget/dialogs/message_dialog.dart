@@ -1,12 +1,8 @@
-// Flutter imports:
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:simply/screens/widget/dialogs/modal_dialog.dart';
-
-// Package imports:
-
-// Project imports:
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
 
 class MessageDialog {
@@ -28,45 +24,42 @@ class MessageDialog {
       useSafeArea: useSafeArea,
       isDismissible: true,
       isScrollControlled: true,
-      backgroundColor: AppColor.greyDark2,
+      backgroundColor: AppColor.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: AppColor.greyDark2,
+          systemNavigationBarColor: AppColor.surface,
         ),
         child: Padding(
           padding: EdgeInsets.only(
-            bottom: useSafeArea ? MediaQuery.of(context).viewPadding.bottom : 0,
+            bottom:
+                useSafeArea ? MediaQuery.of(context).viewPadding.bottom : 0,
           ),
           child: ModalDialog(
             text: text,
             titleTextWidget: titleText != null
                 ? Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         titleText,
-                        style: AppTextStyle.title2(
-                          AppColor.greyDarkInverted,
-                        ),
+                        style: AppTextStyle.title(AppColor.ink),
+                        textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
                     ],
                   )
                 : null,
             description: description,
             buttonTextStyle:
-                buttonTextStyle ?? AppTextStyle.paragraphM(AppColor.magenta),
-            buttonText: buttonText ?? 'close',
-            buttonColor: buttonColor ?? AppColor.magentaLight,
+                buttonTextStyle ?? AppTextStyle.button(AppColor.white),
+            buttonText: buttonText ?? 'OK',
+            buttonColor: buttonColor ?? AppColor.accent,
             onTapButton: onTapButton,
-            borderRadiusButton: BorderRadius.circular(8),
+            borderRadiusButton: AppRadii.brPill,
           ),
         ),
       ),

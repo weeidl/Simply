@@ -18,7 +18,7 @@ class CustomSegmentedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.greyLight,
+        color: AppColor.bgAlt,
         borderRadius: BorderRadius.circular(44),
       ),
       child: Row(

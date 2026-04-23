@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:simply/screens/widget/dialogs/modal_dialog.dart';
 import 'package:simply/screens/widget/rounded_button.dart';
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
 
 class ConfirmationDialog {
@@ -30,67 +31,57 @@ class ConfirmationDialog {
       context: context,
       isDismissible: true,
       isScrollControlled: true,
-      backgroundColor: AppColor.greyLight,
+      backgroundColor: AppColor.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(12),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: AppColor.greyLight,
+          systemNavigationBarColor: AppColor.surface,
         ),
         child: ModalDialog(
           text: subText,
           textStyle: subTextStyle,
           buttonTextStyle:
-              buttonTextStyleOne ?? AppTextStyle.paragraphB(AppColor.white),
+              buttonTextStyleOne ?? AppTextStyle.button(AppColor.white),
           titleTextWidget: text != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (title != null) ...[
-                        Text(
-                          title.toUpperCase(),
-                          style: AppTextStyle.captionSC(
-                            AppColor.greyDark.withValues(alpha: 0.44),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                      ],
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (title != null) ...[
                       Text(
-                        text,
-                        style: AppTextStyle.title2(
-                          AppColor.greyDark,
-                        ),
+                        title.toUpperCase(),
+                        style: AppTextStyle.captionUpper(AppColor.inkTertiary),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
                     ],
-                  ),
+                    Text(
+                      text,
+                      style: AppTextStyle.title(AppColor.ink),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 )
               : null,
           onTapButton: onTapButtonOne,
           buttonTwoWidget: buttonTextTwo != null
               ? Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     RoundedButton(
                       width: double.infinity,
-                      buttonColor: buttonTwoColor ?? AppColor.magentaLight,
-                      padding: const EdgeInsets.all(12),
-                      borderRadius:
-                          borderRadiusButton ?? BorderRadius.circular(12),
+                      buttonColor: buttonTwoColor ?? AppColor.bgAlt,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      borderRadius: borderRadiusButton ?? AppRadii.brPill,
                       onPressed: onTapButtonTwo,
                       child: Text(
                         buttonTextTwo,
                         style: buttonTextStyleTwo ??
-                            AppTextStyle.paragraphB(AppColor.magenta),
+                            AppTextStyle.button(AppColor.accentDeep),
                       ),
                     ),
                   ],
@@ -99,28 +90,26 @@ class ConfirmationDialog {
           buttonThreeWidget: buttonTextThree != null
               ? Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     RoundedButton(
                       width: double.infinity,
-                      buttonColor: buttonThreeColor ?? AppColor.magentaLight,
-                      padding: const EdgeInsets.all(12),
-                      borderRadius:
-                          borderRadiusButton ?? BorderRadius.circular(12),
+                      buttonColor: buttonThreeColor ?? AppColor.bgAlt,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      borderRadius: borderRadiusButton ?? AppRadii.brPill,
                       onPressed: onTapButtonThree,
                       child: Text(
                         buttonTextThree,
                         style: buttonTextStyleThree ??
-                            AppTextStyle.paragraphB(AppColor.magenta),
+                            AppTextStyle.button(AppColor.inkSecondary),
                       ),
                     ),
                   ],
                 )
               : null,
-          buttonText: buttonTextOne ?? 'cancel',
-          buttonColor: AppColor.green,
-          borderRadiusButton: BorderRadius.circular(12),
+          buttonText: buttonTextOne ?? 'OK',
+          buttonColor: AppColor.accent,
+          borderRadiusButton: AppRadii.brPill,
         ),
       ),
     );

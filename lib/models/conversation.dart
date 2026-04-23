@@ -1,11 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// One thread of messages from a single sender, surfaced in the messages list.
+///
+/// [sourcePlatform] and [category] are optional — when present the UI shows
+/// the platform badge on the avatar and a small category tag; when absent,
+/// the row simply omits them.
 class Conversation {
   final String id;
   final String title;
   final String lastMessage;
   final DateTime lastMessageDate;
   final int unreadMessagesCount;
+  final String? sourcePlatform;
+  final String? category;
 
   Conversation({
     required this.id,
@@ -13,6 +20,8 @@ class Conversation {
     required this.lastMessage,
     this.unreadMessagesCount = 0,
     required this.lastMessageDate,
+    this.sourcePlatform,
+    this.category,
   });
 
   Map<String, dynamic> toJson() {
@@ -22,6 +31,8 @@ class Conversation {
       'last_message': lastMessage,
       'last_message_date': Timestamp.fromDate(lastMessageDate.toUtc()),
       'createdAt': FieldValue.serverTimestamp(),
+      if (sourcePlatform != null) 'source_platform': sourcePlatform,
+      if (category != null) 'category': category,
     };
   }
 
@@ -33,6 +44,8 @@ class Conversation {
       lastMessageDate: _readDate(json['last_message_date']),
       unreadMessagesCount:
           (json['unread_messages_count'] as num?)?.toInt() ?? 0,
+      sourcePlatform: json['source_platform'] as String?,
+      category: json['category'] as String?,
     );
   }
 

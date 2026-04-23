@@ -1,42 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 
+/// Warm background scaffold. The new design uses a single flat warm surface
+/// (no white top sheet), so this just gives every screen a consistent base.
 class BackgroundWidget extends StatelessWidget {
   final Widget child;
-  final Widget appBar;
-  final Widget? childAppBar;
+  final Widget? appBar;
+  final Widget? bottomBar;
+  final EdgeInsetsGeometry padding;
 
   const BackgroundWidget({
     super.key,
     required this.child,
-    required this.appBar,
-    this.childAppBar,
+    this.appBar,
+    this.bottomBar,
+    this.padding = EdgeInsets.zero,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.orange,
+      backgroundColor: AppColor.bg,
       body: SafeArea(
+        bottom: false,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            appBar,
-            if (childAppBar != null) childAppBar!,
+            if (appBar != null) appBar!,
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: const BoxDecoration(
-                  color: AppColor.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                ),
-                child: child,
-              ),
+              child: Padding(padding: padding, child: child),
             ),
+            if (bottomBar != null) bottomBar!,
           ],
         ),
       ),

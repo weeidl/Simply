@@ -1,23 +1,47 @@
 import 'dart:ui';
 
+/// Simply warm coral palette.
+///
+/// Semantic naming: brand → surfaces → text → status. Don't reach for raw hex
+/// values from screens — pick the closest semantic token here.
 abstract class AppColor {
-  static const Color greyDark = Color(0xFF1A2127);
-  static const Color orange = Color(0xFFF28A6D);
+  // Brand
+  static const Color accent = Color(0xFFF59B7E);
+  static const Color accentDeep = Color(0xFFE87A58);
+  static const Color accentSoft = Color(0xFFFEE6DC);
+  static const Color accentInk = Color(0xFF5A2A18);
 
-  static const Color greyDark2 = Color(0xFF29343D);
-  static const Color greyMedium = Color(0xFFF2F7FB);
-  static const Color grey = Color(0xFFA2B2C1);
-  static const Color grey2 = Color(0xFF757779);
-  static const Color greyLight = Color(0xFFF2F4F7);
-  static const Color greyDarkInverted = Color(0xFFE6EEF5);
+  // Surfaces (warm neutrals)
+  static const Color bg = Color(0xFFFAF6F2);
+  static const Color bgAlt = Color(0xFFF3ECE4);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color divider = Color(0x0F281910);
+
+  // Text
+  static const Color ink = Color(0xFF1D1410);
+  static const Color inkSecondary = Color(0xFF4A3B32);
+  static const Color inkTertiary = Color(0xFF8B7A6F);
+  static const Color inkPlaceholder = Color(0xFFBFAE9F);
+
+  // Status
+  static const Color success = Color(0xFF3BB879);
+  static const Color successSoft = Color(0xFFE2F5EB);
+  static const Color amber = Color(0xFFE8A84A);
+  static const Color danger = Color(0xFFE3563D);
+
+  // Common
   static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF0D0806);
 
-  static const Color violet = Color(0xFF9B51E0);
-  static const Color violetLight = Color(0xFFEFE3FA);
-
-  static const Color magenta = Color(0xFFFF2D55);
-  static const Color magentaLight = Color(0xFFFFEAEE);
-
-  static const Color green = Color(0xFF4DAB79);
-  static const Color greenLight = Color(0xFFD0FCE5);
+  // Avatar palette — used to pick a stable color from a string hash.
+  static const List<Color> avatarPalette = [
+    Color(0xFFF59B7E),
+    Color(0xFFB794E8),
+    Color(0xFFF2B96E),
+    Color(0xFF3BB879),
+    Color(0xFF6B5BFF),
+    Color(0xFFF28F8F),
+    Color(0xFFE8734A),
+    Color(0xFF3B6BE8),
+  ];
 }

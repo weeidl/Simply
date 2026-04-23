@@ -54,9 +54,9 @@ class RoundedButton extends StatelessWidget {
           backgroundColor: WidgetStateProperty.resolveWith<Color>(
             (states) {
               if (states.contains(WidgetState.disabled)) {
-                return disabledBackgroundColor ?? AppColor.orange;
+                return disabledBackgroundColor ?? AppColor.accent;
               }
-              return buttonColor ?? AppColor.orange;
+              return buttonColor ?? AppColor.accent;
             },
           ),
         ),
@@ -66,7 +66,7 @@ class RoundedButton extends StatelessWidget {
             child: child ??
                 Text(
                   text ?? '',
-                  style: textStyle ?? AppTextStyle.title4(AppColor.white),
+                  style: textStyle ?? AppTextStyle.button(AppColor.white),
                 ),
           ),
         ),

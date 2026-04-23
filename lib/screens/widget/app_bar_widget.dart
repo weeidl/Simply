@@ -1,59 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/radii.dart';
+import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
 
+/// Detail-screen app bar: circular back button on the left, centered title
+/// and optional trailing slot. Lives on the warm background.
 class AppBarWidget extends StatelessWidget {
-  final String nameScreen;
-  final bool isLight;
+  final String? title;
+  final Widget? subtitle;
   final bool showBackButton;
-  final bool showIconPeople;
+  final Widget? leading;
+  final Widget? trailing;
+  final VoidCallback? onBack;
 
   const AppBarWidget({
     super.key,
-    required this.nameScreen,
-    this.isLight = true,
+    this.title,
+    this.subtitle,
     this.showBackButton = false,
-    this.showIconPeople = false,
+    this.leading,
+    this.trailing,
+    this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (showBackButton)
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(
-                Icons.arrow_back_ios,
-                color: AppColor.white,
-                size: 20,
-              ),
+            _CircleButton(
+              icon: Icons.arrow_back_ios_new_rounded,
+              onTap: onBack ?? () => Navigator.of(context).maybePop(),
             ),
-          if (showBackButton) const SizedBox(width: 8),
-          Text(
-            nameScreen,
-            style: AppTextStyle.title2(
-              isLight ? AppColor.greyDark : AppColor.white,
+          if (showBackButton) const SizedBox(width: 10),
+          if (leading != null) ...[
+            leading!,
+            const SizedBox(width: 10),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title != null)
+                  Text(
+                    title!,
+                    style: AppTextStyle.title(AppColor.ink),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                if (subtitle != null) subtitle!,
+              ],
             ),
           ),
-          if (showIconPeople) ...[
-            const Spacer(),
-            ClipOval(
-              child: Container(
-                color: AppColor.greyDark.withValues(alpha: 0.2),
-                height: 40,
-                width: 40,
-                child: Icon(
-                  Icons.people,
-                  color: isLight ? AppColor.greyDark : AppColor.white,
-                ),
-              ),
-            ),
-          ],
+          if (trailing != null) trailing!,
         ],
+      ),
+    );
+  }
+}
+
+class _CircleButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _CircleButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: AppRadii.brPill,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadii.brPill,
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColor.surface,
+            shape: BoxShape.circle,
+            boxShadow: AppShadows.s,
+            border: Border.all(color: const Color(0x0A281910)),
+          ),
+          alignment: Alignment.center,
+          child: Icon(icon, size: 18, color: AppColor.ink),
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/screens/devices/settings/device_settings_widget.dart';
+import 'package:simply/themes/colors.dart';
 
 class DeviceSettingsModal {
   static Future<void> show({
@@ -15,16 +16,14 @@ class DeviceSettingsModal {
       useSafeArea: useSafeArea,
       isDismissible: true,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColor.bg,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(12),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       builder: (_) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarColor: Colors.white,
+          systemNavigationBarColor: AppColor.bg,
         ),
         child: DeviceSettingsWidget(device: device),
       ),

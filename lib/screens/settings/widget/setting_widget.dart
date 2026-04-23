@@ -1,70 +1,100 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gap/gap.dart';
+import 'package:simply/screens/widget/warm/icon_tile.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
 
-class SettingWidget extends StatelessWidget {
+/// Single row inside a SettingsGroup. Renders an icon tile, title/subtitle,
+/// and an optional trailing slot (chevron, badge, switch).
+class SettingsRow extends StatelessWidget {
+  final IconData icon;
   final String title;
-  final String icon;
+  final String? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final Color? iconBg;
+  final Color? iconFg;
   final bool comingSoon;
 
-  const SettingWidget({
+  const SettingsRow({
     super.key,
-    required this.title,
     required this.icon,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+    this.iconBg,
+    this.iconFg,
     this.comingSoon = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final mainColor =
-        comingSoon ? AppColor.greyDark2.withValues(alpha: 0.4) : AppColor.greyDark2;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Container(
-        width: double.infinity,
-        height: 68,
-        padding: const EdgeInsets.all(16),
-        decoration: const BoxDecoration(
-          color: AppColor.greyLight,
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-        ),
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Row(
           children: [
-            SvgPicture.asset(
-              icon,
-              colorFilter: ColorFilter.mode(mainColor, BlendMode.srcIn),
-            ),
-            const Gap(12),
-            Text(title, style: AppTextStyle.paragraphM(mainColor)),
-            if (comingSoon) ...[
-              const Gap(8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColor.orange.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  'Soon',
-                  style: AppTextStyle.captionS(AppColor.orange),
-                ),
+            IconTile(icon: icon, background: iconBg, foreground: iconFg),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          style: AppTextStyle.bodyM(AppColor.ink).copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (comingSoon) ...[
+                        const SizedBox(width: 8),
+                        const _SoonBadge(),
+                      ],
+                    ],
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle!,
+                      style: AppTextStyle.bodySm(AppColor.inkTertiary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
               ),
-            ],
-            const Spacer(),
-            SvgPicture.asset(
-              'assets/icons/arrow_right.svg',
-              colorFilter: ColorFilter.mode(
-                AppColor.greyDark2.withValues(alpha: 0.5),
-                BlendMode.srcIn,
-              ),
             ),
+            const SizedBox(width: 8),
+            trailing ??
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColor.inkPlaceholder, size: 22),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SoonBadge extends StatelessWidget {
+  const _SoonBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColor.accentSoft,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text('Скоро', style: AppTextStyle.micro(AppColor.accentDeep)),
     );
   }
 }

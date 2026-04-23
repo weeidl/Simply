@@ -1,176 +1,115 @@
 import 'package:flutter/painting.dart';
 
+/// Manrope-based typography scale matching the Simply hi-fi design.
+///
+/// Naming: `display`, `h1`, `title`, `body`, `bodySm`, `caption`, `captionUpper`.
+/// Each accepts a color so screens compose with their local palette.
 abstract class AppTextStyle {
-  static const letterSpacing = null;
+  static const String _family = 'Manrope';
 
-  static TextStyle display(Color color) {
-    return TextStyle(
-      fontSize: 40,
-      fontWeight: FontWeight.w400,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle display(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 30,
+        fontWeight: FontWeight.w800,
+        color: color,
+        letterSpacing: -0.7,
+        height: 1.05,
+      );
 
-  static TextStyle displayAccent(Color color) {
-    return TextStyle(
-      fontSize: 36,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle h1(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 24,
+        fontWeight: FontWeight.w800,
+        color: color,
+        letterSpacing: -0.5,
+      );
 
-  static TextStyle title1Accent(Color color) {
-    return TextStyle(
-      fontSize: 28,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle title(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        color: color,
+        letterSpacing: -0.3,
+      );
 
-  static TextStyle title1(Color color) {
-    return TextStyle(
-      fontSize: 28,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle titleSm(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 16,
+        fontWeight: FontWeight.w700,
+        color: color,
+        letterSpacing: -0.3,
+      );
 
-  static TextStyle title2(Color color) {
-    return TextStyle(
-      fontSize: 24,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle body(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+        color: color,
+        letterSpacing: -0.2,
+      );
 
-  static TextStyle title3(Color color) {
-    return TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle bodyM(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 15,
+        fontWeight: FontWeight.w500,
+        color: color,
+        letterSpacing: -0.2,
+        height: 1.45,
+      );
 
-  static TextStyle title5(Color color) {
-    return TextStyle(
-      fontSize: 18,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle bodySm(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 13,
+        fontWeight: FontWeight.w500,
+        color: color,
+        height: 1.4,
+      );
 
-  static TextStyle titleAccent3(Color color) {
-    return TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle bodySmBold(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: color,
+      );
 
-  static TextStyle title4(Color color) {
-    return TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle caption(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 11,
+        fontWeight: FontWeight.w500,
+        color: color,
+      );
 
-  static TextStyle paragraph(Color color) {
-    return TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle captionUpper(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: color,
+        letterSpacing: 0.8,
+      );
 
-  static TextStyle paragraphM(Color color) {
-    return TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle micro(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 10,
+        fontWeight: FontWeight.w600,
+        color: color,
+        letterSpacing: 0.4,
+      );
 
-  static TextStyle paragraphB(Color color) {
-    return TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  static TextStyle button(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: color,
+        letterSpacing: -0.2,
+      );
 
-  static TextStyle captionB(Color color) {
-    return TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionM(Color color) {
-    return TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionSM(Color color) {
-    return TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionSM3(Color color) {
-    return TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w300,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionS(Color color) {
-    return TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w300,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionSC(Color color) {
-    return TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
-
-  static TextStyle captionSC4(Color color) {
-    return TextStyle(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  /// Monospaced display for OTP codes.
+  static TextStyle codeMono(Color color) => TextStyle(
+        fontFamily: _family,
+        fontSize: 22,
+        fontWeight: FontWeight.w800,
+        color: color,
+        letterSpacing: 3,
+        fontFeatures: const [FontFeature.tabularFigures()],
+      );
 }

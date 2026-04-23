@@ -21,21 +21,21 @@ class CustomProgressIndicator extends StatelessWidget {
       radius: 30,
       lineWidth: 4,
       animation: true,
-      percent: progress / 100,
+      percent: (progress.clamp(0, 100)) / 100,
       center: Text(
         textProgress,
-        style: AppTextStyle.captionSM(AppColor.greyDark2),
+        style: AppTextStyle.bodySmBold(AppColor.ink),
       ),
       footer: Padding(
         padding: const EdgeInsets.only(top: 4),
         child: Text(
           title,
-          style: AppTextStyle.captionSC4(AppColor.greyDark2),
+          style: AppTextStyle.caption(AppColor.inkTertiary),
         ),
       ),
-      backgroundColor: AppColor.greyDarkInverted,
+      backgroundColor: AppColor.bgAlt,
       circularStrokeCap: CircularStrokeCap.round,
-      progressColor: AppColor.orange,
+      progressColor: AppColor.accent,
     );
   }
 }

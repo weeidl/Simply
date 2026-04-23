@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
+import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
 
 class BuildSwitchTile extends StatelessWidget {
@@ -20,41 +21,35 @@ class BuildSwitchTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColor.orange.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColor.bgAlt,
+        borderRadius: AppRadii.brR2,
+        border: Border.all(color: AppColor.divider),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: AppTextStyle.title5(AppColor.greyDark2),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: AppTextStyle.captionSM(AppColor.grey2),
-                  ),
+                  Text(title, style: AppTextStyle.titleSm(AppColor.ink)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: AppTextStyle.bodySm(AppColor.inkTertiary)),
                 ],
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.only(right: 6),
             child: Switch(
               value: value,
               onChanged: onChanged,
               activeThumbColor: AppColor.white,
-              activeTrackColor: AppColor.green,
-              inactiveThumbColor: AppColor.grey2,
-              inactiveTrackColor: AppColor.greyLight,
+              activeTrackColor: AppColor.accent,
+              inactiveThumbColor: AppColor.white,
+              inactiveTrackColor: AppColor.inkPlaceholder,
             ),
           ),
         ],

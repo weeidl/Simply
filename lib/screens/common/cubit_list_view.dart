@@ -74,7 +74,7 @@ class CubitListViewState<T, C extends StandardListCubit<T>>
                       padding: EdgeInsets.all(8.0),
                       child: Center(
                         child: SpinKitThreeBounce(
-                          color: AppColor.orange,
+                          color: AppColor.accent,
                           size: 24,
                         ),
                       ),
@@ -93,7 +93,7 @@ class CubitListViewState<T, C extends StandardListCubit<T>>
         if (state.isLoading) {
           return Center(
             child: SpinKitFadingCube(
-              color: AppColor.orange.withValues(alpha: 0.5),
+              color: AppColor.accent.withValues(alpha: 0.5),
             ),
           );
         }

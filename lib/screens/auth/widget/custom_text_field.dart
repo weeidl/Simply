@@ -9,12 +9,12 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.labelText,
     required this.prefixIcon,
     this.isPassword = false,
     this.controller,
-  }) : super(key: key);
+  });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -22,7 +22,7 @@ class CustomTextField extends StatefulWidget {
 
 class _CustomTextFieldState extends State<CustomTextField> {
   bool _obscureText = true;
-  late FocusNode _focusNode;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
@@ -33,43 +33,42 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
     super.dispose();
   }
 
-  void _onFocusChange() {
-    setState(() {});
-  }
+  void _onFocusChange() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
+    final active = _focusNode.hasFocus;
     return TextFormField(
       controller: widget.controller,
       focusNode: _focusNode,
       obscureText: widget.isPassword && _obscureText,
+      style: AppTextStyle.bodyM(AppColor.ink),
       decoration: InputDecoration(
         hintText: widget.labelText,
-        hintStyle: AppTextStyle.paragraph(AppColor.grey),
-        floatingLabelBehavior: FloatingLabelBehavior.never,
+        hintStyle: AppTextStyle.bodyM(AppColor.inkPlaceholder),
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(left: 24, right: 12),
+          padding: const EdgeInsets.only(left: 20, right: 12),
           child: Icon(
             widget.prefixIcon,
-            color: _focusNode.hasFocus ? AppColor.orange : AppColor.grey,
+            size: 20,
+            color: active ? AppColor.accent : AppColor.inkTertiary,
           ),
         ),
-        suffixIcon: widget.isPassword && _focusNode.hasFocus
-            ? Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: IconButton(
-                  icon: Icon(
-                      _obscureText ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
+        suffixIcon: widget.isPassword && active
+            ? IconButton(
+                padding: const EdgeInsets.only(right: 12),
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                  size: 20,
+                  color: AppColor.inkTertiary,
                 ),
+                onPressed: () =>
+                    setState(() => _obscureText = !_obscureText),
               )
             : null,
       ),

@@ -4,17 +4,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:gap/gap.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
-import 'package:simply/screens/devices/settings/device_settings_modal.dart';
 import 'package:simply/screens/devices/screen/devices_screen.dart';
+import 'package:simply/screens/devices/settings/device_settings_modal.dart';
 import 'package:simply/screens/home/cubit/fcm_cubit.dart';
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:simply/screens/settings/settings_screen.dart';
+import 'package:simply/screens/widget/warm/pill_tab_bar.dart';
 import 'package:simply/themes/colors.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,7 +33,7 @@ class HomePage extends StatefulWidget {
     );
   }
 
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => HomePageState();
@@ -45,7 +44,13 @@ class HomePageState extends State<HomePage> {
   late final List<Widget> _tabs;
   bool _didRequestInitialDeviceCheck = false;
 
-  Future<void> requestPermissions() async {
+  static const _navTabs = <PillTab>[
+    PillTab(icon: Icons.devices_other_rounded, label: 'Устройства'),
+    PillTab(icon: Icons.chat_bubble_outline_rounded, label: 'Сообщения'),
+    PillTab(icon: Icons.settings_outlined, label: 'Настройки'),
+  ];
+
+  Future<void> _requestPermissions() async {
     if (!Platform.isAndroid) return;
     final statuses = await [
       Permission.sms,
@@ -59,55 +64,17 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
-    _tabs = [
-      const DevicesScreen(),
-      const MessagesListScreen(),
-      const SettingsScreen(),
+    _requestPermissions();
+    _tabs = const [
+      DevicesScreen(),
+      MessagesListScreen(),
+      SettingsScreen(),
     ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _didRequestInitialDeviceCheck) return;
       _didRequestInitialDeviceCheck = true;
       context.read<CheckDeviceCubit>().checkDevice();
     });
-  }
-
-  Widget buildNavItem({
-    required String icon,
-    required String label,
-    required int index,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      child: SizedBox(
-        height: 60,
-        child: Row(
-          children: [
-            SvgPicture.asset(
-              'assets/icons/$icon.svg',
-              colorFilter: ColorFilter.mode(
-                _selectedIndex == index ? AppColor.greyDark2 : AppColor.grey,
-                BlendMode.srcIn,
-              ),
-            ),
-            // Icon(
-            const Gap(4),
-            Text(
-              label,
-              style: TextStyle(
-                color: _selectedIndex == index
-                    ? AppColor.greyDark2
-                    : AppColor.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -125,40 +92,25 @@ class HomePageState extends State<HomePage> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
-          statusBarIconBrightness: Brightness.light,
+          statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
+          systemNavigationBarColor: AppColor.bg,
+          systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Scaffold(
-          backgroundColor:
-              _selectedIndex == 1 ? AppColor.orange : AppColor.white,
-          bottomNavigationBar: Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewPadding.bottom,
-            ),
-            decoration: BoxDecoration(
-              color: AppColor.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColor.grey.withValues(alpha: 0.1),
-                  spreadRadius: 0,
-                  blurRadius: 24,
-                  offset: const Offset(0, -3),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                buildNavItem(icon: 'device', label: 'Devices', index: 0),
-                buildNavItem(icon: 'messages', label: 'Message', index: 1),
-                buildNavItem(icon: 'settings', label: 'Settings', index: 2),
-              ],
+          backgroundColor: AppColor.bg,
+          extendBody: true,
+          body: SafeArea(
+            bottom: false,
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _tabs,
             ),
           ),
-          body: IndexedStack(
-            index: _selectedIndex,
-            children: _tabs,
+          bottomNavigationBar: PillTabBar(
+            tabs: _navTabs,
+            activeIndex: _selectedIndex,
+            onChanged: (i) => setState(() => _selectedIndex = i),
           ),
         ),
       ),

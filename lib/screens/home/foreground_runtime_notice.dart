@@ -1,12 +1,12 @@
 abstract class ForegroundRuntimeNotice {
   static const channelId = 'foreground_channel_id';
-  static const channelName = 'Фоновая синхронизация Simply';
+  static const channelName = 'Синхронизация SMS';
   static const channelDescription =
-      'Поддерживает тихую синхронизацию SMS, пока приложение работает в фоне.';
+      'Пересылает входящие SMS на ваши устройства в реальном времени.';
 
-  static const title = 'Simply рядом';
+  static const title = 'Simply активен';
   static const body =
-      'Я тихо принимаю новые SMS и аккуратно синхронизирую их, пока ты занят.';
+      'Новые SMS автоматически появляются на всех ваших устройствах.';
 
   static const smallIcon = 'ic_notification_simply';
   static const largeIcon = 'ic_notification_avatar';

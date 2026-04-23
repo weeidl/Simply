@@ -112,6 +112,18 @@ class MessagesRepository {
         : _firebaseApi.itemsCollection(_devices).doc(sourceDeviceId);
 
     await _firebaseApi.firestore.runTransaction((transaction) async {
+      // Firestore requires all reads to happen before any writes, so read the
+      // device doc first and compute its next stats before we touch preview or
+      // message references.
+      Map<String, dynamic>? nextDeviceStats;
+      if (deviceRef != null) {
+        final snapshot = await transaction.get(deviceRef);
+        nextDeviceStats = _nextDeviceStats(
+          existing: snapshot.data() ?? const <String, dynamic>{},
+          messageDate: message.date,
+        );
+      }
+
       transaction.set(
         previewRef,
         {
@@ -133,13 +145,8 @@ class MessagesRepository {
         },
       );
 
-      if (deviceRef != null) {
-        final snapshot = await transaction.get(deviceRef);
-        final nextStats = _nextDeviceStats(
-          existing: snapshot.data() ?? const <String, dynamic>{},
-          messageDate: message.date,
-        );
-        transaction.set(deviceRef, nextStats, SetOptions(merge: true));
+      if (deviceRef != null && nextDeviceStats != null) {
+        transaction.set(deviceRef, nextDeviceStats, SetOptions(merge: true));
       }
     });
   }
@@ -347,6 +354,9 @@ class MessagesRepository {
       'today_sparkline': nextSparkline,
       'today_sparkline_day': dayKey,
       'last_message_at': Timestamp.fromDate(messageDate.toUtc()),
+      // SMS arrival proves the device was reachable — refresh last-seen so
+      // other devices see it as online without waiting for a heartbeat.
+      'date_update_info': FieldValue.serverTimestamp(),
     };
   }
 

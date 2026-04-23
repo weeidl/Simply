@@ -32,9 +32,7 @@ class DeviceWidget extends StatelessWidget {
     required this.onDelete,
   });
 
-  bool get _online =>
-      device.dateUpdateInfo != null &&
-      DateTime.now().difference(device.dateUpdateInfo!.toDate()).inMinutes < 15;
+  bool get _online => device.isOnline;
 
   @override
   Widget build(BuildContext context) {

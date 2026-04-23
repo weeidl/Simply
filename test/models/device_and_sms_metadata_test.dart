@@ -66,6 +66,39 @@ void main() {
     });
   });
 
+  group('Device.isOnlineAt', () {
+    Device makeDevice({DateTime? updatedAt}) {
+      return Device(
+        userId: 'user-1',
+        deviceName: 'Redmi 9 Pro',
+        deviceId: 'device-1',
+        dateUpdateInfo:
+            updatedAt == null ? null : Timestamp.fromDate(updatedAt.toUtc()),
+      );
+    }
+
+    test('reports offline when the device has no heartbeat yet', () {
+      final device = makeDevice();
+      expect(device.isOnlineAt(DateTime.utc(2026, 4, 23, 12)), isFalse);
+    });
+
+    test('reports online within the stale window', () {
+      final now = DateTime.utc(2026, 4, 23, 12);
+      final device = makeDevice(
+        updatedAt: now.subtract(const Duration(minutes: 3)),
+      );
+      expect(device.isOnlineAt(now), isTrue);
+    });
+
+    test('reports offline once the stale window has passed', () {
+      final now = DateTime.utc(2026, 4, 23, 12);
+      final device = makeDevice(
+        updatedAt: now.subtract(Device.onlineStaleWindow * 2),
+      );
+      expect(device.isOnlineAt(now), isFalse);
+    });
+  });
+
   group('IncomingSmsPayload', () {
     test('passes source metadata into conversation and message models', () {
       final payload = IncomingSmsPayload(

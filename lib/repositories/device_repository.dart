@@ -48,6 +48,41 @@ class DeviceRepository {
     return snapshot.docs.map((doc) => Device.fromMap(doc.data())).toList();
   }
 
+  Stream<List<Device>> watch() {
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
+    return itemsBackend.snapshots().map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => Device.fromMap(doc.data())).toList(),
+        );
+  }
+
+  /// Light-weight liveness write used while the app is foregrounded. Touches
+  /// only `date_update_info` plus the runtime fields so other devices can tell
+  /// when this one was last seen without overwriting settings like
+  /// `is_main_device`.
+  Future<void> heartbeat({
+    required String deviceId,
+    int? batteryLevel,
+    String? networkType,
+    int? simCount,
+    int? activeSimSlot,
+    List<DeviceSimCard> simCards = const [],
+  }) async {
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
+    final payload = <String, dynamic>{
+      'date_update_info': FieldValue.serverTimestamp(),
+      if (batteryLevel != null) 'battery_level': batteryLevel,
+      if (networkType != null && networkType.trim().isNotEmpty)
+        'network_type': networkType,
+      if (simCount != null) 'sim_count': simCount,
+      if (activeSimSlot != null) 'active_sim_slot': activeSimSlot,
+      if (simCards.isNotEmpty)
+        'sim_cards': simCards.map((item) => item.toMap()).toList(),
+    };
+
+    await itemsBackend.doc(deviceId).set(payload, SetOptions(merge: true));
+  }
+
   Future<void> addBatteryAndNetworkStatus({
     required String deviceId,
     int? batteryStatus,

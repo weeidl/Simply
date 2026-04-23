@@ -10,6 +10,7 @@ import 'package:simply/bloc/notification/background_message.dart';
 import 'package:simply/bloc/notification/incoming_sms_sync_service.dart';
 import 'package:simply/models/incoming_sms_payload.dart';
 import 'package:simply/screens/home/foreground_runtime_notice.dart';
+import 'package:simply/services/device_heartbeat_service.dart';
 import 'package:simply/themes/colors.dart';
 
 part 'fcm_state.dart';
@@ -19,14 +20,18 @@ const fcmServerUrl = 'https://fcm.googleapis.com/fcm/send';
 class FcmCubit extends Cubit<FcmState> {
   final telephony = Telephony.instance;
   final IncomingSmsSyncService _incomingSmsSyncService;
+  final DeviceHeartbeatService _deviceHeartbeatService;
   final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
   bool _notificationsInitialized = false;
 
   FcmCubit({
     IncomingSmsSyncService? incomingSmsSyncService,
+    DeviceHeartbeatService? deviceHeartbeatService,
   })  : _incomingSmsSyncService =
             incomingSmsSyncService ?? IncomingSmsSyncService(),
+        _deviceHeartbeatService =
+            deviceHeartbeatService ?? DeviceHeartbeatService(),
         super(FcmState());
 
   Future<void> init() async {
@@ -41,12 +46,14 @@ class FcmCubit extends Cubit<FcmState> {
     await _registerSmsRuntime();
     await _incomingSmsSyncService.flushPending();
     await _showNotification();
+    _deviceHeartbeatService.start();
   }
 
   Future<void> refreshRuntime() async {
     if (!Platform.isAndroid) return;
     await _registerSmsRuntime();
     await _incomingSmsSyncService.flushPending();
+    await _deviceHeartbeatService.beatNow();
   }
 
   Future<void> _initNotifications() async {
@@ -108,6 +115,7 @@ class FcmCubit extends Cubit<FcmState> {
 
   @override
   Future<void> close() async {
+    _deviceHeartbeatService.stop();
     await flutterLocalNotificationsPlugin.cancel(0);
     return super.close();
   }

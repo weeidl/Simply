@@ -133,6 +133,23 @@ class Device {
 
   bool get isReceiverOnly => platform?.toLowerCase().contains('ios') == true;
 
+  /// Upper bound for how stale `date_update_info` can be before the device is
+  /// considered offline. Chosen slightly wider than the heartbeat interval
+  /// (2 min) so the UI doesn't flicker on a single missed tick.
+  static const onlineStaleWindow = Duration(minutes: 6);
+
+  /// Whether the device has reported a liveness signal (heartbeat or SMS) in
+  /// the last [onlineStaleWindow]. Uses [now] so callers can pass a seeded
+  /// clock in tests.
+  bool isOnlineAt(DateTime now) {
+    final updatedAt = dateUpdateInfo?.toDate();
+    if (updatedAt == null) return false;
+    return !now.difference(updatedAt).isNegative &&
+        now.difference(updatedAt) < onlineStaleWindow;
+  }
+
+  bool get isOnline => isOnlineAt(DateTime.now());
+
   bool get supportsRuntimeDetails =>
       !isReceiverOnly &&
       (batteryLevel != null ||

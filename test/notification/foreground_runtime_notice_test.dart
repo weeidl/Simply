@@ -3,20 +3,20 @@ import 'package:simply/screens/home/foreground_runtime_notice.dart';
 
 void main() {
   group('ForegroundRuntimeNotice', () {
-    test('uses friendly copy and branded resources', () {
+    test('uses clear product-oriented copy and branded resources', () {
       expect(
         ForegroundRuntimeNotice.title,
-        'Simply рядом',
+        'Simply активен',
       );
       expect(
         ForegroundRuntimeNotice.body,
-        'Я тихо принимаю новые SMS и аккуратно синхронизирую их, пока ты занят.',
+        'Новые SMS автоматически появляются на всех ваших устройствах.',
       );
       expect(ForegroundRuntimeNotice.smallIcon, 'ic_notification_simply');
       expect(ForegroundRuntimeNotice.largeIcon, 'ic_notification_avatar');
       expect(
         ForegroundRuntimeNotice.channelName,
-        'Фоновая синхронизация Simply',
+        'Синхронизация SMS',
       );
     });
   });

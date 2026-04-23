@@ -162,17 +162,11 @@ class _FleetSummaryCard extends StatelessWidget {
 
   const _FleetSummaryCard({required this.devices});
 
-  bool _isOnline(Device device) {
-    final updatedAt = device.dateUpdateInfo?.toDate();
-    if (updatedAt == null) return false;
-    return DateTime.now().difference(updatedAt).inMinutes < 15;
-  }
-
   @override
   Widget build(BuildContext context) {
     final todayMessages =
         devices.fold<int>(0, (sum, item) => sum + item.todayMessageCount);
-    final onlineDevices = devices.where(_isOnline).length;
+    final onlineDevices = devices.where((device) => device.isOnline).length;
     final totalSims = devices
         .where((device) => !device.isReceiverOnly)
         .fold<int>(0, (sum, item) => sum + item.resolvedSimCount);

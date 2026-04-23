@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/repositories/device_repository.dart';
@@ -8,6 +10,7 @@ part 'device_state.dart';
 class DeviceCubit extends Cubit<DeviceState> {
   final DeviceRepository _deviceRepository;
   final SecureStorageService _secureStorageService;
+  StreamSubscription<List<Device>>? _devicesSub;
 
   DeviceCubit({
     DeviceRepository? deviceRepository,
@@ -18,36 +21,13 @@ class DeviceCubit extends Cubit<DeviceState> {
 
   Future<void> fetch() async {
     emit(state.copyWith(status: DeviceStatus.loading));
-    try {
-      final response = await _deviceRepository.fetch();
-      final currentDeviceId = await _secureStorageService.readDeviceId();
-      final normalized = await _normalizeOrder(response);
-      emit(
-        state.copyWith(
-          status: normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
-          items: normalized,
-          currentDeviceId: currentDeviceId,
-        ),
-      );
-    } catch (_) {
-      emit(state.copyWith(status: DeviceStatus.error));
-    }
+    await _bindDevices();
   }
 
-  Future<void> updateDevice() async {
-    try {
-      final response = await _deviceRepository.fetch();
-      final currentDeviceId = await _secureStorageService.readDeviceId();
-      final normalized = await _normalizeOrder(response);
-      emit(state.copyWith(
-        items: normalized,
-        currentDeviceId: currentDeviceId,
-        status: normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
-      ));
-    } catch (_) {
-      emit(state.copyWith(status: DeviceStatus.error));
-    }
-  }
+  /// Forces the current stream to drop and re-subscribe. Mainly used by
+  /// pull-to-refresh; the live subscription means data stays current on its
+  /// own after the initial [fetch].
+  Future<void> updateDevice() => _bindDevices();
 
   Future<void> deleteDevice(String deviceId) async {
     try {
@@ -103,6 +83,47 @@ class DeviceCubit extends Cubit<DeviceState> {
     ];
     await _deviceRepository.saveOrder(normalized);
     return normalized;
+  }
+
+  Future<void> _bindDevices() async {
+    await _devicesSub?.cancel();
+
+    final currentDeviceId = await _secureStorageService.readDeviceId();
+
+    // Completes once the stream produces its first event (success or error) so
+    // callers like `fetch()` / `updateDevice()` can await the initial load and
+    // drive the pull-to-refresh indicator. Subsequent events keep updating the
+    // state in-place.
+    final firstEvent = Completer<void>();
+    _devicesSub = _deviceRepository.watch().listen(
+      (devices) async {
+        try {
+          final normalized = await _normalizeOrder(devices);
+          emit(state.copyWith(
+            status:
+                normalized.isEmpty ? DeviceStatus.empty : DeviceStatus.loaded,
+            items: normalized,
+            currentDeviceId: currentDeviceId,
+          ));
+        } catch (_) {
+          emit(state.copyWith(status: DeviceStatus.error));
+        } finally {
+          if (!firstEvent.isCompleted) firstEvent.complete();
+        }
+      },
+      onError: (Object _) {
+        emit(state.copyWith(status: DeviceStatus.error));
+        if (!firstEvent.isCompleted) firstEvent.complete();
+      },
+    );
+
+    return firstEvent.future;
+  }
+
+  @override
+  Future<void> close() async {
+    await _devicesSub?.cancel();
+    return super.close();
   }
 
   int _deviceComparator(Device a, Device b) {

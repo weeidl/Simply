@@ -7,6 +7,7 @@ import 'package:simply/screens/devices/settings/device_settings_modal.dart';
 import 'package:simply/screens/devices/widget/device_widget.dart';
 import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/screens/widget/warm/warm_header.dart';
+import 'package:simply/screens/widget/warm/warm_loader.dart';
 import 'package:simply/services/ui_preferences_service.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
@@ -92,9 +93,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
     switch (state.status) {
       case DeviceStatus.initial:
       case DeviceStatus.loading:
-        return const Center(
-          child: CircularProgressIndicator(color: AppColor.accent),
-        );
+        return const Center(child: WarmLoader(size: 28));
       case DeviceStatus.error:
         return _ErrorView(
           onRetry: () => context.read<DeviceCubit>().fetch(),
@@ -149,6 +148,8 @@ class _DevicesScreenState extends State<DevicesScreen> {
     return ConfirmationDialog.show<void>(
       context: context,
       title: 'Устройство',
+      leadingIcon: Icons.delete_outline_rounded,
+      leadingIconColor: AppColor.danger,
       text: 'Удалить ${device.deviceName} из списка устройств?',
       subText:
           'Устройство исчезнет из списка, но его можно будет подключить снова.',

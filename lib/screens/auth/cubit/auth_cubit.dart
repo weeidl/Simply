@@ -64,6 +64,15 @@ class AuthCubit extends Cubit<AuthState> {
       return false;
     }
 
+    emit(state.copyWith(isSubmitting: true, clearError: true));
+    try {
+      return await _runSignIn();
+    } finally {
+      if (!isClosed) emit(state.copyWith(isSubmitting: false));
+    }
+  }
+
+  Future<bool> _runSignIn() async {
     final User user;
     try {
       final credential = await _auth.signInWithEmailAndPassword(
@@ -125,6 +134,15 @@ class AuthCubit extends Cubit<AuthState> {
       return null;
     }
 
+    emit(state.copyWith(isSubmitting: true, clearError: true));
+    try {
+      return await _runSignUp();
+    } finally {
+      if (!isClosed) emit(state.copyWith(isSubmitting: false));
+    }
+  }
+
+  Future<User?> _runSignUp() async {
     final User user;
     try {
       final credential = await _auth.createUserWithEmailAndPassword(
@@ -188,12 +206,15 @@ class AuthCubit extends Cubit<AuthState> {
       ));
       return false;
     }
+    emit(state.copyWith(isResetSending: true, clearError: true));
     try {
       await _auth.sendPasswordResetEmail(email: email);
       return true;
     } on FirebaseAuthException catch (e) {
       emit(state.copyWith(authErrorMessage: _mapAuthError(e)));
       return false;
+    } finally {
+      if (!isClosed) emit(state.copyWith(isResetSending: false));
     }
   }
 

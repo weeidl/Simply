@@ -7,8 +7,9 @@ import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
 import 'package:simply/screens/widget/warm/warm_chip.dart';
 import 'package:simply/screens/widget/warm/warm_header.dart';
+import 'package:simply/screens/widget/warm/warm_loader.dart';
 import 'package:simply/screens/widget/warm/warm_search_field.dart';
-import 'package:simply/screens/widget/warm/warm_snack_bar.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -106,6 +107,10 @@ class MessagesListScreen extends StatelessWidget {
     if (filtered.isEmpty) {
       return _EmptyView(filter: state.filter, query: state.query);
     }
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    // Bottom nav bar (PillTabBar row 52 + padding 16) sits on top of the body
+    // via Scaffold.extendBody: true — offset everything above it.
+    const navBarHeight = 68.0;
     return Stack(
       children: [
         RefreshIndicator(
@@ -115,9 +120,9 @@ class MessagesListScreen extends StatelessWidget {
             physics: const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.fromLTRB(
               12,
-              0,
+              6,
               12,
-              state.isSelectionMode ? 154 : 100,
+              bottomInset + navBarHeight + (state.isSelectionMode ? 120 : 24),
             ),
             itemCount: filtered.length,
             itemBuilder: (context, index) {
@@ -141,11 +146,12 @@ class MessagesListScreen extends StatelessWidget {
         Positioned(
           left: 16,
           right: 16,
-          bottom: 14,
+          bottom: bottomInset + navBarHeight + 14,
           child: _SelectionActionBar(
             selectedCount: state.selectedConversationIds.length,
             onReadAll: () => _markSelectedRead(context),
             onDeleteAll: () => _confirmDeleteSelected(context),
+            onClear: () => context.read<MessagesListCubit>().clearSelection(),
           ),
         ),
       ],
@@ -153,14 +159,12 @@ class MessagesListScreen extends StatelessWidget {
   }
 
   Future<void> _markSelectedRead(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
     await context.read<MessagesListCubit>().markSelectedRead();
-    messenger.clearSnackBars();
-    messenger.showSnackBar(
-      buildWarmSnackBar(
-        message: 'Выбранные диалоги прочитаны',
-        icon: Icons.done_all_rounded,
-      ),
+    if (!context.mounted) return;
+    WarmToast.success(
+      context,
+      'Выбранные диалоги прочитаны',
+      icon: Icons.done_all_rounded,
     );
   }
 
@@ -170,6 +174,8 @@ class MessagesListScreen extends StatelessWidget {
     return ConfirmationDialog.show<void>(
       context: context,
       title: 'Удаление',
+      leadingIcon: Icons.delete_sweep_rounded,
+      leadingIconColor: AppColor.danger,
       text: 'Удалить выбранные диалоги?',
       subText: '$count ${_pluralDialogs(count)} исчезнут из списка.',
       buttonTextOne: 'Удалить все',
@@ -178,25 +184,18 @@ class MessagesListScreen extends StatelessWidget {
       buttonTextStyleTwo: AppTextStyle.button(AppColor.inkSecondary),
       onTapButtonOne: () async {
         final navigator = Navigator.of(context);
-        final messenger = ScaffoldMessenger.of(context);
         navigator.pop();
         try {
           await context.read<MessagesListCubit>().deleteSelectedConversations();
-          messenger.clearSnackBars();
-          messenger.showSnackBar(
-            buildWarmSnackBar(
-              message: 'Выбранные диалоги удалены',
-              icon: Icons.delete_outline_rounded,
-            ),
+          if (!context.mounted) return;
+          WarmToast.success(
+            context,
+            'Выбранные диалоги удалены',
+            icon: Icons.delete_outline_rounded,
           );
         } catch (_) {
-          messenger.clearSnackBars();
-          messenger.showSnackBar(
-            buildWarmSnackBar(
-              message: 'Не удалось удалить диалоги',
-              icon: Icons.error_outline_rounded,
-            ),
-          );
+          if (!context.mounted) return;
+          WarmToast.error(context, 'Не удалось удалить диалоги');
         }
       },
       onTapButtonTwo: () => Navigator.of(context).pop(),
@@ -232,11 +231,7 @@ class MessagesListScreen extends StatelessWidget {
               Navigator.of(dialogContext).pop();
               final cubit = context.read<MessagesListCubit>();
               cubit.selectConversation(conversation.id);
-              showWarmSnackBar(
-                context,
-                message: 'Диалог выбран',
-                icon: Icons.check_rounded,
-              );
+              WarmToast.success(context, 'Диалог выбран');
             },
             onDelete: () {
               Navigator.of(dialogContext).pop();
@@ -276,6 +271,8 @@ class MessagesListScreen extends StatelessWidget {
     return ConfirmationDialog.show<void>(
       context: context,
       title: 'Удаление',
+      leadingIcon: Icons.delete_outline_rounded,
+      leadingIconColor: AppColor.danger,
       text: 'Удалить диалог ${conversation.title}?',
       subText: 'Сообщения исчезнут из этого списка.',
       buttonTextOne: 'Удалить',
@@ -284,27 +281,20 @@ class MessagesListScreen extends StatelessWidget {
       buttonTextStyleTwo: AppTextStyle.button(AppColor.inkSecondary),
       onTapButtonOne: () async {
         final navigator = Navigator.of(context);
-        final messenger = ScaffoldMessenger.of(context);
         navigator.pop();
         try {
           await context
               .read<MessagesListCubit>()
               .deleteConversation(conversation.id);
-          messenger.clearSnackBars();
-          messenger.showSnackBar(
-            buildWarmSnackBar(
-              message: 'Диалог удалён',
-              icon: Icons.delete_outline_rounded,
-            ),
+          if (!context.mounted) return;
+          WarmToast.success(
+            context,
+            'Диалог удалён',
+            icon: Icons.delete_outline_rounded,
           );
         } catch (_) {
-          messenger.clearSnackBars();
-          messenger.showSnackBar(
-            buildWarmSnackBar(
-              message: 'Не удалось удалить диалог',
-              icon: Icons.error_outline_rounded,
-            ),
-          );
+          if (!context.mounted) return;
+          WarmToast.error(context, 'Не удалось удалить диалог');
         }
       },
       onTapButtonTwo: () => Navigator.of(context).pop(),
@@ -604,26 +594,29 @@ class _SelectionActionBar extends StatelessWidget {
   final int selectedCount;
   final VoidCallback onReadAll;
   final VoidCallback onDeleteAll;
+  final VoidCallback onClear;
 
   const _SelectionActionBar({
     required this.selectedCount,
     required this.onReadAll,
     required this.onDeleteAll,
+    required this.onClear,
   });
 
   @override
   Widget build(BuildContext context) {
+    final visible = selectedCount > 0;
     return AnimatedSlide(
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 260),
       curve: Curves.easeOutCubic,
-      offset: selectedCount > 0 ? Offset.zero : const Offset(0, 1.25),
+      offset: visible ? Offset.zero : const Offset(0, 1.4),
       child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 180),
-        opacity: selectedCount > 0 ? 1 : 0,
+        duration: const Duration(milliseconds: 200),
+        opacity: visible ? 1 : 0,
         child: IgnorePointer(
-          ignoring: selectedCount == 0,
+          ignoring: !visible,
           child: Container(
-            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
             decoration: BoxDecoration(
               color: AppColor.surface,
               borderRadius: BorderRadius.circular(24),
@@ -634,12 +627,17 @@ class _SelectionActionBar extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    '$selectedCount выбрано',
-                    style: AppTextStyle.captionUpper(AppColor.inkTertiary),
-                  ),
+                Row(
+                  children: [
+                    _ClearSelectionButton(onTap: onClear),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        '$selectedCount выбрано',
+                        style: AppTextStyle.bodySmBold(AppColor.ink),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -663,6 +661,36 @@ class _SelectionActionBar extends StatelessWidget {
                   ],
                 ),
               ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ClearSelectionButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _ClearSelectionButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return PlatformTapScale(
+      pressedScale: 0.94,
+      child: Material(
+        color: AppColor.bgAlt,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: const SizedBox(
+            width: 30,
+            height: 30,
+            child: Icon(
+              Icons.close_rounded,
+              size: 16,
+              color: AppColor.inkSecondary,
             ),
           ),
         ),
@@ -798,9 +826,7 @@ class _LoadingView extends StatelessWidget {
   const _LoadingView();
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: AppColor.accent),
-    );
+    return const Center(child: WarmLoader(size: 28));
   }
 }
 

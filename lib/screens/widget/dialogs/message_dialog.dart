@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:simply/screens/widget/dialogs/modal_dialog.dart';
@@ -17,6 +19,8 @@ class MessageDialog {
     Color? barrierColor,
     VoidCallback? onTapButton,
     bool useSafeArea = false,
+    IconData? leadingIcon,
+    Color? leadingIconColor,
   }) {
     return showModalBottomSheet(
       elevation: 0,
@@ -25,8 +29,14 @@ class MessageDialog {
       isDismissible: true,
       isScrollControlled: true,
       backgroundColor: AppColor.surface,
+      barrierColor: barrierColor ?? AppColor.black.withValues(alpha: 0.32),
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      transitionAnimationController: AnimationController(
+        vsync: Navigator.of(context),
+        duration: Duration(milliseconds: Platform.isIOS ? 440 : 300),
+        reverseDuration: const Duration(milliseconds: 220),
       ),
       builder: (_) => AnnotatedRegion<SystemUiOverlayStyle>(
         value: const SystemUiOverlayStyle(
@@ -35,24 +45,15 @@ class MessageDialog {
         ),
         child: Padding(
           padding: EdgeInsets.only(
-            bottom:
-                useSafeArea ? MediaQuery.of(context).viewPadding.bottom : 0,
+            bottom: useSafeArea ? MediaQuery.of(context).viewPadding.bottom : 0,
           ),
           child: ModalDialog(
             text: text,
-            titleTextWidget: titleText != null
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        titleText,
-                        style: AppTextStyle.title(AppColor.ink),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  )
-                : null,
+            titleTextWidget: _buildTitleBlock(
+              titleText: titleText,
+              leadingIcon: leadingIcon,
+              leadingIconColor: leadingIconColor,
+            ),
             description: description,
             buttonTextStyle:
                 buttonTextStyle ?? AppTextStyle.button(AppColor.white),
@@ -63,6 +64,41 @@ class MessageDialog {
           ),
         ),
       ),
+    );
+  }
+
+  static Widget? _buildTitleBlock({
+    String? titleText,
+    IconData? leadingIcon,
+    Color? leadingIconColor,
+  }) {
+    if (titleText == null && leadingIcon == null) return null;
+    final iconColor = leadingIconColor ?? AppColor.accentDeep;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (leadingIcon != null) ...[
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Icon(leadingIcon, size: 26, color: iconColor),
+          ),
+          const SizedBox(height: 14),
+        ],
+        if (titleText != null) ...[
+          Text(
+            titleText,
+            style: AppTextStyle.title(AppColor.ink),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 14),
+        ],
+      ],
     );
   }
 }

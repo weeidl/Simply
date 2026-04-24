@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/screens/auth/screen/auth_screen.dart';
 import 'package:simply/screens/contact_us/screen/contact_us_screen.dart';
 import 'package:simply/screens/privacy_policy/screen/privacy_policy_screen.dart';
+import 'package:simply/screens/profile/screen/profile_screen.dart';
 import 'package:simply/screens/settings/widget/setting_widget.dart';
 import 'package:simply/screens/splash/cubit/splash_cubit.dart';
 import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
@@ -30,7 +31,11 @@ class SettingsScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
             children: [
-              _ProfileCard(user: user),
+              _ProfileCard(
+                user: user,
+                onTap: () =>
+                    Navigator.of(context).push(ProfileScreen.route()),
+              ),
               const SizedBox(height: 18),
               const _PremiumBanner(),
               const SizedBox(height: 18),
@@ -40,8 +45,7 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.person_outline_rounded,
                   title: 'Профиль',
                   subtitle: 'Имя, аватар, контактные данные',
-                  comingSoon: true,
-                  onTap: () {},
+                  onTap: () => Navigator.of(context).push(ProfileScreen.route()),
                 ),
                 const _Divider(),
                 SettingsRow(
@@ -101,6 +105,7 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _onLogoutTap(BuildContext context) async {
     await ConfirmationDialog.show(
       context: context,
+      leadingIcon: Icons.logout_rounded,
       text: 'Выйти из аккаунта?',
       buttonTextOne: 'Выйти',
       onTapButtonOne: () async {
@@ -120,7 +125,8 @@ class SettingsScreen extends StatelessWidget {
 
 class _ProfileCard extends StatelessWidget {
   final User? user;
-  const _ProfileCard({required this.user});
+  final VoidCallback onTap;
+  const _ProfileCard({required this.user, required this.onTap});
 
   String get _name {
     final n = user?.displayName;
@@ -145,58 +151,66 @@ class _ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: BoxDecoration(
-        color: AppColor.surface,
+    return Material(
+      color: AppColor.surface,
+      borderRadius: AppRadii.brR4,
+      child: InkWell(
         borderRadius: AppRadii.brR4,
-        boxShadow: AppShadows.s,
-        border: Border.all(color: const Color(0x0A281910)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColor.accent, AppColor.accentDeep],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          decoration: BoxDecoration(
+            borderRadius: AppRadii.brR4,
+            boxShadow: AppShadows.s,
+            border: Border.all(color: const Color(0x0A281910)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColor.accent, AppColor.accentDeep],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(_initials,
+                    style: AppTextStyle.title(AppColor.white)),
               ),
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(_initials, style: AppTextStyle.title(AppColor.white)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyle.titleSm(AppColor.ink)),
+                    const SizedBox(height: 2),
+                    Text(user?.email ?? 'Без почты',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyle.bodySm(AppColor.inkTertiary)),
+                  ],
+                ),
+              ),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: AppColor.bgAlt,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.edit_outlined,
+                    size: 18, color: AppColor.inkSecondary),
+              ),
+            ],
           ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyle.titleSm(AppColor.ink)),
-                const SizedBox(height: 2),
-                Text(user?.email ?? 'Без почты',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyle.bodySm(AppColor.inkTertiary)),
-              ],
-            ),
-          ),
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: AppColor.bgAlt,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.edit_outlined,
-                size: 16, color: AppColor.inkSecondary),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -304,7 +318,7 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.only(left: 60),
+      padding: EdgeInsets.only(left: 68),
       child: Divider(color: AppColor.divider, height: 1, thickness: 1),
     );
   }

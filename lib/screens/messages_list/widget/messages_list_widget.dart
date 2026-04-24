@@ -7,7 +7,7 @@ import 'package:simply/screens/message_details/screen/message_details_screen.dar
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
-import 'package:simply/screens/widget/warm/warm_snack_bar.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
@@ -272,11 +272,7 @@ class _CodeChip extends StatelessWidget {
 
   void _copy(BuildContext context) {
     Clipboard.setData(ClipboardData(text: code));
-    showWarmSnackBar(
-      context,
-      message: 'Готово, код уже в буфере',
-      icon: Icons.copy_rounded,
-    );
+    WarmToast.copied(context, 'Код скопирован');
   }
 }
 

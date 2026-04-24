@@ -32,11 +32,11 @@ class SettingsRow extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
         child: Row(
           children: [
             IconTile(icon: icon, background: iconBg, foreground: iconFg),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,9 +47,7 @@ class SettingsRow extends StatelessWidget {
                       Flexible(
                         child: Text(
                           title,
-                          style: AppTextStyle.bodyM(AppColor.ink).copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: AppTextStyle.titleSm(AppColor.ink),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -61,10 +59,11 @@ class SettingsRow extends StatelessWidget {
                     ],
                   ),
                   if (subtitle != null) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle!,
-                      style: AppTextStyle.bodySm(AppColor.inkTertiary),
+                      style: AppTextStyle.bodySm(AppColor.inkTertiary)
+                          .copyWith(fontSize: 14),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -75,7 +74,7 @@ class SettingsRow extends StatelessWidget {
             const SizedBox(width: 8),
             trailing ??
                 const Icon(Icons.chevron_right_rounded,
-                    color: AppColor.inkPlaceholder, size: 22),
+                    color: AppColor.inkPlaceholder, size: 24),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,8 +9,9 @@ import 'package:simply/screens/auth/widget/custom_segmented_control.dart';
 import 'package:simply/screens/auth/widget/custom_text_field.dart';
 import 'package:simply/screens/home/home.dart';
 import 'package:simply/screens/widget/dialogs/message_dialog.dart';
-import 'package:simply/screens/widget/divider_with_text.dart';
-import 'package:simply/screens/widget/sign_in_button.dart';
+import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/screens/widget/warm/warm_loader.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -43,12 +46,12 @@ class AuthScreen extends StatelessWidget {
           final isLogin = state.status == AuthStatus.login;
 
           return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 48, 20, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Gap(24),
                   Text(
                     isLogin ? 'Привет!' : 'Создать аккаунт',
                     style: AppTextStyle.display(AppColor.ink),
@@ -61,7 +64,7 @@ class AuthScreen extends StatelessWidget {
                     style: AppTextStyle.bodyM(AppColor.inkSecondary),
                   ),
                   const Gap(28),
-                  Expanded(child: _buildForm(context, cubit, state, isLogin)),
+                  _buildForm(context, cubit, state, isLogin),
                 ],
               ),
             ),
@@ -85,97 +88,84 @@ class AuthScreen extends StatelessWidget {
         boxShadow: AppShadows.s,
         border: Border.all(color: const Color(0x0A281910)),
       ),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            CustomSegmentedControl(
-              groupValue: state.status,
-              onValueChanged: cubit.setSegmentedControlState,
-              children: {
-                AuthStatus.login: Text(
-                  'Вход',
-                  style: AppTextStyle.bodySmBold(
-                    isLogin ? AppColor.ink : AppColor.inkTertiary,
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CustomSegmentedControl(
+            groupValue: state.status,
+            onValueChanged: cubit.setSegmentedControlState,
+            children: {
+              AuthStatus.login: Text(
+                'Вход',
+                style: AppTextStyle.bodySmBold(
+                  isLogin ? AppColor.ink : AppColor.inkTertiary,
                 ),
-                AuthStatus.register: Text(
-                  'Регистрация',
-                  style: AppTextStyle.bodySmBold(
-                    !isLogin ? AppColor.ink : AppColor.inkTertiary,
-                  ),
-                ),
-              },
-            ),
-            const Gap(20),
-            if (!isLogin) ...[
-              CustomTextField(
-                controller: state.nameController,
-                labelText: 'Имя',
-                prefixIcon: Icons.person_outline_rounded,
               ),
-              const Gap(10),
-            ],
+              AuthStatus.register: Text(
+                'Регистрация',
+                style: AppTextStyle.bodySmBold(
+                  !isLogin ? AppColor.ink : AppColor.inkTertiary,
+                ),
+              ),
+            },
+          ),
+          const Gap(20),
+          if (!isLogin) ...[
             CustomTextField(
-              controller: state.emailController,
-              labelText: 'E-mail',
-              prefixIcon: Icons.mail_outline_rounded,
+              controller: state.nameController,
+              labelText: 'Имя',
+              prefixIcon: Icons.person_outline_rounded,
             ),
             const Gap(10),
-            CustomTextField(
-              controller: state.passwordController,
-              labelText: 'Пароль',
-              prefixIcon: Icons.lock_outline_rounded,
-              isPassword: true,
-            ),
-            if (isLogin) ...[
-              const Gap(10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: InkWell(
-                  borderRadius: AppRadii.brR1,
-                  onTap: () => _sendPasswordReset(context, cubit),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 4),
-                    child: Text(
-                      'Забыли пароль?',
-                      style: AppTextStyle.bodySmBold(AppColor.accentDeep),
-                    ),
+          ],
+          CustomTextField(
+            controller: state.emailController,
+            labelText: 'E-mail',
+            prefixIcon: Icons.mail_outline_rounded,
+          ),
+          const Gap(10),
+          CustomTextField(
+            controller: state.passwordController,
+            labelText: 'Пароль',
+            prefixIcon: Icons.lock_outline_rounded,
+            isPassword: true,
+          ),
+          if (isLogin) ...[
+            const Gap(10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                borderRadius: AppRadii.brR1,
+                onTap: state.isResetSending
+                    ? null
+                    : () => _sendPasswordReset(context, cubit),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (state.isResetSending) ...[
+                        const WarmLoader(size: 12, strokeWidth: 2),
+                        const SizedBox(width: 6),
+                      ],
+                      Text(
+                        'Забыли пароль?',
+                        style: AppTextStyle.bodySmBold(AppColor.accentDeep),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ],
-            const Gap(20),
-            _PrimaryButton(
-              label: isLogin ? 'Войти' : 'Создать аккаунт',
-              onTap: () => _submit(context, cubit, state),
-            ),
-            const Gap(20),
-            const DividerWithText(text: 'или через'),
-            const Gap(16),
-            Row(
-              children: [
-                Expanded(
-                  child: SignInButton(
-                    text: 'Google',
-                    assetName: 'assets/icons/login_google.png',
-                    onPressed: () {},
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SignInButton(
-                    text: 'Apple',
-                    assetName: 'assets/icons/login_apple.png',
-                    onPressed: () {},
-                    backgroundColor: AppColor.ink,
-                    textColor: AppColor.white,
-                  ),
-                ),
-              ],
             ),
           ],
-        ),
+          const Gap(20),
+          _PrimaryButton(
+            label: isLogin ? 'Войти' : 'Создать аккаунт',
+            loading: state.isSubmitting,
+            onTap: () => _submit(context, cubit, state),
+          ),
+        ],
       ),
     );
   }
@@ -183,16 +173,18 @@ class AuthScreen extends StatelessWidget {
   Future<void> _sendPasswordReset(BuildContext context, AuthCubit cubit) async {
     final ok = await cubit.sendPasswordReset();
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          ok
-              ? 'Ссылка для сброса пароля отправлена'
-              : cubit.state.authErrorMessage ??
-                  'Не удалось отправить письмо',
-        ),
-      ),
-    );
+    if (ok) {
+      WarmToast.success(
+        context,
+        'Ссылка для сброса пароля отправлена',
+        icon: Icons.mark_email_read_rounded,
+      );
+    } else {
+      WarmToast.error(
+        context,
+        cubit.state.authErrorMessage ?? 'Не удалось отправить письмо',
+      );
+    }
   }
 
   Future<void> _submit(
@@ -200,6 +192,7 @@ class AuthScreen extends StatelessWidget {
     AuthCubit cubit,
     AuthState state,
   ) async {
+    if (Platform.isIOS) HapticFeedback.selectionClick();
     final isLogin = state.status == AuthStatus.login;
     if (isLogin) {
       final success = await cubit.signIn();
@@ -207,6 +200,9 @@ class AuthScreen extends StatelessWidget {
         if (!context.mounted) return;
         await MessageDialog.show(
           context: context,
+          titleText: 'Не получилось войти',
+          leadingIcon: Icons.error_outline_rounded,
+          leadingIconColor: AppColor.danger,
           text: cubit.state.authErrorMessage ?? 'Не удалось войти',
           buttonText: 'OK',
         );
@@ -218,6 +214,9 @@ class AuthScreen extends StatelessWidget {
         if (!context.mounted) return;
         await MessageDialog.show(
           context: context,
+          titleText: 'Не получилось создать аккаунт',
+          leadingIcon: Icons.error_outline_rounded,
+          leadingIconColor: AppColor.danger,
           text: cubit.state.authErrorMessage ?? 'Не удалось создать аккаунт',
           buttonText: 'OK',
         );
@@ -232,23 +231,51 @@ class AuthScreen extends StatelessWidget {
 
 class _PrimaryButton extends StatelessWidget {
   final String label;
+  final bool loading;
   final VoidCallback onTap;
 
-  const _PrimaryButton({required this.label, required this.onTap});
+  const _PrimaryButton({
+    required this.label,
+    required this.onTap,
+    this.loading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 54,
-      child: ElevatedButton(
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColor.accent,
-          foregroundColor: AppColor.white,
-          elevation: 0,
-          shape: const RoundedRectangleBorder(borderRadius: AppRadii.brPill),
+    return PlatformTapScale(
+      child: SizedBox(
+        height: 54,
+        child: ElevatedButton(
+          onPressed: loading ? null : onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColor.accent,
+            disabledBackgroundColor: AppColor.accent.withValues(alpha: 0.78),
+            foregroundColor: AppColor.white,
+            elevation: 0,
+            shape: const RoundedRectangleBorder(borderRadius: AppRadii.brPill),
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            transitionBuilder: (child, animation) => FadeTransition(
+              opacity: animation,
+              child: ScaleTransition(
+                scale: Tween<double>(begin: 0.94, end: 1).animate(animation),
+                child: child,
+              ),
+            ),
+            child: loading
+                ? const WarmLoader(
+                    key: ValueKey('loader'),
+                    size: 22,
+                    color: AppColor.white,
+                  )
+                : Text(
+                    label,
+                    key: const ValueKey('label'),
+                    style: AppTextStyle.button(AppColor.white),
+                  ),
+          ),
         ),
-        child: Text(label, style: AppTextStyle.button(AppColor.white)),
       ),
     );
   }

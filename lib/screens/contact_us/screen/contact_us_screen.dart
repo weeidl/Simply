@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -21,9 +22,7 @@ class ContactUsScreen extends StatelessWidget {
     final uri = Uri.parse(url);
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Не удалось открыть $url')),
-      );
+      WarmToast.error(context, 'Не удалось открыть ссылку');
     }
   }
 

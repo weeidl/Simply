@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 
 class PermissionsService {
   static final PermissionsService _instance = PermissionsService._internal();
@@ -109,12 +110,9 @@ class PermissionsService {
   Future<void> _showPermissionRestrictedDialog(
       BuildContext context, String permissionName) async {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Access to $permissionName is restricted and cannot be granted.',
-        ),
-      ),
+    WarmToast.error(
+      context,
+      'Access to $permissionName is restricted.',
     );
   }
 }

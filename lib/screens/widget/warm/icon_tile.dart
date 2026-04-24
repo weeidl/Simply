@@ -15,7 +15,7 @@ class IconTile extends StatelessWidget {
     required this.icon,
     this.background,
     this.foreground,
-    this.size = 34,
+    this.size = 40,
   });
 
   @override
@@ -25,11 +25,11 @@ class IconTile extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         color: background ?? AppColor.accentSoft,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
         icon,
-        size: size * 0.52,
+        size: size * 0.54,
         color: foreground ?? AppColor.accentDeep,
       ),
     );

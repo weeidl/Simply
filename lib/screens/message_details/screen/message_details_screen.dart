@@ -9,7 +9,8 @@ import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
-import 'package:simply/screens/widget/warm/warm_snack_bar.dart';
+import 'package:simply/screens/widget/warm/warm_loader.dart';
+import 'package:simply/screens/widget/warm/warm_toast.dart';
 import 'package:simply/services/ui_preferences_service.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
@@ -88,9 +89,7 @@ class MessageDetailsScreen extends StatelessWidget {
       child: BlocBuilder<MessageDetailsCubit, MessageDetailsState>(
         builder: (context, state) {
           if (state.isLoading && state.items.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColor.accent),
-            );
+            return const Center(child: WarmLoader(size: 28));
           }
           if (state.hasError) {
             return _ErrorView(
@@ -347,19 +346,13 @@ class _MoreActionsSheet extends StatelessWidget {
               icon: Icons.content_copy_rounded,
               label: 'Скопировать адрес отправителя',
               onTap: () async {
-                final messenger = ScaffoldMessenger.of(context);
                 await Clipboard.setData(
                   ClipboardData(text: conversationTitle),
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
-                messenger.clearSnackBars();
-                messenger.showSnackBar(
-                  buildWarmSnackBar(
-                    message: 'Готово, отправитель уже в буфере',
-                    icon: Icons.copy_rounded,
-                  ),
-                );
+                if (!context.mounted) return;
+                WarmToast.copied(context, 'Отправитель скопирован');
               },
             ),
             _ActionRow(
@@ -612,11 +605,7 @@ class _CopyButton extends StatelessWidget {
           borderRadius: AppRadii.brPill,
           onTap: () {
             Clipboard.setData(ClipboardData(text: code));
-            showWarmSnackBar(
-              context,
-              message: 'Готово, код уже в буфере',
-              icon: Icons.copy_rounded,
-            );
+            WarmToast.copied(context, 'Код скопирован');
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),

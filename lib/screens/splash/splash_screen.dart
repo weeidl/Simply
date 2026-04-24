@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/screens/auth/screen/auth_screen.dart';
 import 'package:simply/screens/home/home.dart';
 import 'package:simply/screens/splash/cubit/splash_cubit.dart';
+import 'package:simply/screens/widget/warm/warm_loader.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
@@ -61,14 +62,7 @@ class SplashScreen extends StatelessWidget {
                 style: AppTextStyle.bodySm(AppColor.inkTertiary),
               ),
               const SizedBox(height: 36),
-              const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  color: AppColor.accent,
-                  strokeWidth: 2.4,
-                ),
-              ),
+              const WarmLoader(size: 24),
             ],
           ),
         ),

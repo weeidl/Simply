@@ -45,9 +45,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _didRequestInitialDeviceCheck = false;
 
   static const _navTabs = <PillTab>[
-    PillTab(icon: Icons.devices_other_rounded, label: 'Устройства'),
-    PillTab(icon: Icons.chat_bubble_outline_rounded, label: 'Сообщения'),
-    PillTab(icon: Icons.settings_outlined, label: 'Настройки'),
+    PillTab(icon: Icons.smartphone_rounded, label: 'Устройства'),
+    PillTab(icon: Icons.chat_rounded, label: 'Сообщения'),
+    PillTab(icon: Icons.settings_rounded, label: 'Настройки'),
   ];
 
   Future<void> _requestPermissions() async {
@@ -109,7 +109,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: AppColor.bg,
+          systemNavigationBarColor: AppColor.surface,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Scaffold(

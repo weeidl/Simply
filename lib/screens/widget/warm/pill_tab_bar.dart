@@ -1,9 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
-import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
 
 class PillTab {
@@ -13,12 +10,19 @@ class PillTab {
   const PillTab({required this.icon, required this.label});
 }
 
-/// Floating pill bottom navigation. Active tab fills with accent and reveals
-/// its label; inactive tabs collapse to icon-only.
+/// Edge-to-edge bottom navigation. The active tab inflates into a coral pill
+/// hugging its icon + label; inactive tabs collapse to icon-only. Color and
+/// pill width share one ease-out cubic transition; the icon scale rides an
+/// overshoot curve for a subtle pop on activation.
 class PillTabBar extends StatelessWidget {
   final List<PillTab> tabs;
   final int activeIndex;
   final ValueChanged<int> onChanged;
+
+  static const Duration _duration = Duration(milliseconds: 380);
+  static const Curve _curve = Curves.easeOutCubic;
+  static const Curve _popCurve = Curves.easeOutBack;
+  static const double _rowHeight = 52;
 
   const PillTabBar({
     super.key,
@@ -29,86 +33,185 @@ class PillTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        6,
-        16,
-        8 + MediaQuery.of(context).viewPadding.bottom,
-      ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: AppRadii.brPill,
-          boxShadow: [
-            ...AppShadows.glass,
-            ...AppShadows.m,
-          ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColor.surface,
+        border: const Border(
+          top: BorderSide(color: AppColor.divider, width: 0.5),
         ),
-        child: ClipRRect(
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF281910).withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, -8),
+          ),
+          BoxShadow(
+            color: const Color(0xFF281910).withValues(alpha: 0.03),
+            blurRadius: 4,
+            offset: const Offset(0, -1),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+          child: SizedBox(
+            height: _rowHeight,
+            child: Row(
+              children: List.generate(tabs.length, (i) {
+                return Expanded(
+                  child: _PillTabItem(
+                    tab: tabs[i],
+                    active: i == activeIndex,
+                    onTap: () => onChanged(i),
+                    duration: _duration,
+                    curve: _curve,
+                    popCurve: _popCurve,
+                  ),
+                );
+              }),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PillTabItem extends StatelessWidget {
+  final PillTab tab;
+  final bool active;
+  final VoidCallback onTap;
+  final Duration duration;
+  final Curve curve;
+  final Curve popCurve;
+
+  const _PillTabItem({
+    required this.tab,
+    required this.active,
+    required this.onTap,
+    required this.duration,
+    required this.curve,
+    required this.popCurve,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final pillColor =
+        active ? AppColor.accentSoft : AppColor.accentSoft.withValues(alpha: 0);
+
+    return Semantics(
+      button: true,
+      selected: active,
+      label: tab.label,
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
           borderRadius: AppRadii.brPill,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 7),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          onTap: onTap,
+          child: Center(
+            child: AnimatedContainer(
+              duration: duration,
+              curve: curve,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColor.glass,
-                    AppColor.surface.withValues(alpha: 0.78),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: pillColor,
                 borderRadius: AppRadii.brPill,
-                border: Border.all(color: AppColor.glassBorder),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(tabs.length, (i) {
-                  final tab = tabs[i];
-                  final on = i == activeIndex;
-                  return Material(
-                    color: Colors.transparent,
-                    borderRadius: AppRadii.brPill,
-                    child: InkWell(
-                      borderRadius: AppRadii.brPill,
-                      onTap: () => onChanged(i),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 11),
-                        decoration: BoxDecoration(
-                          color: on ? AppColor.accent : Colors.transparent,
-                          borderRadius: AppRadii.brPill,
-                          boxShadow: on ? AppShadows.accent : null,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              tab.icon,
-                              size: 19,
-                              color: on ? AppColor.white : AppColor.inkTertiary,
-                            ),
-                            if (on) ...[
-                              const SizedBox(width: 8),
-                              Text(
-                                tab.label,
-                                style: AppTextStyle.bodySmBold(AppColor.white),
-                              ),
-                            ],
-                          ],
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _AnimatedIcon(
+                    icon: tab.icon,
+                    active: active,
+                    duration: duration,
+                    curve: curve,
+                    popCurve: popCurve,
+                  ),
+                  ClipRect(
+                    child: AnimatedAlign(
+                      duration: duration,
+                      curve: curve,
+                      alignment: Alignment.centerLeft,
+                      widthFactor: active ? 1 : 0,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: AnimatedOpacity(
+                          duration: duration,
+                          curve: curve,
+                          opacity: active ? 1 : 0,
+                          child: Text(
+                            tab.label,
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.fade,
+                            style: AppTextStyle.bodySmBold(AppColor.accent)
+                                .copyWith(fontSize: 12),
+                          ),
                         ),
                       ),
                     ),
-                  );
-                }),
+                  ),
+                ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Icon with two synchronized animations: a smooth color lerp for selection
+/// and an overshoot scale pop (1.0 → ~1.12) so activation feels tactile.
+class _AnimatedIcon extends StatelessWidget {
+  final IconData icon;
+  final bool active;
+  final Duration duration;
+  final Curve curve;
+  final Curve popCurve;
+
+  const _AnimatedIcon({
+    required this.icon,
+    required this.active,
+    required this.duration,
+    required this.curve,
+    required this.popCurve,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      duration: duration,
+      curve: popCurve,
+      tween: Tween<double>(end: active ? 1 : 0),
+      builder: (_, pop, __) {
+        final scale = 1 + 0.12 * pop;
+        return Transform.scale(
+          scale: scale,
+          child: TweenAnimationBuilder<double>(
+            duration: duration,
+            curve: curve,
+            tween: Tween<double>(end: active ? 1 : 0),
+            builder: (_, t, __) {
+              final color = Color.lerp(
+                AppColor.inkTertiary,
+                AppColor.accent,
+                t.clamp(0.0, 1.0),
+              )!;
+              return Icon(icon, size: 20, color: color);
+            },
+          ),
+        );
+      },
     );
   }
 }

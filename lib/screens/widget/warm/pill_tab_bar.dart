@@ -149,7 +149,7 @@ class _PillTabItem extends StatelessWidget {
                               alignment: Alignment.centerLeft,
                               widthFactor: active ? 1 : 0,
                               child: Padding(
-                                padding: const EdgeInsets.only(left: 8),
+                                padding: const EdgeInsets.only(left: 4),
                                 child: AnimatedOpacity(
                                   duration: duration,
                                   curve: curve,
@@ -161,9 +161,9 @@ class _PillTabItem extends StatelessWidget {
                                       tab.label,
                                       maxLines: 1,
                                       softWrap: false,
-                                      style: AppTextStyle.bodySmBold(
+                                      style: AppTextStyle.titleSm(
                                         AppColor.accent,
-                                      ).copyWith(fontSize: 14),
+                                      ),
                                     ),
                                   ),
                                 ),

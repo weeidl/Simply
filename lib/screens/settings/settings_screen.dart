@@ -33,8 +33,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               _ProfileCard(
                 user: user,
-                onTap: () =>
-                    Navigator.of(context).push(ProfileScreen.route()),
+                onTap: () => Navigator.of(context).push(ProfileScreen.route()),
               ),
               const SizedBox(height: 18),
               const _PremiumBanner(),
@@ -45,7 +44,8 @@ class SettingsScreen extends StatelessWidget {
                   icon: Icons.person_outline_rounded,
                   title: 'Профиль',
                   subtitle: 'Имя, аватар, контактные данные',
-                  onTap: () => Navigator.of(context).push(ProfileScreen.route()),
+                  onTap: () =>
+                      Navigator.of(context).push(ProfileScreen.route()),
                 ),
                 const _Divider(),
                 SettingsRow(
@@ -178,8 +178,8 @@ class _ProfileCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 alignment: Alignment.center,
-                child: Text(_initials,
-                    style: AppTextStyle.title(AppColor.white)),
+                child:
+                    Text(_initials, style: AppTextStyle.title(AppColor.white)),
               ),
               const SizedBox(width: 14),
               Expanded(

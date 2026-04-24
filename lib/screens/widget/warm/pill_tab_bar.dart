@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:simply/screens/widget/warm/nav_icons.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
 
 class PillTab {
-  final IconData icon;
+  final NavIconKind kind;
   final String label;
 
-  const PillTab({required this.icon, required this.label});
+  const PillTab({required this.kind, required this.label});
 }
 
 /// Edge-to-edge bottom navigation. The active tab inflates into a coral pill
@@ -117,9 +118,9 @@ class _PillTabItem extends StatelessWidget {
             child: AnimatedContainer(
               duration: duration,
               curve: curve,
+              height: 44,
               padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 6,
+                horizontal: 16,
               ),
               decoration: BoxDecoration(
                 color: pillColor,
@@ -130,7 +131,7 @@ class _PillTabItem extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _AnimatedIcon(
-                    icon: tab.icon,
+                    kind: tab.kind,
                     active: active,
                     duration: duration,
                     curve: curve,
@@ -173,14 +174,14 @@ class _PillTabItem extends StatelessWidget {
 /// Icon with two synchronized animations: a smooth color lerp for selection
 /// and an overshoot scale pop (1.0 → ~1.12) so activation feels tactile.
 class _AnimatedIcon extends StatelessWidget {
-  final IconData icon;
+  final NavIconKind kind;
   final bool active;
   final Duration duration;
   final Curve curve;
   final Curve popCurve;
 
   const _AnimatedIcon({
-    required this.icon,
+    required this.kind,
     required this.active,
     required this.duration,
     required this.curve,
@@ -202,12 +203,17 @@ class _AnimatedIcon extends StatelessWidget {
             curve: curve,
             tween: Tween<double>(end: active ? 1 : 0),
             builder: (_, t, __) {
+              final clamped = t.clamp(0.0, 1.0);
               final color = Color.lerp(
                 AppColor.inkTertiary,
                 AppColor.accent,
-                t.clamp(0.0, 1.0),
+                clamped,
               )!;
-              return Icon(icon, size: 20, color: color);
+              return NavIcon(
+                kind: kind,
+                size: 20,
+                color: color,
+              );
             },
           ),
         );

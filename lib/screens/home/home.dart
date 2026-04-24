@@ -13,6 +13,7 @@ import 'package:simply/screens/home/cubit/fcm_cubit.dart';
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:simply/screens/settings/settings_screen.dart';
+import 'package:simply/screens/widget/warm/nav_icons.dart';
 import 'package:simply/screens/widget/warm/pill_tab_bar.dart';
 import 'package:simply/themes/colors.dart';
 
@@ -45,9 +46,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   bool _didRequestInitialDeviceCheck = false;
 
   static const _navTabs = <PillTab>[
-    PillTab(icon: Icons.smartphone_rounded, label: 'Устройства'),
-    PillTab(icon: Icons.chat_rounded, label: 'Сообщения'),
-    PillTab(icon: Icons.settings_rounded, label: 'Настройки'),
+    PillTab(kind: NavIconKind.devices, label: 'Устройства'),
+    PillTab(kind: NavIconKind.messages, label: 'Сообщения'),
+    PillTab(kind: NavIconKind.settings, label: 'Настройки'),
   ];
 
   Future<void> _requestPermissions() async {

@@ -15,7 +15,7 @@ abstract class AppColor {
   // Surfaces (warm neutrals)
   static const Color bg = Color(0xFFFAF6F2);
   static const Color bgAlt = Color(0xFFF3ECE4);
-  static const Color navBar = Color(0xFFF8F3EE);
+  static const Color navBar = Color(0xFFFFFBF7);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color surfaceSoft = Color(0xFFFFFBF8);
   static const Color divider = Color(0x0F281910);

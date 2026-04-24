@@ -23,7 +23,7 @@ class PillTabBar extends StatelessWidget {
   static const Duration _duration = Duration(milliseconds: 380);
   static const Curve _curve = Curves.easeOutCubic;
   static const Curve _popCurve = Curves.easeOutBack;
-  static const double _rowHeight = 52;
+  static const double _rowHeight = 60;
 
   const PillTabBar({
     super.key,
@@ -122,9 +122,9 @@ class _PillTabItem extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: duration,
                     curve: curve,
-                    height: 44,
+                    height: 52,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                      horizontal: 18,
                     ),
                     decoration: BoxDecoration(
                       color: pillColor,
@@ -163,7 +163,7 @@ class _PillTabItem extends StatelessWidget {
                                       softWrap: false,
                                       style: AppTextStyle.bodySmBold(
                                         AppColor.accent,
-                                      ).copyWith(fontSize: 12),
+                                      ).copyWith(fontSize: 14),
                                     ),
                                   ),
                                 ),
@@ -224,7 +224,7 @@ class _AnimatedIcon extends StatelessWidget {
               )!;
               return NavIcon(
                 kind: kind,
-                size: 20,
+                size: 24,
                 color: color,
               );
             },

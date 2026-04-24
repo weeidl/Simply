@@ -24,29 +24,37 @@ class DeviceInfoWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: _TodayStat(device: device)),
-            const _StatDivider(),
-            Expanded(
-              child: _BatteryStat(
-                level: device.batteryLevel,
-                online: online,
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _StatCard(
+                  child: _TodayStat(device: device),
+                ),
               ),
-            ),
-            const _StatDivider(),
-            Expanded(
-              child: _SimStat(
-                device: device,
-                online: online,
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatCard(
+                  child: _BatteryStat(
+                    level: device.batteryLevel,
+                    online: online,
+                  ),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: _StatCard(
+                  child: _SimStat(
+                    device: device,
+                    online: online,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         if (device.simCards.isNotEmpty) ...[
-          const SizedBox(height: 18),
-          const Divider(height: 1, color: AppColor.divider),
           const SizedBox(height: 14),
           for (var i = 0; i < device.simCards.length; i++) ...[
             _SimRow(
@@ -54,11 +62,8 @@ class DeviceInfoWidget extends StatelessWidget {
               online: online,
               networkType: device.networkType,
             ),
-            if (i < device.simCards.length - 1) ...[
-              const SizedBox(height: 10),
-              const Divider(height: 1, color: AppColor.divider),
-              const SizedBox(height: 10),
-            ],
+            if (i < device.simCards.length - 1)
+              const SizedBox(height: 8),
           ],
         ],
       ],
@@ -66,16 +71,20 @@ class DeviceInfoWidget extends StatelessWidget {
   }
 }
 
-class _StatDivider extends StatelessWidget {
-  const _StatDivider();
+class _StatCard extends StatelessWidget {
+  final Widget child;
+  const _StatCard({required this.child});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 1,
-      height: 72,
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      color: AppColor.divider,
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+      decoration: BoxDecoration(
+        color: AppColor.bgAlt.withValues(alpha: 0.55),
+        borderRadius: AppRadii.brR2,
+        border: Border.all(color: AppColor.divider),
+      ),
+      child: child,
     );
   }
 }
@@ -107,23 +116,27 @@ class _TodayStat extends StatelessWidget {
       children: [
         const _StatLabel('СЕГОДНЯ'),
         const SizedBox(height: 8),
-        RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: '${device.todayMessageCount}',
-                style: AppTextStyle.h1(AppColor.accentDeep),
-              ),
-              TextSpan(
-                text: ' SMS',
-                style: AppTextStyle.bodySm(AppColor.inkTertiary).copyWith(
-                  fontWeight: FontWeight.w700,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: '${device.todayMessageCount}',
+                  style: AppTextStyle.h1(AppColor.accentDeep),
                 ),
-              ),
-            ],
+                TextSpan(
+                  text: ' SMS',
+                  style: AppTextStyle.bodySm(AppColor.inkTertiary).copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _Sparkline(values: device.normalizedSparkline),
       ],
     );
@@ -198,48 +211,51 @@ class _BatteryStat extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const _StatLabel('БАТАРЕЯ'),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Row(
           children: [
-            Text(
-              value != null ? '$value%' : '—',
-              style: AppTextStyle.h1(AppColor.ink),
-            ),
-            const SizedBox(width: 6),
-            Container(
-              width: 22,
-              height: 22,
-              decoration: BoxDecoration(
-                color: fill.withValues(alpha: 0.14),
-                shape: BoxShape.circle,
+            SizedBox(
+              width: 40,
+              height: 40,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox.expand(
+                    child: CircularProgressIndicator(
+                      value: ratio,
+                      strokeWidth: 3.5,
+                      backgroundColor: AppColor.bg,
+                      valueColor: AlwaysStoppedAnimation(fill),
+                      strokeCap: StrokeCap.round,
+                    ),
+                  ),
+                  Icon(Icons.bolt_rounded, size: 16, color: fill),
+                ],
               ),
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.bolt_rounded,
-                size: 14,
-                color: fill,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  value != null ? '$value%' : '—',
+                  style: AppTextStyle.title(AppColor.ink),
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(999),
-          child: Stack(
-            children: [
-              Container(
-                height: 6,
-                color: AppColor.bg,
-              ),
-              FractionallySizedBox(
-                widthFactor: ratio,
-                child: Container(
-                  height: 6,
-                  color: fill,
-                ),
-              ),
-            ],
-          ),
+        const SizedBox(height: 8),
+        Text(
+          value == null
+              ? 'нет данных'
+              : (value <= 20
+                  ? 'низкий'
+                  : (value <= 40 ? 'средний' : 'в норме')),
+          style: AppTextStyle.caption(
+            value != null && value <= 20 ? AppColor.danger : AppColor.inkTertiary,
+          ).copyWith(fontWeight: FontWeight.w700),
         ),
       ],
     );
@@ -263,14 +279,18 @@ class _SimStat extends StatelessWidget {
       children: [
         const _StatLabel('SIM'),
         const SizedBox(height: 8),
-        Text(
-          device.simLabel,
-          style: AppTextStyle.h1(AppColor.ink),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(
+            device.simLabel,
+            style: AppTextStyle.title(AppColor.ink),
+          ),
         ),
         const SizedBox(height: 8),
         Wrap(
-          spacing: 6,
-          runSpacing: 6,
+          spacing: 4,
+          runSpacing: 4,
           children: [
             _MiniPill(
               label: activeSlot != null ? 'SIM $activeSlot' : 'авто',
@@ -332,72 +352,76 @@ class _SimRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusLabel =
         card.isActive ? (networkType?.toUpperCase() ?? 'АКТИВНА') : 'ГОТОВА';
+    final activeRing =
+        card.isActive && online ? AppColor.success : AppColor.inkPlaceholder;
 
-    return Row(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: const BoxDecoration(
-            color: AppColor.bgAlt,
-            borderRadius: AppRadii.brR1,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            '${card.slot}',
-            style: AppTextStyle.bodySmBold(AppColor.inkSecondary),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Row(
-            children: [
-              Flexible(
-                child: Text(
-                  card.label,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyle.body(AppColor.ink),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: card.isActive
-                      ? AppColor.success
-                      : AppColor.inkPlaceholder,
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 12),
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            for (var i = 0; i < 4; i++) ...[
-              Container(
-                width: 3,
-                height: 5.0 + (i * 3),
-                margin: EdgeInsets.only(right: i == 3 ? 6 : 2),
-                decoration: BoxDecoration(
-                  color: online && card.isActive && i >= 1
-                      ? AppColor.success
-                      : AppColor.bgAlt,
-                  borderRadius: BorderRadius.circular(1),
-                ),
-              ),
-            ],
-            Text(
-              statusLabel,
-              style: AppTextStyle.micro(AppColor.inkTertiary),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 12, 10),
+      decoration: BoxDecoration(
+        color: AppColor.bgAlt.withValues(alpha: 0.55),
+        borderRadius: AppRadii.brR2,
+        border: Border.all(color: AppColor.divider),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: card.isActive && online
+                  ? AppColor.accentSoft
+                  : AppColor.surface,
+              borderRadius: AppRadii.brR1,
+              border: Border.all(color: activeRing.withValues(alpha: 0.3)),
             ),
-          ],
-        ),
-      ],
+            alignment: Alignment.center,
+            child: Text(
+              '${card.slot}',
+              style: AppTextStyle.bodySmBold(
+                card.isActive && online
+                    ? AppColor.accentDeep
+                    : AppColor.inkSecondary,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              card.label,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyle.body(AppColor.ink),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              for (var i = 0; i < 4; i++) ...[
+                Container(
+                  width: 3,
+                  height: 5.0 + (i * 3),
+                  margin: EdgeInsets.only(right: i == 3 ? 8 : 2),
+                  decoration: BoxDecoration(
+                    color: online && card.isActive && i >= 1
+                        ? AppColor.success
+                        : AppColor.bgAlt,
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                ),
+              ],
+              Text(
+                statusLabel,
+                style: AppTextStyle.micro(
+                  card.isActive && online
+                      ? AppColor.success
+                      : AppColor.inkTertiary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

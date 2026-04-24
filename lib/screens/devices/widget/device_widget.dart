@@ -8,12 +8,14 @@ import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
 
-class DeviceWidget extends StatelessWidget {
+class DeviceWidget extends StatefulWidget {
   final Device device;
   final int animationIndex;
   final bool isCurrentDevice;
   final bool canMoveUp;
   final bool canMoveDown;
+  final bool isPinned;
+  final VoidCallback onTogglePin;
   final VoidCallback onReconnect;
   final VoidCallback onMoveUp;
   final VoidCallback onMoveDown;
@@ -26,19 +28,41 @@ class DeviceWidget extends StatelessWidget {
     required this.isCurrentDevice,
     required this.canMoveUp,
     required this.canMoveDown,
+    this.isPinned = false,
+    required this.onTogglePin,
     required this.onReconnect,
     required this.onMoveUp,
     required this.onMoveDown,
     required this.onDelete,
   });
 
-  bool get _online => device.isOnline;
+  @override
+  State<DeviceWidget> createState() => _DeviceWidgetState();
+}
+
+class _DeviceWidgetState extends State<DeviceWidget> {
+  late bool _expanded = widget.isPinned;
+
+  bool get _online => widget.device.isOnline;
+
+  @override
+  void didUpdateWidget(covariant DeviceWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPinned && !oldWidget.isPinned) {
+      setState(() => _expanded = true);
+    }
+  }
+
+  void _toggle() {
+    if (widget.isPinned) return;
+    setState(() => _expanded = !_expanded);
+  }
 
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
-      duration: Duration(milliseconds: 260 + (animationIndex * 45)),
+      duration: Duration(milliseconds: 260 + (widget.animationIndex * 45)),
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return Transform.translate(
@@ -49,45 +73,170 @@ class DeviceWidget extends StatelessWidget {
           ),
         );
       },
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: AppRadii.brR4,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-          decoration: BoxDecoration(
-            color: AppColor.surface,
-            borderRadius: AppRadii.brR4,
-            boxShadow: AppShadows.s,
-            border: Border.all(
-              color: device.isMainDevice
-                  ? AppColor.accent.withValues(alpha: 0.28)
-                  : const Color(0x12281910),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: AppRadii.brR4,
+          boxShadow: AppShadows.s,
+          border: Border.all(
+            color: widget.device.isMainDevice
+                ? AppColor.accent.withValues(alpha: 0.28)
+                : const Color(0x12281910),
+          ),
+        ),
+        child: Material(
+          color: AppColor.surface,
+          borderRadius: AppRadii.brR4,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: _toggle,
+            splashColor: AppColor.accentSoft.withValues(alpha: 0.35),
+            highlightColor: AppColor.accentSoft.withValues(alpha: 0.18),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                14,
+                _expanded ? 16 : 12,
+                14,
+                _expanded ? 16 : 12,
+              ),
+              child: _expanded ? _buildExpanded() : _buildCollapsed(),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCollapsed() {
+    final device = widget.device;
+    return Row(
+      key: const ValueKey('collapsed'),
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _PhoneThumbnail(device: device, online: _online, compact: true),
+        const SizedBox(width: 12),
+        Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _Header(
-                device: device,
-                online: _online,
-                isCurrentDevice: isCurrentDevice,
-                canMoveUp: canMoveUp,
-                canMoveDown: canMoveDown,
-                onReconnect: onReconnect,
-                onMoveUp: onMoveUp,
-                onMoveDown: onMoveDown,
-                onDelete: onDelete,
+              Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      device.deviceName,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyle.titleSm(AppColor.ink),
+                    ),
+                  ),
+                  if (device.isMainDevice) ...[
+                    const SizedBox(width: 6),
+                    const _MainDot(),
+                  ],
+                ],
               ),
-              const SizedBox(height: 16),
-              DeviceInfoWidget(
-                device: device,
-                online: _online,
+              const SizedBox(height: 3),
+              DefaultTextStyle(
+                style: AppTextStyle.caption(AppColor.inkTertiary),
+                child: Row(
+                  children: [
+                    _CollapsedStatusDot(online: _online),
+                    const SizedBox(width: 5),
+                    Flexible(
+                      child: Text(
+                        _collapsedSubtitle(device),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
+        const SizedBox(width: 8),
+        const Icon(
+          Icons.keyboard_arrow_down_rounded,
+          size: 22,
+          color: AppColor.inkPlaceholder,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExpanded() {
+    final device = widget.device;
+    return Column(
+      key: const ValueKey('expanded'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Header(
+          device: device,
+          online: _online,
+          isCurrentDevice: widget.isCurrentDevice,
+          canMoveUp: widget.canMoveUp,
+          canMoveDown: widget.canMoveDown,
+          isPinned: widget.isPinned,
+          onTogglePin: widget.onTogglePin,
+          onReconnect: widget.onReconnect,
+          onMoveUp: widget.onMoveUp,
+          onMoveDown: widget.onMoveDown,
+          onDelete: widget.onDelete,
+        ),
+        const SizedBox(height: 16),
+        DeviceInfoWidget(
+          device: device,
+          online: _online,
+        ),
+      ],
+    );
+  }
+
+  String _collapsedSubtitle(Device device) {
+    final parts = <String>[
+      device.platformLabel,
+      if (_online)
+        'в сети'
+      else if (device.dateUpdateInfo != null)
+        'был ${device.dateUpdateInfo!.toDate().formatRelativeShort()}'
+      else
+        'не в сети',
+      if (!device.isReceiverOnly && device.todayMessageCount > 0)
+        '${device.todayMessageCount} SMS',
+      if (!device.isReceiverOnly && device.batteryLevel != null)
+        '${device.batteryLevel}%',
+    ];
+    return parts.join(' · ');
+  }
+}
+
+class _CollapsedStatusDot extends StatelessWidget {
+  final bool online;
+  const _CollapsedStatusDot({required this.online});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: online ? AppColor.success : AppColor.inkPlaceholder,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+class _MainDot extends StatelessWidget {
+  const _MainDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: const BoxDecoration(
+        color: AppColor.accent,
+        shape: BoxShape.circle,
       ),
     );
   }
@@ -99,6 +248,8 @@ class _Header extends StatelessWidget {
   final bool isCurrentDevice;
   final bool canMoveUp;
   final bool canMoveDown;
+  final bool isPinned;
+  final VoidCallback onTogglePin;
   final VoidCallback onReconnect;
   final VoidCallback onMoveUp;
   final VoidCallback onMoveDown;
@@ -110,6 +261,8 @@ class _Header extends StatelessWidget {
     required this.isCurrentDevice,
     required this.canMoveUp,
     required this.canMoveDown,
+    required this.isPinned,
+    required this.onTogglePin,
     required this.onReconnect,
     required this.onMoveUp,
     required this.onMoveDown,
@@ -161,7 +314,9 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 6),
+        _PinButton(pinned: isPinned, onTap: onTogglePin),
+        const SizedBox(width: 4),
         _ActionMenu(
           isCurrentDevice: isCurrentDevice,
           canMoveUp: canMoveUp,
@@ -172,6 +327,51 @@ class _Header extends StatelessWidget {
           onDelete: onDelete,
         ),
       ],
+    );
+  }
+}
+
+class _PinButton extends StatelessWidget {
+  final bool pinned;
+  final VoidCallback onTap;
+
+  const _PinButton({required this.pinned, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = pinned ? AppColor.accentSoft : AppColor.bgAlt.withValues(alpha: 0.7);
+    final color = pinned ? AppColor.accentDeep : AppColor.inkPlaceholder;
+    return Semantics(
+      button: true,
+      toggled: pinned,
+      label: pinned
+          ? 'Открепить развёрнутый вид'
+          : 'Закрепить развёрнутый вид',
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: 34,
+            height: 34,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: bg,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              pinned
+                  ? Icons.push_pin_rounded
+                  : Icons.push_pin_outlined,
+              color: color,
+              size: 18,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -369,10 +569,12 @@ class _MainBadge extends StatelessWidget {
 class _PhoneThumbnail extends StatelessWidget {
   final Device device;
   final bool online;
+  final bool compact;
 
   const _PhoneThumbnail({
     required this.device,
     required this.online,
+    this.compact = false,
   });
 
   @override
@@ -380,10 +582,14 @@ class _PhoneThumbnail extends StatelessWidget {
     final gradientColors = device.isReceiverOnly
         ? [const Color(0xFFF3ECE6), const Color(0xFFE9DDD2)]
         : [AppColor.accent, AppColor.accentDeep];
+    final size = compact ? 44.0 : 58.0;
+    final iconSize = compact ? 22.0 : 26.0;
 
-    return Container(
-      width: 58,
-      height: 58,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      width: size,
+      height: size,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: gradientColors,
@@ -398,7 +604,7 @@ class _PhoneThumbnail extends StatelessWidget {
         device.isReceiverOnly
             ? Icons.phone_iphone_rounded
             : Icons.phone_android_rounded,
-        size: 26,
+        size: iconSize,
         color: device.isReceiverOnly ? AppColor.inkTertiary : AppColor.white,
       ),
     );

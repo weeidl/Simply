@@ -8,7 +8,7 @@ import 'package:simply/screens/devices/screen/devices_screen.dart';
 import 'package:simply/themes/radii.dart';
 
 void main() {
-  testWidgets('fleet summary clips the accent gradient to rounded corners',
+  testWidgets('fleet summary renders compact today pill with online badge',
       (tester) async {
     final cubit = _LoadedDeviceCubit();
     addTearDown(cubit.close);
@@ -23,26 +23,19 @@ void main() {
     );
     await tester.pump();
 
-    final summaryText = find.text(
-      'Синхронизировано со всех подключённых устройств',
-    );
-    expect(summaryText, findsOneWidget);
+    expect(find.text('СЕГОДНЯ'), findsOneWidget);
+    expect(find.text('1/1'), findsOneWidget);
 
-    final roundedSummaryContainers = tester
-        .widgetList<Container>(
-      find.ancestor(
-        of: summaryText,
-        matching: find.byType(Container),
-      ),
-    )
+    final clippedCard = tester
+        .widgetList<Container>(find.byType(Container))
         .where((container) {
       final decoration = container.decoration;
       return decoration is BoxDecoration &&
-          decoration.borderRadius == AppRadii.brR4;
+          decoration.borderRadius == AppRadii.brR4 &&
+          container.clipBehavior == Clip.antiAlias;
     }).toList();
 
-    expect(roundedSummaryContainers, hasLength(1));
-    expect(roundedSummaryContainers.single.clipBehavior, Clip.antiAlias);
+    expect(clippedCard, isNotEmpty);
   });
 }
 

@@ -110,7 +110,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
           statusBarBrightness: Brightness.light,
-          systemNavigationBarColor: AppColor.surface,
+          systemNavigationBarColor: AppColor.navBar,
+          systemNavigationBarDividerColor: AppColor.navBar,
+          systemNavigationBarContrastEnforced: false,
           systemNavigationBarIconBrightness: Brightness.dark,
         ),
         child: Scaffold(

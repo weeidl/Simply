@@ -7,6 +7,7 @@ import 'package:simply/screens/message_details/screen/message_details_screen.dar
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/screens/widget/warm/warm_snack_bar.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/text_style.dart';
@@ -14,8 +15,17 @@ import 'package:simply/utils/code_extractor.dart';
 
 class MessagesListWidget extends StatelessWidget {
   final Conversation conversation;
+  final bool selected;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
-  const MessagesListWidget({super.key, required this.conversation});
+  const MessagesListWidget({
+    super.key,
+    required this.conversation,
+    this.selected = false,
+    this.onTap,
+    this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +39,22 @@ class MessagesListWidget extends StatelessWidget {
         borderRadius: AppRadii.brR3,
         child: InkWell(
           borderRadius: AppRadii.brR3,
-          onTap: () => _open(context),
+          onTap: onTap ?? () => _open(context),
+          onLongPress: onLongPress,
           child: Container(
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
             decoration: BoxDecoration(
-              color: unread
-                  ? AppColor.accent.withValues(alpha: 0.06)
-                  : Colors.transparent,
+              color: selected
+                  ? AppColor.accentSoft.withValues(alpha: 0.7)
+                  : unread
+                      ? AppColor.accent.withValues(alpha: 0.06)
+                      : Colors.transparent,
               borderRadius: AppRadii.brR3,
+              border: selected
+                  ? Border.all(
+                      color: AppColor.accent.withValues(alpha: 0.34),
+                    )
+                  : null,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +130,11 @@ class MessagesListWidget extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        if (sourceSummary != null) ...[
+          const SizedBox(height: 6),
+          _SourceMetaChip(text: sourceSummary),
+        ],
+        SizedBox(height: sourceSummary != null ? 7 : 4),
         Text(
           conversation.lastMessage,
           maxLines: 2,
@@ -120,16 +142,9 @@ class MessagesListWidget extends StatelessWidget {
           style: AppTextStyle.bodySm(
               unread ? AppColor.inkSecondary : AppColor.inkTertiary),
         ),
-        if (sourceSummary != null || code != null) ...[
-          const SizedBox(height: 9),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              if (sourceSummary != null) _SourceMetaChip(text: sourceSummary),
-              if (code != null) _CodeChip(code: code),
-            ],
-          ),
+        if (code != null) ...[
+          const SizedBox(height: 8),
+          _CodeChip(code: code),
         ],
       ],
     );
@@ -143,13 +158,14 @@ class MessagesListWidget extends StatelessWidget {
       parts.add(deviceName);
     }
 
+    final hasVerifiedSim = conversation.sourceSubscriptionId != null;
     final simSlot = conversation.sourceSimSlot;
-    if (simSlot != null) {
+    if (hasVerifiedSim && simSlot != null) {
       parts.add('SIM $simSlot');
     }
 
     final carrier = conversation.sourceCarrier?.trim();
-    if (carrier != null && carrier.isNotEmpty) {
+    if (hasVerifiedSim && carrier != null && carrier.isNotEmpty) {
       parts.add(carrier);
     } else {
       final platform = conversation.sourcePlatform?.trim();
@@ -192,7 +208,7 @@ class _CategoryTag extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Manrope',
           fontSize: 10,
           fontWeight: FontWeight.w700,
@@ -214,16 +230,16 @@ class _CodeChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       onTap: () => _copy(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
         decoration: BoxDecoration(
           color: AppColor.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0x0F281910)),
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(color: AppColor.divider),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Код',
+            const Text('Код',
                 style: TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 11,
@@ -233,17 +249,21 @@ class _CodeChip extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               code,
-              style: TextStyle(
+              style: const TextStyle(
                 fontFamily: 'Manrope',
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AppColor.ink,
                 letterSpacing: 1,
-                fontFeatures: const [FontFeature.tabularFigures()],
+                fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.copy_rounded, size: 13, color: AppColor.accent),
+            Icon(
+              Icons.copy_rounded,
+              size: 13,
+              color: AppColor.accentDeep.withValues(alpha: 0.82),
+            ),
           ],
         ),
       ),
@@ -252,13 +272,10 @@ class _CodeChip extends StatelessWidget {
 
   void _copy(BuildContext context) {
     Clipboard.setData(ClipboardData(text: code));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: AppColor.ink,
-        content: Text('Код $code скопирован',
-            style: AppTextStyle.bodySm(AppColor.white)),
-        duration: const Duration(seconds: 2),
-      ),
+    showWarmSnackBar(
+      context,
+      message: 'Готово, код уже в буфере',
+      icon: Icons.copy_rounded,
     );
   }
 }

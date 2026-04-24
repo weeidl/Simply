@@ -9,6 +9,7 @@ import 'package:simply/screens/messages_list/widget/avatar_with_indicator.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/screens/widget/warm/warm_snack_bar.dart';
 import 'package:simply/services/ui_preferences_service.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
@@ -65,7 +66,7 @@ class MessageDetailsScreen extends StatelessWidget {
               Container(
                 width: 6,
                 height: 6,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColor.success,
                   shape: BoxShape.circle,
                 ),
@@ -142,26 +143,61 @@ class _MessagesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      itemCount: messages.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) return const _InfoBanner();
-        final message = messages[index - 1];
-        final prev = index > 1 ? messages[index - 2] : null;
-        final showDivider = prev == null || !_sameDay(prev.date, message.date);
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (showDivider)
-              _DateDivider(label: message.date.formatChatDivider()),
-            const SizedBox(height: 6),
-            _MessageBubble(message: message),
-            const SizedBox(height: 8),
-          ],
+    final chronological = messages.reversed.toList(growable: false);
+    final shortThread = chronological.length <= 2;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          reverse: !shortThread,
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight:
+                  constraints.maxHeight > 28 ? constraints.maxHeight - 28 : 0,
+            ),
+            child: Column(
+              mainAxisAlignment:
+                  shortThread ? MainAxisAlignment.start : MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _InfoBanner(),
+                for (var i = 0; i < chronological.length; i++)
+                  _MessageListEntry(
+                    message: chronological[i],
+                    previous: i > 0 ? chronological[i - 1] : null,
+                  ),
+              ],
+            ),
+          ),
         );
       },
+    );
+  }
+}
+
+class _MessageListEntry extends StatelessWidget {
+  final Message message;
+  final Message? previous;
+
+  const _MessageListEntry({
+    required this.message,
+    required this.previous,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final showDivider =
+        previous == null || !_sameDay(previous!.date, message.date);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showDivider) _DateDivider(label: message.date.formatChatDivider()),
+        const SizedBox(height: 6),
+        _MessageBubble(message: message),
+        const SizedBox(height: 8),
+      ],
     );
   }
 
@@ -311,19 +347,17 @@ class _MoreActionsSheet extends StatelessWidget {
               icon: Icons.content_copy_rounded,
               label: 'Скопировать адрес отправителя',
               onTap: () async {
+                final messenger = ScaffoldMessenger.of(context);
                 await Clipboard.setData(
                   ClipboardData(text: conversationTitle),
                 );
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: AppColor.ink,
-                    content: Text(
-                      'Отправитель скопирован',
-                      style: AppTextStyle.bodySm(AppColor.white),
-                    ),
-                    duration: const Duration(seconds: 2),
+                messenger.clearSnackBars();
+                messenger.showSnackBar(
+                  buildWarmSnackBar(
+                    message: 'Готово, отправитель уже в буфере',
+                    icon: Icons.copy_rounded,
                   ),
                 );
               },
@@ -534,12 +568,9 @@ class _CodeBlock extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
       decoration: BoxDecoration(
-        color: AppColor.bg,
+        color: AppColor.bgAlt.withValues(alpha: 0.58),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppColor.accent.withValues(alpha: 0.4),
-          style: BorderStyle.solid,
-        ),
+        border: Border.all(color: AppColor.divider),
       ),
       child: Row(
         children: [
@@ -547,7 +578,7 @@ class _CodeBlock extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Найден код',
+                Text('Код из сообщения',
                     style: AppTextStyle.micro(AppColor.inkTertiary)),
                 const SizedBox(height: 2),
                 Text(_spaced(code), style: AppTextStyle.codeMono(AppColor.ink)),
@@ -581,13 +612,10 @@ class _CopyButton extends StatelessWidget {
           borderRadius: AppRadii.brPill,
           onTap: () {
             Clipboard.setData(ClipboardData(text: code));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: AppColor.ink,
-                content: Text('Код скопирован',
-                    style: AppTextStyle.bodySm(AppColor.white)),
-                duration: const Duration(seconds: 2),
-              ),
+            showWarmSnackBar(
+              context,
+              message: 'Готово, код уже в буфере',
+              icon: Icons.copy_rounded,
             );
           },
           child: Padding(
@@ -595,9 +623,16 @@ class _CopyButton extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.copy_rounded, size: 13, color: AppColor.white),
+                const Icon(
+                  Icons.copy_rounded,
+                  size: 13,
+                  color: AppColor.white,
+                ),
                 const SizedBox(width: 6),
-                Text('Копировать', style: AppTextStyle.button(AppColor.white)),
+                Text(
+                  'Копировать',
+                  style: AppTextStyle.button(AppColor.white),
+                ),
               ],
             ),
           ),
@@ -654,7 +689,7 @@ class _EmptyView extends StatelessWidget {
             Container(
               width: 84,
               height: 84,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColor.accentSoft,
                 shape: BoxShape.circle,
               ),

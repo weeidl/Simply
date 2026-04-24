@@ -195,7 +195,6 @@ class DeviceRuntimeService {
     final matchedSim = _resolveSim(
       simCards: context.simCards,
       subscriptionId: payload.sourceSubscriptionId,
-      fallbackActiveSlot: context.activeSimSlot,
     );
 
     return payload.copyWith(
@@ -212,7 +211,6 @@ class DeviceRuntimeService {
   DeviceSimCard? _resolveSim({
     required List<DeviceSimCard> simCards,
     required int? subscriptionId,
-    required int? fallbackActiveSlot,
   }) {
     if (simCards.isEmpty) return null;
 
@@ -220,15 +218,6 @@ class DeviceRuntimeService {
       final exact =
           simCards.where((card) => card.subscriptionId == subscriptionId);
       if (exact.isNotEmpty) return exact.first;
-    }
-
-    final active = simCards.where((card) => card.isActive);
-    if (active.isNotEmpty) return active.first;
-
-    if (fallbackActiveSlot != null) {
-      final slotMatch =
-          simCards.where((card) => card.slot == fallbackActiveSlot);
-      if (slotMatch.isNotEmpty) return slotMatch.first;
     }
 
     return simCards.length == 1 ? simCards.first : null;

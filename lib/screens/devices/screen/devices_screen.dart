@@ -184,7 +184,7 @@ class _FleetSummaryCard extends StatelessWidget {
         );
       },
       child: Container(
-        padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [AppColor.surface, AppColor.surfaceSoft],
@@ -215,62 +215,65 @@ class _FleetSummaryCard extends StatelessWidget {
                 ),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'СЕГОДНЯ',
-                  style: AppTextStyle.captionUpper(AppColor.inkTertiary),
-                ),
-                const SizedBox(height: 14),
-                RichText(
-                  text: TextSpan(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 22, 22, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'СЕГОДНЯ',
+                    style: AppTextStyle.captionUpper(AppColor.inkTertiary),
+                  ),
+                  const SizedBox(height: 14),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$todayMessages',
+                          style: AppTextStyle.display(AppColor.accentDeep)
+                              .copyWith(
+                            fontSize: 56,
+                            height: 0.92,
+                          ),
+                        ),
+                        TextSpan(
+                          text: ' сообщений',
+                          style: AppTextStyle.title(AppColor.inkSecondary),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Синхронизировано со всех подключённых устройств',
+                    style: AppTextStyle.bodySm(AppColor.inkSecondary),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
                     children: [
-                      TextSpan(
-                        text: '$todayMessages',
-                        style:
-                            AppTextStyle.display(AppColor.accentDeep).copyWith(
-                          fontSize: 56,
-                          height: 0.92,
+                      Expanded(
+                        child: _HeroMetric(
+                          label: 'УСТРОЙСТВА',
+                          value: '$onlineDevices/${devices.length}',
+                          trailingDot: true,
                         ),
                       ),
-                      TextSpan(
-                        text: ' сообщений',
-                        style: AppTextStyle.title(AppColor.inkSecondary),
+                      Expanded(
+                        child: _HeroMetric(
+                          label: 'SIM',
+                          value: '${totalSims > 0 ? totalSims : senderDevices}',
+                        ),
+                      ),
+                      const Expanded(
+                        child: _HeroMetric(
+                          label: 'СИНХР.',
+                          value: 'авто',
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Синхронизировано со всех подключённых устройств',
-                  style: AppTextStyle.bodySm(AppColor.inkSecondary),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _HeroMetric(
-                        label: 'УСТРОЙСТВА',
-                        value: '$onlineDevices/${devices.length}',
-                        trailingDot: true,
-                      ),
-                    ),
-                    Expanded(
-                      child: _HeroMetric(
-                        label: 'SIM',
-                        value: '${totalSims > 0 ? totalSims : senderDevices}',
-                      ),
-                    ),
-                    const Expanded(
-                      child: _HeroMetric(
-                        label: 'СИНХР.',
-                        value: 'авто',
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

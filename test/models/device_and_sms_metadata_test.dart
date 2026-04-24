@@ -3,6 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/models/device_sim_card.dart';
 import 'package:simply/models/incoming_sms_payload.dart';
+import 'package:simply/security/secure_storage_service.dart';
+import 'package:simply/services/device_runtime_service.dart';
+
+class _FakeSecureStorageService extends SecureStorageService {
+  final Map<String, String> values = {};
+
+  @override
+  Future<void> writeValue(String key, String value) async {
+    values[key] = value;
+  }
+
+  @override
+  Future<String?> readValue(String key) async => values[key];
+}
 
 void main() {
   group('Device', () {
@@ -125,6 +139,87 @@ void main() {
       expect(message.sourceDeviceName, 'Redmi 9 Pro');
       expect(message.sourceSimSlot, 2);
       expect(message.sourceCarrier, 'MTC');
+    });
+  });
+
+  group('DeviceRuntimeService.enrichIncomingPayload', () {
+    test('does not guess the active SIM when SMS subscription is unknown',
+        () async {
+      final storage = _FakeSecureStorageService();
+      final service = DeviceRuntimeService(secureStorageService: storage);
+      await service.writeCurrentContext(
+        const CurrentDeviceContext(
+          deviceId: 'device-1',
+          deviceName: 'Redmi 9',
+          platform: 'android',
+          activeSimSlot: 2,
+          simCards: [
+            DeviceSimCard(
+              slot: 1,
+              subscriptionId: 11,
+              carrierName: 'A1',
+              isActive: false,
+            ),
+            DeviceSimCard(
+              slot: 2,
+              subscriptionId: 12,
+              carrierName: 'Yettel',
+              isActive: true,
+            ),
+          ],
+        ),
+      );
+
+      final enriched = await service.enrichIncomingPayload(
+        IncomingSmsPayload(
+          address: 'Bank',
+          body: 'Code 1234',
+          receivedAt: DateTime.utc(2026, 4, 24, 10),
+        ),
+      );
+
+      expect(enriched.sourceDeviceName, 'Redmi 9');
+      expect(enriched.sourceSimSlot, isNull);
+      expect(enriched.sourceCarrier, isNull);
+    });
+
+    test('uses the exact SMS subscription when it is available', () async {
+      final storage = _FakeSecureStorageService();
+      final service = DeviceRuntimeService(secureStorageService: storage);
+      await service.writeCurrentContext(
+        const CurrentDeviceContext(
+          deviceId: 'device-1',
+          deviceName: 'Redmi 9',
+          platform: 'android',
+          activeSimSlot: 2,
+          simCards: [
+            DeviceSimCard(
+              slot: 1,
+              subscriptionId: 11,
+              carrierName: 'A1',
+              isActive: false,
+            ),
+            DeviceSimCard(
+              slot: 2,
+              subscriptionId: 12,
+              carrierName: 'Yettel',
+              isActive: true,
+            ),
+          ],
+        ),
+      );
+
+      final enriched = await service.enrichIncomingPayload(
+        IncomingSmsPayload(
+          address: 'Bank',
+          body: 'Code 1234',
+          receivedAt: DateTime.utc(2026, 4, 24, 10),
+          sourceSubscriptionId: 11,
+        ),
+      );
+
+      expect(enriched.sourceSimSlot, 1);
+      expect(enriched.sourceCarrier, 'A1');
     });
   });
 }

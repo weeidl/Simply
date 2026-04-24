@@ -82,6 +82,25 @@ class MessagesRepository {
     );
   }
 
+  Future<void> deleteConversation(String conversationId) async {
+    final previewRef =
+        _userDocument().collection(_messages).doc(conversationId);
+    final messagesCollection = _messagesCollection(conversationId);
+
+    while (true) {
+      final snapshot = await messagesCollection.limit(400).get();
+      if (snapshot.docs.isEmpty) break;
+
+      final batch = _firebaseApi.firestore.batch();
+      for (final doc in snapshot.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    }
+
+    await previewRef.delete();
+  }
+
   /// Persists an incoming SMS: updates the conversation preview and appends
   /// the message body inside a Firestore transaction so both writes land
   /// together.

@@ -8,19 +8,24 @@ class MessagesListState extends Equatable {
     this.status = MessagesListStatus.loading,
     this.items = const [],
     this.filter = MessagesFilter.all,
+    this.enabledFilters = defaultMessagesFilters,
     this.query = '',
+    this.selectedConversationIds = const {},
     this.errorMessage,
   });
 
   final MessagesListStatus status;
   final List<Conversation> items;
   final MessagesFilter filter;
+  final Set<MessagesFilter> enabledFilters;
   final String query;
+  final Set<String> selectedConversationIds;
   final String? errorMessage;
 
   bool get isLoading => status == MessagesListStatus.loading;
   bool get isLoaded => status == MessagesListStatus.loaded;
   bool get hasError => status == MessagesListStatus.error;
+  bool get isSelectionMode => selectedConversationIds.isNotEmpty;
 
   /// Items after applying the current chip filter and search query.
   List<Conversation> get filteredItems {
@@ -54,8 +59,7 @@ class MessagesListState extends Equatable {
     return list.toList(growable: false);
   }
 
-  int get unreadCount =>
-      items.where((c) => c.unreadMessagesCount > 0).length;
+  int get unreadCount => items.where((c) => c.unreadMessagesCount > 0).length;
 
   int get totalCount => items.length;
 
@@ -63,7 +67,10 @@ class MessagesListState extends Equatable {
     MessagesListStatus? status,
     List<Conversation>? items,
     MessagesFilter? filter,
+    Set<MessagesFilter>? enabledFilters,
     String? query,
+    Set<String>? selectedConversationIds,
+    bool clearSelectedConversations = false,
     String? errorMessage,
     bool clearError = false,
   }) {
@@ -71,12 +78,23 @@ class MessagesListState extends Equatable {
       status: status ?? this.status,
       items: items ?? this.items,
       filter: filter ?? this.filter,
+      enabledFilters: enabledFilters ?? this.enabledFilters,
       query: query ?? this.query,
+      selectedConversationIds: clearSelectedConversations
+          ? const {}
+          : (selectedConversationIds ?? this.selectedConversationIds),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
   @override
-  List<Object?> get props =>
-      [status, items, filter, query, errorMessage];
+  List<Object?> get props => [
+        status,
+        items,
+        filter,
+        enabledFilters,
+        query,
+        selectedConversationIds,
+        errorMessage,
+      ];
 }

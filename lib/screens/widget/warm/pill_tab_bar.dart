@@ -36,7 +36,7 @@ class PillTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColor.surface,
+        color: AppColor.navBar,
         border: const Border(
           top: BorderSide(color: AppColor.divider, width: 0.5),
         ),
@@ -102,71 +102,84 @@ class _PillTabItem extends StatelessWidget {
     final pillColor =
         active ? AppColor.accentSoft : AppColor.accentSoft.withValues(alpha: 0);
 
-    return Semantics(
-      button: true,
-      selected: active,
-      label: tab.label,
-      child: Material(
-        type: MaterialType.transparency,
-        child: InkWell(
-          borderRadius: AppRadii.brPill,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          onTap: onTap,
-          child: Center(
-            child: AnimatedContainer(
-              duration: duration,
-              curve: curve,
-              height: 44,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              decoration: BoxDecoration(
-                color: pillColor,
-                borderRadius: AppRadii.brPill,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _AnimatedIcon(
-                    kind: tab.kind,
-                    active: active,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Semantics(
+          button: true,
+          selected: active,
+          label: tab.label,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              borderRadius: AppRadii.brPill,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              onTap: onTap,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+                  child: AnimatedContainer(
                     duration: duration,
                     curve: curve,
-                    popCurve: popCurve,
-                  ),
-                  ClipRect(
-                    child: AnimatedAlign(
-                      duration: duration,
-                      curve: curve,
-                      alignment: Alignment.centerLeft,
-                      widthFactor: active ? 1 : 0,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 8),
-                        child: AnimatedOpacity(
+                    height: 44,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: pillColor,
+                      borderRadius: AppRadii.brPill,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _AnimatedIcon(
+                          kind: tab.kind,
+                          active: active,
                           duration: duration,
                           curve: curve,
-                          opacity: active ? 1 : 0,
-                          child: Text(
-                            tab.label,
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: TextOverflow.fade,
-                            style: AppTextStyle.bodySmBold(AppColor.accent)
-                                .copyWith(fontSize: 12),
+                          popCurve: popCurve,
+                        ),
+                        Flexible(
+                          child: ClipRect(
+                            child: AnimatedAlign(
+                              duration: duration,
+                              curve: curve,
+                              alignment: Alignment.centerLeft,
+                              widthFactor: active ? 1 : 0,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: AnimatedOpacity(
+                                  duration: duration,
+                                  curve: curve,
+                                  opacity: active ? 1 : 0,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      tab.label,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      style: AppTextStyle.bodySmBold(
+                                        AppColor.accent,
+                                      ).copyWith(fontSize: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

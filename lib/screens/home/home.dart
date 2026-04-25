@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:simply/screens/devices/screen/devices_screen.dart';
@@ -45,11 +46,13 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
   late final List<Widget> _tabs;
   bool _didRequestInitialDeviceCheck = false;
 
-  static const _navTabs = <PillTab>[
-    PillTab(kind: NavIconKind.devices, label: 'Устройства'),
-    PillTab(kind: NavIconKind.messages, label: 'Сообщения'),
-    PillTab(kind: NavIconKind.settings, label: 'Настройки'),
-  ];
+  List<PillTab> _buildNavTabs(AppLocalizations l10n) {
+    return [
+      PillTab(kind: NavIconKind.devices, label: l10n.devices),
+      PillTab(kind: NavIconKind.messages, label: l10n.messages),
+      PillTab(kind: NavIconKind.settings, label: l10n.settings),
+    ];
+  }
 
   Future<void> _requestPermissions() async {
     if (!Platform.isAndroid) return;
@@ -95,6 +98,9 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final navTabs = _buildNavTabs(l10n);
+
     return MultiBlocListener(
       listeners: [
         BlocListener<CheckDeviceCubit, CheckDeviceState>(
@@ -130,7 +136,7 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
             ),
           ),
           bottomNavigationBar: PillTabBar(
-            tabs: _navTabs,
+            tabs: navTabs,
             activeIndex: _selectedIndex,
             onChanged: (i) => setState(() => _selectedIndex = i),
           ),

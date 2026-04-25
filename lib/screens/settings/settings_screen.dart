@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/bloc/locale/locale_cubit.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/auth/screen/auth_screen.dart';
 import 'package:simply/screens/contact_us/screen/contact_us_screen.dart';
+import 'package:simply/screens/language_selection/language_selection_screen.dart';
 import 'package:simply/screens/privacy_policy/screen/privacy_policy_screen.dart';
 import 'package:simply/screens/profile/screen/profile_screen.dart';
 import 'package:simply/screens/settings/widget/setting_widget.dart';
@@ -20,12 +23,15 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
+    final l10n = AppLocalizations.of(context)!;
+    final localeCubit = context.read<LocaleCubit>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         WarmHeader(
-          eyebrow: 'Аккаунт и приложение',
-          title: 'Настройки',
+          eyebrow: l10n.settingsHeaderEyebrow,
+          title: l10n.settings,
         ),
         Expanded(
           child: ListView(
@@ -34,44 +40,47 @@ class SettingsScreen extends StatelessWidget {
               _ProfileCard(
                 user: user,
                 onTap: () => Navigator.of(context).push(ProfileScreen.route()),
+                l10n: l10n,
               ),
               const SizedBox(height: 18),
-              const _PremiumBanner(),
+              _PremiumBanner(l10n: l10n),
               const SizedBox(height: 18),
-              _SectionTitle('Аккаунт'),
+              _SectionTitle(l10n.account.toUpperCase()),
               _Group(children: [
                 SettingsRow(
                   icon: Icons.person_outline_rounded,
-                  title: 'Профиль',
-                  subtitle: 'Имя, аватар, контактные данные',
+                  title: l10n.profile,
+                  subtitle: l10n.profileNameSubtitle,
                   onTap: () =>
                       Navigator.of(context).push(ProfileScreen.route()),
                 ),
                 const _Divider(),
                 SettingsRow(
                   icon: Icons.notifications_none_rounded,
-                  title: 'Уведомления',
-                  subtitle: 'Push, звуки, тихие часы',
+                  title: l10n.notifications,
+                  subtitle: l10n.notificationsSubtitle,
                   comingSoon: true,
                   onTap: () {},
                 ),
                 const _Divider(),
                 SettingsRow(
                   icon: Icons.language_rounded,
-                  title: 'Язык',
-                  subtitle: 'Русский',
-                  comingSoon: true,
+                  title: l10n.language,
+                  subtitle: localeCubit.isEnglish()
+                      ? l10n.languageEn
+                      : l10n.languageRu,
                   iconBg: const Color(0xFFE7F1FB),
                   iconFg: const Color(0xFF2F6BBA),
-                  onTap: () {},
+                  onTap: () => Navigator.of(context)
+                      .push(LanguageSelectionScreen.route()),
                 ),
               ]),
               const SizedBox(height: 16),
-              _SectionTitle('Помощь'),
+              _SectionTitle(l10n.help.toUpperCase()),
               _Group(children: [
                 SettingsRow(
                   icon: Icons.shield_outlined,
-                  title: 'Политика конфиденциальности',
+                  title: l10n.privacyPolicy,
                   iconBg: const Color(0xFFE2F5EB),
                   iconFg: const Color(0xFF1A7F4B),
                   onTap: () =>
@@ -80,18 +89,21 @@ class SettingsScreen extends StatelessWidget {
                 const _Divider(),
                 SettingsRow(
                   icon: Icons.support_agent_rounded,
-                  title: 'Связаться с нами',
+                  title: l10n.contactUs,
                   iconBg: AppColor.accentSoft,
                   iconFg: AppColor.accentDeep,
                   onTap: () => Navigator.push(context, ContactUsScreen.route()),
                 ),
               ]),
               const SizedBox(height: 24),
-              _LogoutButton(onTap: () => _onLogoutTap(context)),
+              _LogoutButton(
+                onTap: () => _onLogoutTap(context),
+                l10n: l10n,
+              ),
               const SizedBox(height: 18),
               Center(
                 child: Text(
-                  'Создано с любовью weeidl',
+                  l10n.madeWithLove,
                   style: AppTextStyle.caption(AppColor.inkTertiary),
                 ),
               ),
@@ -103,11 +115,12 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Future<void> _onLogoutTap(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     await ConfirmationDialog.show(
       context: context,
       leadingIcon: Icons.logout_rounded,
-      text: 'Выйти из аккаунта?',
-      buttonTextOne: 'Выйти',
+      text: l10n.logoutConfirmation,
+      buttonTextOne: l10n.logoutConfirmButton,
       onTapButtonOne: () async {
         final splashCubit = context.read<SplashCubit>();
         final navigator = Navigator.of(context);
@@ -115,7 +128,7 @@ class SettingsScreen extends StatelessWidget {
         if (!signedOut) return;
         navigator.pushAndRemoveUntil(AuthScreen.route(), (route) => false);
       },
-      buttonTextTwo: 'Отмена',
+      buttonTextTwo: l10n.cancel,
       buttonTextStyleTwo: AppTextStyle.button(AppColor.accent),
       buttonTwoColor: AppColor.accentSoft,
       onTapButtonTwo: () => Navigator.pop(context),
@@ -126,7 +139,13 @@ class SettingsScreen extends StatelessWidget {
 class _ProfileCard extends StatelessWidget {
   final User? user;
   final VoidCallback onTap;
-  const _ProfileCard({required this.user, required this.onTap});
+  final AppLocalizations l10n;
+
+  const _ProfileCard({
+    required this.user,
+    required this.onTap,
+    required this.l10n,
+  });
 
   String get _name {
     final n = user?.displayName;
@@ -217,7 +236,9 @@ class _ProfileCard extends StatelessWidget {
 }
 
 class _PremiumBanner extends StatelessWidget {
-  const _PremiumBanner();
+  final AppLocalizations l10n;
+
+  const _PremiumBanner({required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -249,11 +270,11 @@ class _PremiumBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Simply Premium',
+                Text(l10n.simpplyPremium,
                     style: AppTextStyle.titleSm(AppColor.white)),
                 const SizedBox(height: 2),
                 Text(
-                  'Снимите лимиты на устройства и историю.',
+                  l10n.premiumDescription,
                   style: AppTextStyle.bodySm(AppColor.white)
                       .copyWith(color: AppColor.white.withValues(alpha: 0.9)),
                 ),
@@ -267,7 +288,7 @@ class _PremiumBanner extends StatelessWidget {
               color: AppColor.white,
               borderRadius: BorderRadius.circular(999),
             ),
-            child: Text('Открыть',
+            child: Text(l10n.open,
                 style: AppTextStyle.button(AppColor.accentDeep)),
           ),
         ],
@@ -326,7 +347,9 @@ class _Divider extends StatelessWidget {
 
 class _LogoutButton extends StatelessWidget {
   final VoidCallback onTap;
-  const _LogoutButton({required this.onTap});
+  final AppLocalizations l10n;
+
+  const _LogoutButton({required this.onTap, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -345,8 +368,7 @@ class _LogoutButton extends StatelessWidget {
                 const Icon(Icons.logout_rounded,
                     color: AppColor.danger, size: 18),
                 const SizedBox(width: 8),
-                Text('Выйти из аккаунта',
-                    style: AppTextStyle.button(AppColor.danger)),
+                Text(l10n.logout, style: AppTextStyle.button(AppColor.danger)),
               ],
             ),
           ),

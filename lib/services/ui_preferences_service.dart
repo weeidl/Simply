@@ -12,6 +12,7 @@ class UiPreferencesService {
       'ui.banner.messages_info.dismissed';
   static const _pinnedExpandedDeviceIdsKey =
       'ui.devices.pinned_expanded_ids';
+  static const _savedLanguageKey = 'ui.locale.language_code';
 
   final FlutterSecureStorage _storage;
 
@@ -46,5 +47,13 @@ class UiPreferencesService {
 
   Future<void> _writeFlag(String key, bool value) {
     return _storage.write(key: key, value: value ? 'true' : 'false');
+  }
+
+  Future<String?> readSavedLanguage() async {
+    return _storage.read(key: _savedLanguageKey);
+  }
+
+  Future<void> saveSavedLanguage(String languageCode) {
+    return _storage.write(key: _savedLanguageKey, value: languageCode);
   }
 }

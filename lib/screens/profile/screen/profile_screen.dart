@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/profile/cubit/profile_cubit.dart';
 import 'package:simply/screens/profile/screen/profile_edit_screen.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
@@ -26,9 +27,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BackgroundWidget(
-      appBar: const AppBarWidget(
-        title: 'Профиль',
+      appBar: AppBarWidget(
+        title: l10n.profile,
         showBackButton: true,
       ),
       child: BlocBuilder<ProfileCubit, ProfileState>(
@@ -37,14 +39,15 @@ class ProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: [
               _ProfileHero(
-                name: _resolvedName(state),
+                name: _resolvedName(state, l10n),
                 email: state.email,
               ),
               const SizedBox(height: 20),
-              _InfoCard(state: state),
+              _InfoCard(state: state, l10n: l10n),
               const SizedBox(height: 24),
               _EditButton(
                 onTap: () => _openEdit(context),
+                l10n: l10n,
               ),
             ],
           );
@@ -53,11 +56,11 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  String _resolvedName(ProfileState state) {
+  String _resolvedName(ProfileState state, AppLocalizations l10n) {
     final n = state.displayName.trim();
     if (n.isNotEmpty) return n;
     if (state.email.isNotEmpty) return state.email.split('@').first;
-    return 'Пользователь';
+    return l10n.user;
   }
 
   Future<void> _openEdit(BuildContext context) async {
@@ -116,7 +119,8 @@ class _ProfileHero extends StatelessWidget {
             alignment: Alignment.center,
             child: Text(
               _initials,
-              style: AppTextStyle.display(AppColor.white).copyWith(fontSize: 32),
+              style:
+                  AppTextStyle.display(AppColor.white).copyWith(fontSize: 32),
             ),
           ),
           const SizedBox(height: 16),
@@ -145,11 +149,15 @@ class _ProfileHero extends StatelessWidget {
 
 class _InfoCard extends StatelessWidget {
   final ProfileState state;
+  final AppLocalizations l10n;
 
-  const _InfoCard({required this.state});
+  const _InfoCard({required this.state, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context);
+    final dateFormat = DateFormat('d MMMM y', locale.languageCode);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColor.surface,
@@ -162,21 +170,21 @@ class _InfoCard extends StatelessWidget {
         children: [
           _InfoRow(
             icon: Icons.person_outline_rounded,
-            label: 'Имя',
+            label: l10n.name,
             value: state.displayName.isEmpty ? '—' : state.displayName,
           ),
           const _RowDivider(),
           _InfoRow(
             icon: Icons.mail_outline_rounded,
-            label: 'Email',
+            label: l10n.email,
             value: state.email.isEmpty ? '—' : state.email,
           ),
           if (state.memberSince != null) ...[
             const _RowDivider(),
             _InfoRow(
               icon: Icons.event_available_rounded,
-              label: 'С нами',
-              value: DateFormat('d MMMM y', 'ru').format(state.memberSince!),
+              label: l10n.memberSince,
+              value: dateFormat.format(state.memberSince!),
             ),
           ],
         ],
@@ -250,8 +258,9 @@ class _RowDivider extends StatelessWidget {
 
 class _EditButton extends StatelessWidget {
   final VoidCallback onTap;
+  final AppLocalizations l10n;
 
-  const _EditButton({required this.onTap});
+  const _EditButton({required this.onTap, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -268,7 +277,7 @@ class _EditButton extends StatelessWidget {
             const Icon(Icons.edit_outlined, size: 18, color: AppColor.white),
             const SizedBox(width: 8),
             Text(
-              'Редактировать профиль',
+              l10n.profileEditButton,
               style: AppTextStyle.button(AppColor.white),
             ),
           ],

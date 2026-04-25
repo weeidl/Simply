@@ -43,6 +43,7 @@ class MessagesListWidget extends StatelessWidget {
           onTap: onTap ?? () => _open(context),
           onLongPress: onLongPress,
           child: Container(
+            margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.fromLTRB(12, 14, 12, 14),
             decoration: BoxDecoration(
               color: selected

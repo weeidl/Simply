@@ -27,6 +27,12 @@ class MessagesListState extends Equatable {
   bool get hasError => status == MessagesListStatus.error;
   bool get isSelectionMode => selectedConversationIds.isNotEmpty;
 
+  bool get hasUnreadInSelection => items.any(
+        (c) =>
+            selectedConversationIds.contains(c.id) &&
+            c.unreadMessagesCount > 0,
+      );
+
   /// Items after applying the current chip filter and search query.
   List<Conversation> get filteredItems {
     Iterable<Conversation> list = items;

@@ -6,6 +6,7 @@ import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/widget/messages_list_widget.dart';
 import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
+import 'package:simply/screens/widget/warm/warm_bottom_dock.dart';
 import 'package:simply/screens/widget/warm/warm_chip.dart';
 import 'package:simply/screens/widget/warm/warm_header.dart';
 import 'package:simply/screens/widget/warm/warm_loader.dart';
@@ -109,8 +110,7 @@ class MessagesListScreen extends StatelessWidget {
     if (filtered.isEmpty) {
       return _EmptyView(filter: state.filter, query: state.query);
     }
-    final bottomInset = MediaQuery.of(context).padding.bottom;
-    const navBarHeight = 68.0;
+    final dockOffset = WarmBottomDock.offsetOf(context);
     return Stack(
       children: [
         RefreshIndicator(
@@ -122,7 +122,7 @@ class MessagesListScreen extends StatelessWidget {
               12,
               6,
               12,
-              bottomInset + navBarHeight + (state.isSelectionMode ? 120 : 24),
+              dockOffset + (state.isSelectionMode ? 56 : 24),
             ),
             itemCount: filtered.length,
             itemBuilder: (context, index) {
@@ -144,11 +144,12 @@ class MessagesListScreen extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 16,
-          right: 16,
-          bottom: bottomInset + navBarHeight + 14,
+          left: 0,
+          right: 0,
+          bottom: dockOffset,
           child: _SelectionActionBar(
             selectedCount: state.selectedConversationIds.length,
+            hasUnread: state.hasUnreadInSelection,
             onReadAll: () => _markSelectedRead(context),
             onDeleteAll: () => _confirmDeleteSelected(context),
             onClear: () => context.read<MessagesListCubit>().clearSelection(),
@@ -589,12 +590,14 @@ class _ConversationActionsSheet extends StatelessWidget {
 
 class _SelectionActionBar extends StatelessWidget {
   final int selectedCount;
+  final bool hasUnread;
   final VoidCallback onReadAll;
   final VoidCallback onDeleteAll;
   final VoidCallback onClear;
 
   const _SelectionActionBar({
     required this.selectedCount,
+    required this.hasUnread,
     required this.onReadAll,
     required this.onDeleteAll,
     required this.onClear,
@@ -607,56 +610,39 @@ class _SelectionActionBar extends StatelessWidget {
     return AnimatedSlide(
       duration: const Duration(milliseconds: 260),
       curve: Curves.easeOutCubic,
-      offset: visible ? Offset.zero : const Offset(0, 1.4),
+      offset: visible ? Offset.zero : const Offset(0, 1),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
         opacity: visible ? 1 : 0,
         child: IgnorePointer(
           ignoring: !visible,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-            decoration: BoxDecoration(
-              color: AppColor.surface,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: AppColor.divider),
-              boxShadow: AppShadows.l,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: WarmDockedSurface(
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    _ClearSelectionButton(onTap: onClear),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        l10n.selectedCount(selectedCount),
-                        style: AppTextStyle.bodySmBold(AppColor.ink),
-                      ),
-                    ),
-                  ],
+                _ClearSelectionButton(onTap: onClear),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.selectedCount(selectedCount),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyle.bodySmBold(AppColor.ink),
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SelectionButton(
-                        icon: Icons.done_all_rounded,
-                        label: l10n.readAll,
-                        onTap: onReadAll,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _SelectionButton(
-                        icon: Icons.delete_outline_rounded,
-                        label: l10n.deleteAll,
-                        color: AppColor.danger,
-                        onTap: onDeleteAll,
-                      ),
-                    ),
-                  ],
+                if (hasUnread) ...[
+                  const SizedBox(width: 8),
+                  _SelectionButton(
+                    icon: Icons.done_all_rounded,
+                    label: l10n.readAll,
+                    onTap: onReadAll,
+                  ),
+                ],
+                const SizedBox(width: 8),
+                _SelectionButton(
+                  icon: Icons.delete_outline_rounded,
+                  label: l10n.deleteAll,
+                  color: AppColor.danger,
+                  onTap: onDeleteAll,
                 ),
               ],
             ),
@@ -722,11 +708,12 @@ class _SelectionButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: AppRadii.brPill,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(icon, size: 17, color: resolvedColor),
+                Icon(icon, size: 16, color: resolvedColor),
                 const SizedBox(width: 6),
                 Flexible(
                   child: Text(

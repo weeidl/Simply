@@ -29,6 +29,12 @@ class PillTabBar extends StatelessWidget {
   static const double _iconSize = 24;
   static const double _minLabelFontSize = 12;
 
+  /// Y-offset above the bottom safe-area inset where dockable banners
+  /// (selection action bar, toasts) should align their bottom edge so they
+  /// sit flush above the navbar's tappable pill row, covering the navbar's
+  /// own top divider for a seamless stacked look.
+  static const double attachHeight = 68;
+
   const PillTabBar({
     super.key,
     required this.tabs,

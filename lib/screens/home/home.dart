@@ -16,6 +16,7 @@ import 'package:simply/screens/messages_list/screen/messages_list_screen.dart';
 import 'package:simply/screens/settings/settings_screen.dart';
 import 'package:simply/screens/widget/warm/nav_icons.dart';
 import 'package:simply/screens/widget/warm/pill_tab_bar.dart';
+import 'package:simply/screens/widget/warm/warm_bottom_dock.dart';
 import 'package:simply/themes/colors.dart';
 
 class HomePage extends StatefulWidget {
@@ -124,14 +125,18 @@ class HomePageState extends State<HomePage> with WidgetsBindingObserver {
         child: Scaffold(
           backgroundColor: AppColor.bg,
           extendBody: true,
-          body: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: SafeArea(
-              bottom: false,
-              child: IndexedStack(
-                index: _selectedIndex,
-                children: _tabs,
+          body: WarmBottomDock(
+            offset: PillTabBar.attachHeight +
+                MediaQuery.of(context).padding.bottom,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: SafeArea(
+                bottom: false,
+                child: IndexedStack(
+                  index: _selectedIndex,
+                  children: _tabs,
+                ),
               ),
             ),
           ),

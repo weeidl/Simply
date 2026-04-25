@@ -19,6 +19,8 @@
   "yourName": "Ваше имя",
   "saveProfile": "Профиль обновлён",
   "saveError": "Не удалось сохранить, попробуйте позже",
+  "profileNameEmptyError": "Имя не может быть пустым",
+  "profileSessionExpiredError": "Сессия истекла, войдите снова",
   "changeEmailInfo": "Изменить email можно через поддержку.",
   "personalData": "ЛИЧНЫЕ ДАННЫЕ",
   "protected": "защищено",
@@ -192,7 +194,20 @@
 
   "today": "СЕГОДНЯ",
   "allLowercase": "все",
+  "justNow": "сейчас",
+  "minutesShort": "{count} мин",
+  "hoursShort": "{count} ч",
+  "yesterdayLowercase": "вчера",
+  "todayAtTime": "Сегодня · {time}",
+  "yesterdayAtTime": "Вчера · {time}",
+  "dateAtTime": "{date} · {time}",
 
   "splashSubtitle": "SMS-пересылка между устройствами",
+  "permissionRequiredTitle": "Требуется разрешение",
+  "permissionRequiredMessage": "Для корректной работы приложению нужен доступ к {permissionName}. Пожалуйста, предоставьте доступ.",
+  "permissionPermanentlyDeniedTitle": "Разрешение навсегда отклонено",
+  "permissionPermanentlyDeniedMessage": "Вы навсегда отклонили доступ к {permissionName}. Пожалуйста, разрешите доступ в настройках приложения.",
+  "openSettings": "Открыть настройки",
+  "permissionRestrictedMessage": "Доступ к {permissionName} ограничен.",
   "copied": "Скопировано"
 }

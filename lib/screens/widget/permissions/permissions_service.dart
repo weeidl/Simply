@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/widget/warm/warm_toast.dart';
 
 class PermissionsService {
@@ -52,12 +53,13 @@ class PermissionsService {
   Future<void> _showPermissionRationale(
       BuildContext context, String permissionName) async {
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Permission Required'),
+        title: Text(l10n.permissionRequiredTitle),
         content: Text(
-          'To function correctly, the app requires access to $permissionName. Please grant access.',
+          l10n.permissionRequiredMessage(permissionName),
         ),
         actions: [
           TextButton(
@@ -65,13 +67,13 @@ class PermissionsService {
               Navigator.of(context).pop();
               openAppSettings();
             },
-            child: const Text('Open Settings'),
+            child: Text(l10n.openSettings),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -81,12 +83,13 @@ class PermissionsService {
   Future<void> _showPermissionSettingsDialog(
       BuildContext context, String permissionName) async {
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Permission Permanently Denied'),
+        title: Text(l10n.permissionPermanentlyDeniedTitle),
         content: Text(
-          'You have permanently denied access to $permissionName. Please grant access in the app settings.',
+          l10n.permissionPermanentlyDeniedMessage(permissionName),
         ),
         actions: [
           TextButton(
@@ -94,13 +97,13 @@ class PermissionsService {
               Navigator.of(context).pop();
               openAppSettings();
             },
-            child: const Text('Open Settings'),
+            child: Text(l10n.openSettings),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -110,9 +113,10 @@ class PermissionsService {
   Future<void> _showPermissionRestrictedDialog(
       BuildContext context, String permissionName) async {
     if (!context.mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     WarmToast.error(
       context,
-      'Access to $permissionName is restricted.',
+      l10n.permissionRestrictedMessage(permissionName),
     );
   }
 }

@@ -206,6 +206,18 @@ abstract class AppLocalizations {
   /// **'Failed to save, please try again'**
   String get saveError;
 
+  /// Profile validation error when name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Name cannot be empty'**
+  String get profileNameEmptyError;
+
+  /// Profile update error when user session is missing
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, please sign in again'**
+  String get profileSessionExpiredError;
+
   /// Email change info
   ///
   /// In en, this message translates to:
@@ -1178,11 +1190,89 @@ abstract class AppLocalizations {
   /// **'all'**
   String get allLowercase;
 
+  /// Relative time: just now
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow;
+
+  /// Relative time in minutes (short)
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String minutesShort(int count);
+
+  /// Relative time in hours (short)
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h'**
+  String hoursShort(int count);
+
+  /// Relative time: yesterday (lowercase)
+  ///
+  /// In en, this message translates to:
+  /// **'yesterday'**
+  String get yesterdayLowercase;
+
+  /// Chat divider for today with time
+  ///
+  /// In en, this message translates to:
+  /// **'Today · {time}'**
+  String todayAtTime(String time);
+
+  /// Chat divider for yesterday with time
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday · {time}'**
+  String yesterdayAtTime(String time);
+
+  /// Chat divider for arbitrary date with time
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {time}'**
+  String dateAtTime(String date, String time);
+
   /// Splash screen subtitle
   ///
   /// In en, this message translates to:
   /// **'SMS forwarding between devices'**
   String get splashSubtitle;
+
+  /// Permission rationale dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Required'**
+  String get permissionRequiredTitle;
+
+  /// Permission rationale dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'To function correctly, the app requires access to {permissionName}. Please grant access.'**
+  String permissionRequiredMessage(String permissionName);
+
+  /// Permission permanently denied dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Permanently Denied'**
+  String get permissionPermanentlyDeniedTitle;
+
+  /// Permission permanently denied dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'You have permanently denied access to {permissionName}. Please grant access in the app settings.'**
+  String permissionPermanentlyDeniedMessage(String permissionName);
+
+  /// Button to open app settings
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// Toast shown when permission is restricted
+  ///
+  /// In en, this message translates to:
+  /// **'Access to {permissionName} is restricted.'**
+  String permissionRestrictedMessage(String permissionName);
 
   /// Default copied toast message
   ///

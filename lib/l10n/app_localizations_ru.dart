@@ -63,6 +63,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get saveError => 'Не удалось сохранить, попробуйте позже';
 
   @override
+  String get profileNameEmptyError => 'Имя не может быть пустым';
+
+  @override
+  String get profileSessionExpiredError => 'Сессия истекла, войдите снова';
+
+  @override
   String get changeEmailInfo => 'Изменить email можно через поддержку.';
 
   @override
@@ -596,7 +602,63 @@ class AppLocalizationsRu extends AppLocalizations {
   String get allLowercase => 'все';
 
   @override
+  String get justNow => 'сейчас';
+
+  @override
+  String minutesShort(int count) {
+    return '$count мин';
+  }
+
+  @override
+  String hoursShort(int count) {
+    return '$count ч';
+  }
+
+  @override
+  String get yesterdayLowercase => 'вчера';
+
+  @override
+  String todayAtTime(String time) {
+    return 'Сегодня · $time';
+  }
+
+  @override
+  String yesterdayAtTime(String time) {
+    return 'Вчера · $time';
+  }
+
+  @override
+  String dateAtTime(String date, String time) {
+    return '$date · $time';
+  }
+
+  @override
   String get splashSubtitle => 'SMS-пересылка между устройствами';
+
+  @override
+  String get permissionRequiredTitle => 'Требуется разрешение';
+
+  @override
+  String permissionRequiredMessage(String permissionName) {
+    return 'Для корректной работы приложению нужен доступ к $permissionName. Пожалуйста, предоставьте доступ.';
+  }
+
+  @override
+  String get permissionPermanentlyDeniedTitle =>
+      'Разрешение навсегда отклонено';
+
+  @override
+  String permissionPermanentlyDeniedMessage(String permissionName) {
+    return 'Вы навсегда отклонили доступ к $permissionName. Пожалуйста, разрешите доступ в настройках приложения.';
+  }
+
+  @override
+  String get openSettings => 'Открыть настройки';
+
+  @override
+  String permissionRestrictedMessage(String permissionName) {
+    return 'Доступ к $permissionName ограничен.';
+  }
 
   @override
   String get copied => 'Скопировано';

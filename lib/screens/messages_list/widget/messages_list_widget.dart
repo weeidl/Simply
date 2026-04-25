@@ -93,6 +93,7 @@ class MessagesListWidget extends StatelessWidget {
   }
 
   Widget _content(BuildContext context, bool unread, String? code) {
+    final l10n = AppLocalizations.of(context)!;
     final sourceSummary = _sourceSummary();
 
     return Column(
@@ -126,7 +127,7 @@ class MessagesListWidget extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              conversation.lastMessageDate.formatRelativeShort(),
+              conversation.lastMessageDate.formatRelativeShort(l10n),
               style: AppTextStyle.caption(AppColor.inkTertiary),
             ),
           ],

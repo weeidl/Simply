@@ -38,6 +38,10 @@
   "@saveProfile": { "description": "Success toast when profile saved" },
   "saveError": "Failed to save, please try again",
   "@saveError": { "description": "Error toast when save fails" },
+  "profileNameEmptyError": "Name cannot be empty",
+  "@profileNameEmptyError": { "description": "Profile validation error when name is empty" },
+  "profileSessionExpiredError": "Session expired, please sign in again",
+  "@profileSessionExpiredError": { "description": "Profile update error when user session is missing" },
   "changeEmailInfo": "Change email through support.",
   "@changeEmailInfo": { "description": "Email change info" },
   "personalData": "PERSONAL DATA",
@@ -412,9 +416,62 @@
   "@today": { "description": "Today date group header" },
   "allLowercase": "all",
   "@allLowercase": { "description": "All lowercase label" },
+  "justNow": "just now",
+  "@justNow": { "description": "Relative time: just now" },
+  "minutesShort": "{count} min",
+  "@minutesShort": {
+    "description": "Relative time in minutes (short)",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "hoursShort": "{count} h",
+  "@hoursShort": {
+    "description": "Relative time in hours (short)",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "yesterdayLowercase": "yesterday",
+  "@yesterdayLowercase": { "description": "Relative time: yesterday (lowercase)" },
+  "todayAtTime": "Today · {time}",
+  "@todayAtTime": {
+    "description": "Chat divider for today with time",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "yesterdayAtTime": "Yesterday · {time}",
+  "@yesterdayAtTime": {
+    "description": "Chat divider for yesterday with time",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "dateAtTime": "{date} · {time}",
+  "@dateAtTime": {
+    "description": "Chat divider for arbitrary date with time",
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
 
   "splashSubtitle": "SMS forwarding between devices",
   "@splashSubtitle": { "description": "Splash screen subtitle" },
+  "permissionRequiredTitle": "Permission Required",
+  "@permissionRequiredTitle": { "description": "Permission rationale dialog title" },
+  "permissionRequiredMessage": "To function correctly, the app requires access to {permissionName}. Please grant access.",
+  "@permissionRequiredMessage": {
+    "description": "Permission rationale dialog body",
+    "placeholders": { "permissionName": { "type": "String" } }
+  },
+  "permissionPermanentlyDeniedTitle": "Permission Permanently Denied",
+  "@permissionPermanentlyDeniedTitle": { "description": "Permission permanently denied dialog title" },
+  "permissionPermanentlyDeniedMessage": "You have permanently denied access to {permissionName}. Please grant access in the app settings.",
+  "@permissionPermanentlyDeniedMessage": {
+    "description": "Permission permanently denied dialog body",
+    "placeholders": { "permissionName": { "type": "String" } }
+  },
+  "openSettings": "Open Settings",
+  "@openSettings": { "description": "Button to open app settings" },
+  "permissionRestrictedMessage": "Access to {permissionName} is restricted.",
+  "@permissionRestrictedMessage": {
+    "description": "Toast shown when permission is restricted",
+    "placeholders": { "permissionName": { "type": "String" } }
+  },
   "copied": "Copied",
   "@copied": { "description": "Default copied toast message" }
 }

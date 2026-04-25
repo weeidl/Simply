@@ -24,6 +24,10 @@ class PillTabBar extends StatelessWidget {
   static const Curve _curve = Curves.easeOutCubic;
   static const Curve _popCurve = Curves.easeOutBack;
   static const double _rowHeight = 60;
+  static const double _itemHorizontalPadding = 18;
+  static const double _labelLeftPadding = 4;
+  static const double _iconSize = 24;
+  static const double _minLabelFontSize = 12;
 
   const PillTabBar({
     super.key,
@@ -57,26 +61,66 @@ class PillTabBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-          child: SizedBox(
-            height: _rowHeight,
-            child: Row(
-              children: List.generate(tabs.length, (i) {
-                return Expanded(
-                  child: _PillTabItem(
-                    tab: tabs[i],
-                    active: i == activeIndex,
-                    onTap: () => onChanged(i),
-                    duration: _duration,
-                    curve: _curve,
-                    popCurve: _popCurve,
-                  ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final labelFontSize = _resolveUniformLabelFontSize(
+                context,
+                constraints.maxWidth,
+              );
+              return SizedBox(
+                height: _rowHeight,
+                child: Row(
+                  children: List.generate(tabs.length, (i) {
+                    return Expanded(
+                      child: _PillTabItem(
+                        tab: tabs[i],
+                        active: i == activeIndex,
+                        onTap: () => onChanged(i),
+                        duration: _duration,
+                        curve: _curve,
+                        popCurve: _popCurve,
+                        labelFontSize: labelFontSize,
+                      ),
+                    );
+                  }),
                 );
-              }),
-            ),
+              );
+            },
           ),
         ),
       ),
     );
+  }
+
+  double _resolveUniformLabelFontSize(
+    BuildContext context,
+    double navBarWidth,
+  ) {
+    final baseStyle = AppTextStyle.titleSm(AppColor.accent);
+    final baseFontSize = baseStyle.fontSize ?? 16;
+    final tabWidth = navBarWidth / tabs.length;
+    final maxLabelWidth = tabWidth -
+        (_itemHorizontalPadding * 2) -
+        _iconSize -
+        _labelLeftPadding;
+    if (maxLabelWidth <= 0) return _minLabelFontSize;
+
+    final textScaler = MediaQuery.textScalerOf(context);
+    var scale = 1.0;
+    for (final tab in tabs) {
+      final painter = TextPainter(
+        text: TextSpan(text: tab.label, style: baseStyle),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+        textScaler: textScaler,
+      )..layout();
+      final width = painter.width;
+      if (width <= 0) continue;
+      final candidate = maxLabelWidth / width;
+      if (candidate < scale) scale = candidate;
+    }
+    final resolved = baseFontSize * scale.clamp(0.0, 1.0);
+    return resolved < _minLabelFontSize ? _minLabelFontSize : resolved;
   }
 }
 
@@ -87,6 +131,7 @@ class _PillTabItem extends StatelessWidget {
   final Duration duration;
   final Curve curve;
   final Curve popCurve;
+  final double labelFontSize;
 
   const _PillTabItem({
     required this.tab,
@@ -95,6 +140,7 @@ class _PillTabItem extends StatelessWidget {
     required this.duration,
     required this.curve,
     required this.popCurve,
+    required this.labelFontSize,
   });
 
   @override
@@ -154,17 +200,14 @@ class _PillTabItem extends StatelessWidget {
                                   duration: duration,
                                   curve: curve,
                                   opacity: active ? 1 : 0,
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      tab.label,
-                                      maxLines: 1,
-                                      softWrap: false,
-                                      style: AppTextStyle.titleSm(
-                                        AppColor.accent,
-                                      ),
-                                    ),
+                                  child: Text(
+                                    tab.label,
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.clip,
+                                    style: AppTextStyle.titleSm(
+                                      AppColor.accent,
+                                    ).copyWith(fontSize: labelFontSize),
                                   ),
                                 ),
                               ),

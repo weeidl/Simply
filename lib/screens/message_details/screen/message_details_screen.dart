@@ -190,12 +190,14 @@ class _MessageListEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final showDivider =
         previous == null || !_sameDay(previous!.date, message.date);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (showDivider) _DateDivider(label: message.date.formatChatDivider()),
+        if (showDivider)
+          _DateDivider(label: message.date.formatChatDivider(l10n)),
         const SizedBox(height: 6),
         _MessageBubble(message: message),
         const SizedBox(height: 8),

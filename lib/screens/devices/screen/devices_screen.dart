@@ -377,7 +377,7 @@ class _FleetInsights extends StatelessWidget {
     if (lastActivity != null) {
       chips.add(_InsightChip(
         icon: Icons.schedule_rounded,
-        label: l10n.lastActivity(lastActivity!.formatRelativeShort()),
+        label: l10n.lastActivity(lastActivity!.formatRelativeShort(l10n)),
         tone: _ChipTone.neutral,
       ));
     } else if (senderCount > 0 && totalMessages == 0) {

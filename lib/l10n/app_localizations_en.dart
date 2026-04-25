@@ -63,6 +63,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveError => 'Failed to save, please try again';
 
   @override
+  String get profileNameEmptyError => 'Name cannot be empty';
+
+  @override
+  String get profileSessionExpiredError =>
+      'Session expired, please sign in again';
+
+  @override
   String get changeEmailInfo => 'Change email through support.';
 
   @override
@@ -591,7 +598,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allLowercase => 'all';
 
   @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesShort(int count) {
+    return '$count min';
+  }
+
+  @override
+  String hoursShort(int count) {
+    return '$count h';
+  }
+
+  @override
+  String get yesterdayLowercase => 'yesterday';
+
+  @override
+  String todayAtTime(String time) {
+    return 'Today · $time';
+  }
+
+  @override
+  String yesterdayAtTime(String time) {
+    return 'Yesterday · $time';
+  }
+
+  @override
+  String dateAtTime(String date, String time) {
+    return '$date · $time';
+  }
+
+  @override
   String get splashSubtitle => 'SMS forwarding between devices';
+
+  @override
+  String get permissionRequiredTitle => 'Permission Required';
+
+  @override
+  String permissionRequiredMessage(String permissionName) {
+    return 'To function correctly, the app requires access to $permissionName. Please grant access.';
+  }
+
+  @override
+  String get permissionPermanentlyDeniedTitle =>
+      'Permission Permanently Denied';
+
+  @override
+  String permissionPermanentlyDeniedMessage(String permissionName) {
+    return 'You have permanently denied access to $permissionName. Please grant access in the app settings.';
+  }
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String permissionRestrictedMessage(String permissionName) {
+    return 'Access to $permissionName is restricted.';
+  }
 
   @override
   String get copied => 'Copied';

@@ -72,7 +72,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       );
       Navigator.of(context).maybePop();
     } else {
-      final message = cubit.state.errorMessage ?? l10n.saveError;
+      final message = switch (cubit.state.errorCode) {
+        ProfileErrorCode.nameEmpty => l10n.profileNameEmptyError,
+        ProfileErrorCode.sessionExpired => l10n.profileSessionExpiredError,
+        ProfileErrorCode.saveFailed => l10n.saveError,
+        null => l10n.saveError,
+      };
       WarmToast.error(context, message);
     }
   }

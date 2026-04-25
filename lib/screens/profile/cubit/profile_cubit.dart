@@ -32,7 +32,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<bool> updateDisplayName(String name) async {
     final trimmed = name.trim();
     if (trimmed.isEmpty) {
-      emit(state.copyWith(errorMessage: 'Имя не может быть пустым'));
+      emit(state.copyWith(errorCode: ProfileErrorCode.nameEmpty));
       return false;
     }
     if (trimmed == state.displayName.trim()) {
@@ -40,7 +40,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
     final user = _auth.currentUser;
     if (user == null) {
-      emit(state.copyWith(errorMessage: 'Сессия истекла, войдите снова'));
+      emit(state.copyWith(errorCode: ProfileErrorCode.sessionExpired));
       return false;
     }
 
@@ -58,7 +58,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       debugPrint('[ProfileCubit.updateDisplayName] $e\n$stack');
       emit(state.copyWith(
         isSaving: false,
-        errorMessage: 'Не удалось сохранить, попробуйте позже',
+        errorCode: ProfileErrorCode.saveFailed,
       ));
       return false;
     }

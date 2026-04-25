@@ -1,19 +1,21 @@
 part of 'profile_cubit.dart';
 
+enum ProfileErrorCode { nameEmpty, sessionExpired, saveFailed }
+
 @immutable
 class ProfileState {
   final String displayName;
   final String email;
   final DateTime? memberSince;
   final bool isSaving;
-  final String? errorMessage;
+  final ProfileErrorCode? errorCode;
 
   const ProfileState({
     required this.displayName,
     required this.email,
     required this.memberSince,
     required this.isSaving,
-    required this.errorMessage,
+    required this.errorCode,
   });
 
   factory ProfileState.initial() {
@@ -22,7 +24,7 @@ class ProfileState {
       email: '',
       memberSince: null,
       isSaving: false,
-      errorMessage: null,
+      errorCode: null,
     );
   }
 
@@ -31,7 +33,7 @@ class ProfileState {
     String? email,
     DateTime? memberSince,
     bool? isSaving,
-    String? errorMessage,
+    ProfileErrorCode? errorCode,
     bool clearError = false,
   }) {
     return ProfileState(
@@ -39,7 +41,7 @@ class ProfileState {
       email: email ?? this.email,
       memberSince: memberSince ?? this.memberSince,
       isSaving: isSaving ?? this.isSaving,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      errorCode: clearError ? null : (errorCode ?? this.errorCode),
     );
   }
 }

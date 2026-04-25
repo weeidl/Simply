@@ -82,7 +82,7 @@ class FcmCubit extends Cubit<FcmState> {
   }
 
   Future<void> _showNotification() async {
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       ForegroundRuntimeNotice.channelId,
       ForegroundRuntimeNotice.channelName,
       channelDescription: ForegroundRuntimeNotice.channelDescription,
@@ -94,7 +94,7 @@ class FcmCubit extends Cubit<FcmState> {
       ongoing: true,
       color: AppColor.accentDeep,
     );
-    const platformDetails = NotificationDetails(android: androidDetails);
+    final platformDetails = NotificationDetails(android: androidDetails);
     await flutterLocalNotificationsPlugin.show(
       0,
       ForegroundRuntimeNotice.title,

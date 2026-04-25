@@ -199,7 +199,8 @@ class _DeviceWidgetState extends State<DeviceWidget> {
       if (_online)
         l10n.online
       else if (device.dateUpdateInfo != null)
-        l10n.lastSeenAt(device.dateUpdateInfo!.toDate().formatRelativeShort())
+        l10n.lastSeenAt(
+            device.dateUpdateInfo!.toDate().formatRelativeShort(l10n))
       else
         l10n.offline,
       if (!device.isReceiverOnly && device.todayMessageCount > 0)
@@ -539,7 +540,7 @@ class _StatusLine extends StatelessWidget {
           online
               ? l10n.online
               : (lastSeen != null
-                  ? l10n.lastSeenAt(lastSeen!.formatRelativeShort())
+                  ? l10n.lastSeenAt(lastSeen!.formatRelativeShort(l10n))
                   : l10n.offline),
           style: AppTextStyle.bodySm(
             online ? AppColor.success : AppColor.inkTertiary,

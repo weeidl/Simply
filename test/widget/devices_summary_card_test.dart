@@ -72,5 +72,8 @@ class _LoadedDeviceCubit extends Cubit<DeviceState> implements DeviceCubit {
   Future<void> moveUp(String deviceId) async {}
 
   @override
+  Future<void> togglePin(String deviceId) async {}
+
+  @override
   Future<void> updateDevice() async {}
 }

@@ -9,30 +9,22 @@ import 'package:simply/screens/devices/widget/device_widget.dart';
 import 'package:simply/screens/widget/dialogs/confirmation_dialog.dart';
 import 'package:simply/screens/widget/warm/warm_header.dart';
 import 'package:simply/screens/widget/warm/warm_loader.dart';
-import 'package:simply/services/ui_preferences_service.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
 import 'package:simply/themes/text_style.dart';
 
 class DevicesScreen extends StatefulWidget {
-  final UiPreferencesService? uiPreferencesService;
-
-  const DevicesScreen({super.key, this.uiPreferencesService});
+  const DevicesScreen({super.key});
 
   @override
   State<DevicesScreen> createState() => _DevicesScreenState();
 }
 
 class _DevicesScreenState extends State<DevicesScreen> {
-  late final UiPreferencesService _uiPrefs;
-  Set<String> _pinnedIds = <String>{};
-
   @override
   void initState() {
     super.initState();
-    _uiPrefs = widget.uiPreferencesService ?? UiPreferencesService();
-    _loadPinnedIds();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final cubit = context.read<DeviceCubit>();
@@ -40,25 +32,6 @@ class _DevicesScreenState extends State<DevicesScreen> {
         cubit.fetch();
       }
     });
-  }
-
-  Future<void> _loadPinnedIds() async {
-    final ids = await _uiPrefs.readPinnedExpandedDeviceIds();
-    if (!mounted) return;
-    setState(() => _pinnedIds = ids);
-  }
-
-  void _togglePin(String deviceId) {
-    setState(() {
-      final next = {..._pinnedIds};
-      if (next.contains(deviceId)) {
-        next.remove(deviceId);
-      } else {
-        next.add(deviceId);
-      }
-      _pinnedIds = next;
-    });
-    _uiPrefs.writePinnedExpandedDeviceIds(_pinnedIds);
   }
 
   @override
@@ -124,8 +97,10 @@ class _DevicesScreenState extends State<DevicesScreen> {
                       state.items[i].deviceId == state.currentDeviceId,
                   canMoveUp: i > 0,
                   canMoveDown: i < state.items.length - 1,
-                  isPinned: _pinnedIds.contains(state.items[i].deviceId),
-                  onTogglePin: () => _togglePin(state.items[i].deviceId),
+                  isPinned: state.items[i].pinned,
+                  onTogglePin: () => context
+                      .read<DeviceCubit>()
+                      .togglePin(state.items[i].deviceId),
                   onReconnect: () => DeviceSettingsModal.show(
                     context: context,
                     device: state.items[i],

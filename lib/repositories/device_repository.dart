@@ -141,6 +141,14 @@ class DeviceRepository {
     await itemsBackend.doc(deviceId).delete();
   }
 
+  Future<void> setPinned(String deviceId, bool pinned) async {
+    final itemsBackend = _firebaseApi.itemsCollection(_url);
+    await itemsBackend.doc(deviceId).set(
+      {'pinned': pinned},
+      SetOptions(merge: true),
+    );
+  }
+
   Future<void> saveOrder(List<Device> devices) async {
     final itemsBackend = _firebaseApi.itemsCollection(_url);
     final batch = _firebaseApi.firestore.batch();

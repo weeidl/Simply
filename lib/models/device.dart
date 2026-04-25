@@ -18,6 +18,7 @@ class Device {
   final String? todaySparklineDay;
   final Timestamp? lastMessageAt;
   final int? sortOrder;
+  final bool pinned;
 
   Device({
     required this.userId,
@@ -36,6 +37,7 @@ class Device {
     this.todaySparklineDay,
     this.lastMessageAt,
     this.sortOrder,
+    this.pinned = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -57,6 +59,7 @@ class Device {
       if (todaySparklineDay != null) "today_sparkline_day": todaySparklineDay,
       if (lastMessageAt != null) "last_message_at": lastMessageAt,
       if (sortOrder != null) "sort_order": sortOrder,
+      if (pinned) "pinned": pinned,
     };
   }
 
@@ -90,6 +93,7 @@ class Device {
       todaySparklineDay: map['today_sparkline_day']?.toString(),
       lastMessageAt: map['last_message_at'],
       sortOrder: (map['sort_order'] as num?)?.toInt(),
+      pinned: map['pinned'] == true,
     );
   }
 
@@ -110,6 +114,7 @@ class Device {
     String? todaySparklineDay,
     Timestamp? lastMessageAt,
     int? sortOrder,
+    bool? pinned,
   }) {
     return Device(
       userId: userId ?? this.userId,
@@ -128,6 +133,7 @@ class Device {
       todaySparklineDay: todaySparklineDay ?? this.todaySparklineDay,
       lastMessageAt: lastMessageAt ?? this.lastMessageAt,
       sortOrder: sortOrder ?? this.sortOrder,
+      pinned: pinned ?? this.pinned,
     );
   }
 

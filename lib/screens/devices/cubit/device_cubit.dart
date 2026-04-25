@@ -44,6 +44,26 @@ class DeviceCubit extends Cubit<DeviceState> {
     }
   }
 
+  Future<void> togglePin(String deviceId) async {
+    final device = state.items.firstWhere(
+      (d) => d.deviceId == deviceId,
+      orElse: () => throw StateError('Device $deviceId not in state'),
+    );
+    final next = !device.pinned;
+    final optimistic = state.items
+        .map((d) => d.deviceId == deviceId ? d.copyWith(pinned: next) : d)
+        .toList();
+    emit(state.copyWith(items: optimistic));
+    try {
+      await _deviceRepository.setPinned(deviceId, next);
+    } catch (_) {
+      final rolledBack = state.items
+          .map((d) => d.deviceId == deviceId ? d.copyWith(pinned: !next) : d)
+          .toList();
+      emit(state.copyWith(items: rolledBack));
+    }
+  }
+
   Future<void> moveUp(String deviceId) async {
     final index =
         state.items.indexWhere((device) => device.deviceId == deviceId);

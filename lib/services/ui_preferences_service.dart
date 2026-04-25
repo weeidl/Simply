@@ -10,8 +10,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class UiPreferencesService {
   static const _messagesInfoBannerDismissedKey =
       'ui.banner.messages_info.dismissed';
-  static const _pinnedExpandedDeviceIdsKey =
-      'ui.devices.pinned_expanded_ids';
   static const _savedLanguageKey = 'ui.locale.language_code';
 
   final FlutterSecureStorage _storage;
@@ -25,19 +23,6 @@ class UiPreferencesService {
 
   Future<void> setMessagesInfoBannerDismissed(bool dismissed) {
     return _writeFlag(_messagesInfoBannerDismissedKey, dismissed);
-  }
-
-  Future<Set<String>> readPinnedExpandedDeviceIds() async {
-    final raw = await _storage.read(key: _pinnedExpandedDeviceIdsKey);
-    if (raw == null || raw.isEmpty) return <String>{};
-    return raw.split(',').where((value) => value.isNotEmpty).toSet();
-  }
-
-  Future<void> writePinnedExpandedDeviceIds(Set<String> ids) {
-    return _storage.write(
-      key: _pinnedExpandedDeviceIdsKey,
-      value: ids.join(','),
-    );
   }
 
   Future<bool> _readFlag(String key) async {

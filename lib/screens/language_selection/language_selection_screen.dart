@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/bloc/locale/locale_cubit.dart';
+import 'package:simply/bloc/locale/locale_state.dart';
 import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
@@ -26,7 +27,7 @@ class LanguageSelectionScreen extends StatelessWidget {
         title: AppLocalizations.of(context)!.language,
         showBackButton: true,
       ),
-      child: BlocBuilder<LocaleCubit, dynamic>(
+      child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, state) {
           final cubit = context.read<LocaleCubit>();
           final l10n = AppLocalizations.of(context)!;
@@ -35,7 +36,7 @@ class LanguageSelectionScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             children: [
               Text(
-                'Choose your preferred language',
+                l10n.chooseLanguage,
                 style: AppTextStyle.bodySm(AppColor.inkTertiary),
               ),
               const SizedBox(height: 20),
@@ -177,12 +178,12 @@ class _LanguageInfo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Language will be changed immediately',
+            l10n.languageChangedHint,
             style: AppTextStyle.titleSm(AppColor.accent),
           ),
           const SizedBox(height: 8),
           Text(
-            'All text in the app will be displayed in your selected language.',
+            l10n.languageChangedDesc,
             style: AppTextStyle.bodySm(AppColor.accentDeep),
           ),
         ],

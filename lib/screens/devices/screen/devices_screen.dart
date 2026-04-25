@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/extensions.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/screens/devices/cubit/device_cubit.dart';
 import 'package:simply/screens/devices/settings/device_settings_modal.dart';
@@ -62,16 +63,18 @@ class _DevicesScreenState extends State<DevicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<DeviceCubit, DeviceState>(
       builder: (context, state) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             WarmHeader(
-              eyebrow: _eyebrow(state),
-              title: 'Устройства',
+              eyebrow: _eyebrow(state, l10n),
+              title: l10n.devices,
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
               trailing: _AddButton(
+                label: l10n.addButton,
                 onTap: () => DeviceSettingsModal.show(context: context),
               ),
             ),
@@ -82,11 +85,11 @@ class _DevicesScreenState extends State<DevicesScreen> {
     );
   }
 
-  String _eyebrow(DeviceState state) {
-    if (state.items.isEmpty) return 'Подключите свой первый телефон';
+  String _eyebrow(DeviceState state, AppLocalizations l10n) {
+    if (state.items.isEmpty) return l10n.devicesEyebrowEmpty;
     final senders =
         state.items.where((device) => !device.isReceiverOnly).length;
-    return '${state.items.length} устройств · $senders отправляют SMS';
+    return l10n.devicesEyebrow(state.items.length, senders);
   }
 
   Widget _content(BuildContext context, DeviceState state) {
@@ -145,20 +148,20 @@ class _DevicesScreenState extends State<DevicesScreen> {
   }
 
   Future<void> _confirmDelete(BuildContext context, Device device) {
+    final l10n = AppLocalizations.of(context)!;
     return ConfirmationDialog.show<void>(
       context: context,
-      title: 'Устройство',
+      title: l10n.deviceConfirmTitle,
       leadingIcon: Icons.delete_outline_rounded,
       leadingIconColor: AppColor.danger,
-      text: 'Удалить ${device.deviceName} из списка устройств?',
-      subText:
-          'Устройство исчезнет из списка, но его можно будет подключить снова.',
-      buttonTextOne: 'Удалить',
+      text: l10n.deleteDeviceFromList(device.deviceName),
+      subText: l10n.deleteDeviceWarning,
+      buttonTextOne: l10n.delete,
       onTapButtonOne: () async {
         Navigator.of(context).pop();
         await context.read<DeviceCubit>().deleteDevice(device.deviceId);
       },
-      buttonTextTwo: 'Отмена',
+      buttonTextTwo: l10n.cancel,
       onTapButtonTwo: () => Navigator.of(context).pop(),
       buttonTwoColor: AppColor.bgAlt,
       buttonTextStyleTwo: AppTextStyle.button(AppColor.accentDeep),
@@ -173,10 +176,11 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Text(
-          'ВСЕ УСТРОЙСТВА',
+          l10n.allDevices,
           style: AppTextStyle.captionUpper(AppColor.inkTertiary),
         ),
         const Spacer(),
@@ -196,6 +200,7 @@ class _FleetSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final senders = devices.where((d) => !d.isReceiverOnly).toList();
     final todayMessages =
         devices.fold<int>(0, (sum, item) => sum + item.todayMessageCount);
@@ -244,7 +249,7 @@ class _FleetSummaryCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'СЕГОДНЯ',
+                        l10n.todayLabel,
                         style: AppTextStyle.micro(AppColor.inkTertiary),
                       ),
                       const SizedBox(height: 4),
@@ -350,12 +355,13 @@ class _FleetInsights extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final chips = <Widget>[];
 
     if (lowBatteryCount > 0) {
       chips.add(_InsightChip(
         icon: Icons.battery_alert_rounded,
-        label: 'Низкий заряд · $lowBatteryCount',
+        label: l10n.lowBattery(lowBatteryCount),
         tone: _ChipTone.danger,
       ));
     }
@@ -371,21 +377,21 @@ class _FleetInsights extends StatelessWidget {
     if (lastActivity != null) {
       chips.add(_InsightChip(
         icon: Icons.schedule_rounded,
-        label: 'Посл. ${lastActivity!.formatRelativeShort()}',
+        label: l10n.lastActivity(lastActivity!.formatRelativeShort()),
         tone: _ChipTone.neutral,
       ));
     } else if (senderCount > 0 && totalMessages == 0) {
-      chips.add(const _InsightChip(
+      chips.add(_InsightChip(
         icon: Icons.hourglass_empty_rounded,
-        label: 'Ждём первое SMS',
+        label: l10n.waitingFirstSms,
         tone: _ChipTone.neutral,
       ));
     }
 
     if (chips.isEmpty) {
-      chips.add(const _InsightChip(
+      chips.add(_InsightChip(
         icon: Icons.devices_rounded,
-        label: 'Подключите отправителя',
+        label: l10n.connectSender,
         tone: _ChipTone.neutral,
       ));
     }
@@ -505,13 +511,14 @@ class _OnlineBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final allOnline = online == total && total > 0;
     final dotColor = total == 0
         ? AppColor.inkPlaceholder
         : (allOnline ? AppColor.success : AppColor.amber);
     final subtitleColor =
         offline > 0 ? AppColor.amber : AppColor.inkTertiary;
-    final subtitle = offline > 0 ? '$offline оффлайн' : 'в сети';
+    final subtitle = offline > 0 ? l10n.offlineFleetCount(offline) : l10n.onlineFleetStatus;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -555,8 +562,9 @@ class _OnlineBadge extends StatelessWidget {
 }
 
 class _AddButton extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
-  const _AddButton({required this.onTap});
+  const _AddButton({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +586,7 @@ class _AddButton extends StatelessWidget {
             children: [
               const Icon(Icons.add_rounded, size: 18, color: AppColor.white),
               const SizedBox(width: 4),
-              Text('Добавить', style: AppTextStyle.button(AppColor.white)),
+              Text(label, style: AppTextStyle.button(AppColor.white)),
             ],
           ),
         ),
@@ -592,6 +600,7 @@ class _EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -618,12 +627,12 @@ class _EmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             Text(
-              'Пока нет устройств',
+              l10n.noDevices,
               style: AppTextStyle.title(AppColor.ink),
             ),
             const SizedBox(height: 6),
             Text(
-              'Подключите Android как отправитель или iPhone как устройство только для приёма.',
+              l10n.addDevicesHint,
               textAlign: TextAlign.center,
               style: AppTextStyle.bodySm(AppColor.inkTertiary),
             ),
@@ -640,16 +649,17 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Не удалось загрузить', style: AppTextStyle.title(AppColor.ink)),
+          Text(l10n.failedToLoad, style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 8),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColor.accent),
             onPressed: onRetry,
-            child: const Text('Повторить'),
+            child: Text(l10n.retry),
           ),
         ],
       ),

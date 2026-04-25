@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/auth/cubit/auth_cubit.dart';
 import 'package:simply/screens/auth/widget/custom_segmented_control.dart';
 import 'package:simply/screens/auth/widget/custom_text_field.dart';
@@ -43,6 +44,7 @@ class AuthScreen extends StatelessWidget {
       body: BlocBuilder<AuthCubit, AuthState>(
         builder: (context, state) {
           final cubit = context.read<AuthCubit>();
+          final l10n = AppLocalizations.of(context)!;
           final isLogin = state.status == AuthStatus.login;
 
           return SafeArea(
@@ -53,18 +55,16 @@ class AuthScreen extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    isLogin ? 'Привет!' : 'Создать аккаунт',
+                    isLogin ? l10n.hello : l10n.createAccount,
                     style: AppTextStyle.display(AppColor.ink),
                   ),
                   const Gap(8),
                   Text(
-                    isLogin
-                        ? 'Войдите, чтобы продолжить пересылку SMS'
-                        : 'Несколько секунд — и вы в Simply',
+                    isLogin ? l10n.loginDescription : l10n.quickStart,
                     style: AppTextStyle.bodyM(AppColor.inkSecondary),
                   ),
                   const Gap(28),
-                  _buildForm(context, cubit, state, isLogin),
+                  _buildForm(context, cubit, state, isLogin, l10n),
                 ],
               ),
             ),
@@ -79,6 +79,7 @@ class AuthScreen extends StatelessWidget {
     AuthCubit cubit,
     AuthState state,
     bool isLogin,
+    AppLocalizations l10n,
   ) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -96,13 +97,13 @@ class AuthScreen extends StatelessWidget {
             onValueChanged: cubit.setSegmentedControlState,
             children: {
               AuthStatus.login: Text(
-                'Вход',
+                l10n.loginTab,
                 style: AppTextStyle.bodySmBold(
                   isLogin ? AppColor.ink : AppColor.inkTertiary,
                 ),
               ),
               AuthStatus.register: Text(
-                'Регистрация',
+                l10n.signupTab,
                 style: AppTextStyle.bodySmBold(
                   !isLogin ? AppColor.ink : AppColor.inkTertiary,
                 ),
@@ -113,20 +114,20 @@ class AuthScreen extends StatelessWidget {
           if (!isLogin) ...[
             CustomTextField(
               controller: state.nameController,
-              labelText: 'Имя',
+              labelText: l10n.fullName,
               prefixIcon: Icons.person_outline_rounded,
             ),
             const Gap(10),
           ],
           CustomTextField(
             controller: state.emailController,
-            labelText: 'E-mail',
+            labelText: l10n.emailField,
             prefixIcon: Icons.mail_outline_rounded,
           ),
           const Gap(10),
           CustomTextField(
             controller: state.passwordController,
-            labelText: 'Пароль',
+            labelText: l10n.password,
             prefixIcon: Icons.lock_outline_rounded,
             isPassword: true,
           ),
@@ -150,7 +151,7 @@ class AuthScreen extends StatelessWidget {
                         const SizedBox(width: 6),
                       ],
                       Text(
-                        'Забыли пароль?',
+                        l10n.forgotPassword,
                         style: AppTextStyle.bodySmBold(AppColor.accentDeep),
                       ),
                     ],
@@ -161,7 +162,7 @@ class AuthScreen extends StatelessWidget {
           ],
           const Gap(20),
           _PrimaryButton(
-            label: isLogin ? 'Войти' : 'Создать аккаунт',
+            label: isLogin ? l10n.loginButton : l10n.signupButton,
             loading: state.isSubmitting,
             onTap: () => _submit(context, cubit, state),
           ),
@@ -171,18 +172,19 @@ class AuthScreen extends StatelessWidget {
   }
 
   Future<void> _sendPasswordReset(BuildContext context, AuthCubit cubit) async {
+    final l10n = AppLocalizations.of(context)!;
     final ok = await cubit.sendPasswordReset();
     if (!context.mounted) return;
     if (ok) {
       WarmToast.success(
         context,
-        'Ссылка для сброса пароля отправлена',
+        l10n.resetPasswordSent,
         icon: Icons.mark_email_read_rounded,
       );
     } else {
       WarmToast.error(
         context,
-        cubit.state.authErrorMessage ?? 'Не удалось отправить письмо',
+        cubit.state.authErrorMessage ?? l10n.resetPasswordError,
       );
     }
   }
@@ -192,6 +194,7 @@ class AuthScreen extends StatelessWidget {
     AuthCubit cubit,
     AuthState state,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     if (Platform.isIOS) HapticFeedback.selectionClick();
     final isLogin = state.status == AuthStatus.login;
     if (isLogin) {
@@ -200,10 +203,10 @@ class AuthScreen extends StatelessWidget {
         if (!context.mounted) return;
         await MessageDialog.show(
           context: context,
-          titleText: 'Не получилось войти',
+          titleText: l10n.loginError,
           leadingIcon: Icons.error_outline_rounded,
           leadingIconColor: AppColor.danger,
-          text: cubit.state.authErrorMessage ?? 'Не удалось войти',
+          text: cubit.state.authErrorMessage ?? l10n.loginErrorMessage,
           buttonText: 'OK',
         );
         return;
@@ -214,10 +217,10 @@ class AuthScreen extends StatelessWidget {
         if (!context.mounted) return;
         await MessageDialog.show(
           context: context,
-          titleText: 'Не получилось создать аккаунт',
+          titleText: l10n.signupError,
           leadingIcon: Icons.error_outline_rounded,
           leadingIconColor: AppColor.danger,
-          text: cubit.state.authErrorMessage ?? 'Не удалось создать аккаунт',
+          text: cubit.state.authErrorMessage ?? l10n.signupErrorMessage,
           buttonText: 'OK',
         );
         return;

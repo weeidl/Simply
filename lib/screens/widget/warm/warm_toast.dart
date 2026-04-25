@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/radii.dart';
 import 'package:simply/themes/shadows.dart';
@@ -47,7 +48,7 @@ class WarmToast {
   static void copied(BuildContext context, [String? message]) {
     show(
       context,
-      message: message ?? 'Скопировано',
+      message: message ?? AppLocalizations.of(context)!.copied,
       kind: WarmToastKind.copy,
       duration: const Duration(milliseconds: 1400),
     );

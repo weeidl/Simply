@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
@@ -18,9 +19,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BackgroundWidget(
-      appBar: const AppBarWidget(
-        title: 'Политика конфиденциальности',
+      appBar: AppBarWidget(
+        title: l10n.privacyPolicy,
         showBackButton: true,
       ),
       child: ListView(
@@ -42,8 +44,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Готовим документ. Пока это заглушка — не используйте '
-                    'приложение в публичных каналах.',
+                    l10n.documentPlaceholder,
                     style: AppTextStyle.bodySm(AppColor.accentInk),
                   ),
                 ),
@@ -51,7 +52,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text('Что будет в политике', style: AppTextStyle.title(AppColor.ink)),
+          Text(l10n.privacyWhat, style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(16),
@@ -63,12 +64,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                _Bullet(text: 'Какие данные собираются'),
-                _Bullet(text: 'Как они используются'),
-                _Bullet(text: 'Ваши права и контроль'),
-                _Bullet(text: 'Меры безопасности и шифрование'),
-                _Bullet(text: 'Контакты для запросов'),
+              children: [
+                _Bullet(text: l10n.privacyDataCollected),
+                _Bullet(text: l10n.privacyDataUsage),
+                _Bullet(text: l10n.privacyYourRights),
+                _Bullet(text: l10n.privacySecurity),
+                _Bullet(text: l10n.privacyContact),
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/extensions.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/conversation.dart';
 import 'package:simply/screens/message_details/screen/message_details_screen.dart';
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
@@ -239,8 +240,8 @@ class _CodeChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Код',
-                style: TextStyle(
+            Text(AppLocalizations.of(context)!.code,
+                style: const TextStyle(
                   fontFamily: 'Manrope',
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -272,7 +273,7 @@ class _CodeChip extends StatelessWidget {
 
   void _copy(BuildContext context) {
     Clipboard.setData(ClipboardData(text: code));
-    WarmToast.copied(context, 'Код скопирован');
+    WarmToast.copied(context, AppLocalizations.of(context)!.codeCopied);
   }
 }
 

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/profile/cubit/profile_cubit.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
@@ -57,6 +58,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
   }
 
   Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
     FocusManager.instance.primaryFocus?.unfocus();
     if (Platform.isIOS) HapticFeedback.selectionClick();
     final cubit = context.read<ProfileCubit>();
@@ -65,23 +67,24 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     if (ok) {
       WarmToast.success(
         context,
-        'Профиль обновлён',
+        l10n.saveProfile,
         icon: Icons.check_rounded,
       );
       Navigator.of(context).maybePop();
     } else {
-      final message = cubit.state.errorMessage ?? 'Не удалось сохранить';
+      final message = cubit.state.errorMessage ?? l10n.saveError;
       WarmToast.error(context, message);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         return BackgroundWidget(
-          appBar: const AppBarWidget(
-            title: 'Редактирование',
+          appBar: AppBarWidget(
+            title: l10n.profileEditing,
             showBackButton: true,
           ),
           child: GestureDetector(
@@ -97,23 +100,27 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               keyboardDismissBehavior:
                   ScrollViewKeyboardDismissBehavior.onDrag,
               children: [
-                _AvatarPreview(name: _currentPreviewName(state)),
+                _AvatarPreview(
+                  name: _currentPreviewName(state),
+                  comingSoon: l10n.coming,
+                ),
                 const SizedBox(height: 24),
-                _SectionLabel('ЛИЧНЫЕ ДАННЫЕ'),
+                _SectionLabel(l10n.personalData),
                 const SizedBox(height: 8),
                 _FormCard(
                   children: [
                     _LabeledField(
-                      label: 'Имя',
+                      label: l10n.name,
                       child: _NameField(
                         controller: _nameController,
                         focusNode: _nameFocus,
+                        hint: l10n.yourName,
                       ),
                     ),
                     const _FieldDivider(),
                     _LabeledField(
-                      label: 'Email',
-                      trailing: const _LockedBadge(),
+                      label: l10n.email,
+                      trailing: _LockedBadge(label: l10n.protected),
                       child: Text(
                         state.email.isEmpty ? '—' : state.email,
                         style: AppTextStyle.bodyM(AppColor.inkTertiary),
@@ -125,12 +132,13 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text(
-                    'Изменить email можно через поддержку.',
+                    l10n.changeEmailInfo,
                     style: AppTextStyle.caption(AppColor.inkTertiary),
                   ),
                 ),
                 const SizedBox(height: 28),
                 _SaveButton(
+                  label: l10n.save,
                   loading: state.isSaving,
                   enabled: _nameController.text.trim().isNotEmpty,
                   onTap: _save,
@@ -153,8 +161,9 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
 class _AvatarPreview extends StatelessWidget {
   final String name;
+  final String comingSoon;
 
-  const _AvatarPreview({required this.name});
+  const _AvatarPreview({required this.name, required this.comingSoon});
 
   String get _initials {
     final parts = name.trim().split(RegExp(r'\s+|@'));
@@ -203,7 +212,7 @@ class _AvatarPreview extends StatelessWidget {
                 border: Border.all(color: AppColor.divider),
               ),
               child: Text(
-                'Скоро',
+                comingSoon,
                 style: AppTextStyle.micro(AppColor.accentDeep),
               ),
             ),
@@ -309,10 +318,12 @@ class _LabeledField extends StatelessWidget {
 class _NameField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
+  final String hint;
 
   const _NameField({
     required this.controller,
     required this.focusNode,
+    required this.hint,
   });
 
   @override
@@ -324,20 +335,21 @@ class _NameField extends StatelessWidget {
       textCapitalization: TextCapitalization.words,
       style: AppTextStyle.titleSm(AppColor.ink),
       cursorColor: AppColor.accentDeep,
-      decoration: const InputDecoration(
+      decoration: InputDecoration(
         isDense: true,
         contentPadding: EdgeInsets.zero,
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
-        hintText: 'Ваше имя',
+        hintText: hint,
       ),
     );
   }
 }
 
 class _LockedBadge extends StatelessWidget {
-  const _LockedBadge();
+  final String label;
+  const _LockedBadge({required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -357,7 +369,7 @@ class _LockedBadge extends StatelessWidget {
           ),
           const SizedBox(width: 4),
           Text(
-            'защищено',
+            label,
             style: AppTextStyle.micro(AppColor.inkTertiary),
           ),
         ],
@@ -367,11 +379,13 @@ class _LockedBadge extends StatelessWidget {
 }
 
 class _SaveButton extends StatelessWidget {
+  final String label;
   final bool loading;
   final bool enabled;
   final VoidCallback onTap;
 
   const _SaveButton({
+    required this.label,
     required this.loading,
     required this.enabled,
     required this.onTap,
@@ -412,7 +426,7 @@ class _SaveButton extends StatelessWidget {
                       color: AppColor.white,
                     )
                   : Text(
-                      'Сохранить',
+                      label,
                       key: const ValueKey('label'),
                       style: AppTextStyle.button(AppColor.white),
                     ),

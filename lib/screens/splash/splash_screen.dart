@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/auth/screen/auth_screen.dart';
 import 'package:simply/screens/home/home.dart';
 import 'package:simply/screens/splash/cubit/splash_cubit.dart';
@@ -58,7 +59,7 @@ class SplashScreen extends StatelessWidget {
               Text('Simply', style: AppTextStyle.h1(AppColor.ink)),
               const SizedBox(height: 6),
               Text(
-                'SMS-пересылка между устройствами',
+                AppLocalizations.of(context)!.splashSubtitle,
                 style: AppTextStyle.bodySm(AppColor.inkTertiary),
               ),
               const SizedBox(height: 36),

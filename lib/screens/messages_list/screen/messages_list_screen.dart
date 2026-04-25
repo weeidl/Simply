@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/conversation.dart';
 import 'package:simply/screens/messages_list/cubit/messages_list_cubit.dart';
 import 'package:simply/screens/messages_list/widget/messages_list_widget.dart';
@@ -23,21 +24,22 @@ class MessagesListScreen extends StatelessWidget {
     return BlocBuilder<MessagesListCubit, MessagesListState>(
       builder: (context, state) {
         final cubit = context.read<MessagesListCubit>();
+        final l10n = AppLocalizations.of(context)!;
         final filtered = state.filteredItems;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             WarmHeader(
-              eyebrow: _eyebrow(state),
-              title: 'Сообщения',
+              eyebrow: _eyebrow(state, l10n),
+              title: l10n.messages,
               trailing: const _ProfileBubble(),
               padding: const EdgeInsets.fromLTRB(20, 10, 20, 14),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
               child: WarmSearchField(
-                hint: 'Поиск по сообщениям',
+                hint: l10n.search,
                 trailingIcon: Icons.tune_rounded,
                 onTrailingTap: () => _showFilterSettings(context),
                 onChanged: cubit.setQuery,
@@ -83,13 +85,13 @@ class MessagesListScreen extends StatelessWidget {
     );
   }
 
-  String _eyebrow(MessagesListState state) {
+  String _eyebrow(MessagesListState state, AppLocalizations l10n) {
     if (state.unreadCount == 0) {
       return state.totalCount == 0
-          ? 'Здесь будут ваши SMS'
-          : '${state.totalCount} в архиве';
+          ? l10n.yourSms
+          : l10n.messagesEyebrowArchive(state.totalCount);
     }
-    return '${state.unreadCount} новых · сегодня';
+    return l10n.messagesEyebrowUnread(state.unreadCount);
   }
 
   Widget _list(
@@ -108,8 +110,6 @@ class MessagesListScreen extends StatelessWidget {
       return _EmptyView(filter: state.filter, query: state.query);
     }
     final bottomInset = MediaQuery.of(context).padding.bottom;
-    // Bottom nav bar (PillTabBar row 52 + padding 16) sits on top of the body
-    // via Scaffold.extendBody: true — offset everything above it.
     const navBarHeight = 68.0;
     return Stack(
       children: [
@@ -159,27 +159,29 @@ class MessagesListScreen extends StatelessWidget {
   }
 
   Future<void> _markSelectedRead(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     await context.read<MessagesListCubit>().markSelectedRead();
     if (!context.mounted) return;
     WarmToast.success(
       context,
-      'Выбранные диалоги прочитаны',
+      l10n.markedReadToast,
       icon: Icons.done_all_rounded,
     );
   }
 
   Future<void> _confirmDeleteSelected(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final count =
         context.read<MessagesListCubit>().state.selectedConversationIds.length;
     return ConfirmationDialog.show<void>(
       context: context,
-      title: 'Удаление',
+      title: l10n.deleteTitle,
       leadingIcon: Icons.delete_sweep_rounded,
       leadingIconColor: AppColor.danger,
-      text: 'Удалить выбранные диалоги?',
-      subText: '$count ${_pluralDialogs(count)} исчезнут из списка.',
-      buttonTextOne: 'Удалить все',
-      buttonTextTwo: 'Оставить',
+      text: l10n.deleteConfirmation,
+      subText: l10n.selectedDialogsDisappear(count),
+      buttonTextOne: l10n.deleteButton,
+      buttonTextTwo: l10n.keep,
       buttonTwoColor: AppColor.bgAlt,
       buttonTextStyleTwo: AppTextStyle.button(AppColor.inkSecondary),
       onTapButtonOne: () async {
@@ -190,36 +192,27 @@ class MessagesListScreen extends StatelessWidget {
           if (!context.mounted) return;
           WarmToast.success(
             context,
-            'Выбранные диалоги удалены',
+            l10n.selectedConversationsDeleted,
             icon: Icons.delete_outline_rounded,
           );
         } catch (_) {
           if (!context.mounted) return;
-          WarmToast.error(context, 'Не удалось удалить диалоги');
+          WarmToast.error(context, l10n.failedToDeleteMany);
         }
       },
       onTapButtonTwo: () => Navigator.of(context).pop(),
     );
   }
 
-  String _pluralDialogs(int count) {
-    final mod10 = count % 10;
-    final mod100 = count % 100;
-    if (mod10 == 1 && mod100 != 11) return 'диалог';
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-      return 'диалога';
-    }
-    return 'диалогов';
-  }
-
   Future<void> _showConversationActions(
     BuildContext context,
     Conversation conversation,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return showGeneralDialog<void>(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Действия с сообщением',
+      barrierLabel: l10n.conversationActionsSheet,
       barrierColor: AppColor.black.withValues(alpha: 0.16),
       transitionDuration: const Duration(milliseconds: 260),
       pageBuilder: (dialogContext, animation, secondaryAnimation) {
@@ -231,7 +224,7 @@ class MessagesListScreen extends StatelessWidget {
               Navigator.of(dialogContext).pop();
               final cubit = context.read<MessagesListCubit>();
               cubit.selectConversation(conversation.id);
-              WarmToast.success(context, 'Диалог выбран');
+              WarmToast.success(context, l10n.conversationSelectedToast);
             },
             onDelete: () {
               Navigator.of(dialogContext).pop();
@@ -268,15 +261,16 @@ class MessagesListScreen extends StatelessWidget {
     BuildContext context,
     Conversation conversation,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return ConfirmationDialog.show<void>(
       context: context,
-      title: 'Удаление',
+      title: l10n.deleteTitle,
       leadingIcon: Icons.delete_outline_rounded,
       leadingIconColor: AppColor.danger,
-      text: 'Удалить диалог ${conversation.title}?',
-      subText: 'Сообщения исчезнут из этого списка.',
-      buttonTextOne: 'Удалить',
-      buttonTextTwo: 'Оставить',
+      text: l10n.deleteConfirmationSingle(conversation.title),
+      subText: l10n.messagesWillDisappear,
+      buttonTextOne: l10n.delete,
+      buttonTextTwo: l10n.keep,
       buttonTwoColor: AppColor.bgAlt,
       buttonTextStyleTwo: AppTextStyle.button(AppColor.inkSecondary),
       onTapButtonOne: () async {
@@ -289,12 +283,12 @@ class MessagesListScreen extends StatelessWidget {
           if (!context.mounted) return;
           WarmToast.success(
             context,
-            'Диалог удалён',
+            l10n.conversationDeleted,
             icon: Icons.delete_outline_rounded,
           );
         } catch (_) {
           if (!context.mounted) return;
-          WarmToast.error(context, 'Не удалось удалить диалог');
+          WarmToast.error(context, l10n.failedToDelete);
         }
       },
       onTapButtonTwo: () => Navigator.of(context).pop(),
@@ -319,12 +313,13 @@ class _FilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final entries = <_ChipSpec>[
-      _ChipSpec(MessagesFilter.all, 'Все', total),
-      _ChipSpec(MessagesFilter.unread, 'Непрочитанные', unread),
-      _ChipSpec(MessagesFilter.codes, 'Коды', null),
-      _ChipSpec(MessagesFilter.banks, 'Банки', null),
-      _ChipSpec(MessagesFilter.delivery, 'Доставка', null),
+      _ChipSpec(MessagesFilter.all, l10n.allFilter, total),
+      _ChipSpec(MessagesFilter.unread, l10n.unread, unread),
+      _ChipSpec(MessagesFilter.codes, l10n.codes, null),
+      _ChipSpec(MessagesFilter.banks, l10n.banks, null),
+      _ChipSpec(MessagesFilter.delivery, l10n.delivery, null),
     ].where((entry) => enabledFilters.contains(entry.filter)).toList();
 
     return SingleChildScrollView(
@@ -359,26 +354,27 @@ class _FilterSettingsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const rows = [
+    final l10n = AppLocalizations.of(context)!;
+    final rows = [
       _FilterToggleSpec(
         filter: MessagesFilter.unread,
         icon: Icons.mark_chat_unread_rounded,
-        title: 'Непрочитанные',
+        title: l10n.unread,
       ),
       _FilterToggleSpec(
         filter: MessagesFilter.codes,
         icon: Icons.password_rounded,
-        title: 'Коды',
+        title: l10n.codes,
       ),
       _FilterToggleSpec(
         filter: MessagesFilter.banks,
         icon: Icons.account_balance_rounded,
-        title: 'Банки',
+        title: l10n.banks,
       ),
       _FilterToggleSpec(
         filter: MessagesFilter.delivery,
         icon: Icons.local_shipping_rounded,
-        title: 'Доставка',
+        title: l10n.delivery,
       ),
     ];
 
@@ -401,7 +397,7 @@ class _FilterSettingsSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            Text('Фильтры', style: AppTextStyle.title(AppColor.ink)),
+            Text(l10n.filters, style: AppTextStyle.title(AppColor.ink)),
             const SizedBox(height: 14),
             Container(
               decoration: const BoxDecoration(
@@ -512,6 +508,7 @@ class _ConversationActionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bottomInset = MediaQuery.of(context).viewPadding.bottom;
     return Material(
       type: MaterialType.transparency,
@@ -572,12 +569,12 @@ class _ConversationActionsSheet extends StatelessWidget {
                 const SizedBox(height: 12),
                 _ConversationActionRow(
                   icon: Icons.check_circle_outline_rounded,
-                  label: 'Выбрать',
+                  label: l10n.select,
                   onTap: onSelect,
                 ),
                 _ConversationActionRow(
                   icon: Icons.delete_outline_rounded,
-                  label: 'Удалить',
+                  label: l10n.delete,
                   color: AppColor.danger,
                   onTap: onDelete,
                 ),
@@ -605,6 +602,7 @@ class _SelectionActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final visible = selectedCount > 0;
     return AnimatedSlide(
       duration: const Duration(milliseconds: 260),
@@ -633,7 +631,7 @@ class _SelectionActionBar extends StatelessWidget {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        '$selectedCount выбрано',
+                        l10n.selectedCount(selectedCount),
                         style: AppTextStyle.bodySmBold(AppColor.ink),
                       ),
                     ),
@@ -645,7 +643,7 @@ class _SelectionActionBar extends StatelessWidget {
                     Expanded(
                       child: _SelectionButton(
                         icon: Icons.done_all_rounded,
-                        label: 'Прочитать все',
+                        label: l10n.readAll,
                         onTap: onReadAll,
                       ),
                     ),
@@ -653,7 +651,7 @@ class _SelectionActionBar extends StatelessWidget {
                     Expanded(
                       child: _SelectionButton(
                         icon: Icons.delete_outline_rounded,
-                        label: 'Удалить все',
+                        label: l10n.deleteAll,
                         color: AppColor.danger,
                         onTap: onDeleteAll,
                       ),
@@ -837,7 +835,8 @@ class _EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (title, subtitle) = _copy();
+    final l10n = AppLocalizations.of(context)!;
+    final (title, subtitle) = _copy(l10n);
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -868,36 +867,21 @@ class _EmptyView extends StatelessWidget {
     );
   }
 
-  (String, String) _copy() {
+  (String, String) _copy(AppLocalizations l10n) {
     if (query.isNotEmpty) {
-      return (
-        'Ничего не найдено',
-        'Попробуйте изменить запрос или сбросить фильтр.',
-      );
+      return (l10n.notFound, l10n.tryChangingQuery);
     }
     switch (filter) {
       case MessagesFilter.all:
-        return (
-          'Сообщений пока нет',
-          'Они появятся здесь, как только устройство получит SMS.',
-        );
+        return (l10n.noMessagesYet, l10n.hereWhenSmsArrives);
       case MessagesFilter.unread:
-        return ('Всё прочитано', 'Новых сообщений нет.');
+        return (l10n.allRead, l10n.noNewMessages);
       case MessagesFilter.codes:
-        return (
-          'Кодов не найдено',
-          'Сообщения с одноразовыми кодами появятся в этом списке.',
-        );
+        return (l10n.noCodes, l10n.codesHint);
       case MessagesFilter.banks:
-        return (
-          'Нет сообщений от банков',
-          'Категория автоматически определится из текста.',
-        );
+        return (l10n.noBanks, l10n.categoryAuto);
       case MessagesFilter.delivery:
-        return (
-          'Нет сообщений о доставке',
-          'Они подтянутся, когда придут уведомления курьеров.',
-        );
+        return (l10n.noDelivery, l10n.deliveryHint);
     }
   }
 }
@@ -908,16 +892,17 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Не удалось загрузить', style: AppTextStyle.title(AppColor.ink)),
+          Text(l10n.failedToLoad, style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 8),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColor.accent),
             onPressed: onRetry,
-            child: const Text('Повторить'),
+            child: Text(l10n.retry),
           ),
         ],
       ),

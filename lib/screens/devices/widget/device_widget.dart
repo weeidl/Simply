@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simply/extensions.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/screens/devices/widget/device_card_actions.dart';
 import 'package:simply/screens/devices/widget/device_info_widget.dart';
@@ -98,7 +99,7 @@ class _DeviceWidgetState extends State<DeviceWidget> {
                 14,
                 _expanded ? 16 : 12,
               ),
-              child: _expanded ? _buildExpanded() : _buildCollapsed(),
+              child: _expanded ? _buildExpanded(context) : _buildCollapsed(context),
             ),
           ),
         ),
@@ -106,7 +107,8 @@ class _DeviceWidgetState extends State<DeviceWidget> {
     );
   }
 
-  Widget _buildCollapsed() {
+  Widget _buildCollapsed(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final device = widget.device;
     return Row(
       key: const ValueKey('collapsed'),
@@ -143,7 +145,7 @@ class _DeviceWidgetState extends State<DeviceWidget> {
                     const SizedBox(width: 5),
                     Flexible(
                       child: Text(
-                        _collapsedSubtitle(device),
+                        _collapsedSubtitle(device, l10n),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -163,7 +165,7 @@ class _DeviceWidgetState extends State<DeviceWidget> {
     );
   }
 
-  Widget _buildExpanded() {
+  Widget _buildExpanded(BuildContext context) {
     final device = widget.device;
     return Column(
       key: const ValueKey('expanded'),
@@ -191,15 +193,15 @@ class _DeviceWidgetState extends State<DeviceWidget> {
     );
   }
 
-  String _collapsedSubtitle(Device device) {
+  String _collapsedSubtitle(Device device, AppLocalizations l10n) {
     final parts = <String>[
       device.platformLabel,
       if (_online)
-        'в сети'
+        l10n.online
       else if (device.dateUpdateInfo != null)
-        'был ${device.dateUpdateInfo!.toDate().formatRelativeShort()}'
+        l10n.lastSeenAt(device.dateUpdateInfo!.toDate().formatRelativeShort())
       else
-        'не в сети',
+        l10n.offline,
       if (!device.isReceiverOnly && device.todayMessageCount > 0)
         '${device.todayMessageCount} SMS',
       if (!device.isReceiverOnly && device.batteryLevel != null)
@@ -339,14 +341,13 @@ class _PinButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bg = pinned ? AppColor.accentSoft : AppColor.bgAlt.withValues(alpha: 0.7);
     final color = pinned ? AppColor.accentDeep : AppColor.inkPlaceholder;
     return Semantics(
       button: true,
       toggled: pinned,
-      label: pinned
-          ? 'Открепить развёрнутый вид'
-          : 'Закрепить развёрнутый вид',
+      label: pinned ? l10n.unpinned : l10n.pinned,
       child: Material(
         color: Colors.transparent,
         shape: const CircleBorder(),
@@ -397,6 +398,7 @@ class _ActionMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final actions = buildDeviceCardActions(
       isCurrentDevice: isCurrentDevice,
       canMoveUp: canMoveUp,
@@ -404,7 +406,7 @@ class _ActionMenu extends StatelessWidget {
     );
 
     return PopupMenuButton<DeviceCardAction>(
-      tooltip: 'Действия устройства',
+      tooltip: l10n.deviceActionsTooltip,
       onSelected: (action) {
         switch (action) {
           case DeviceCardAction.reconnect:
@@ -440,7 +442,7 @@ class _ActionMenu extends StatelessWidget {
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  _labelFor(action),
+                  _labelFor(action, l10n),
                   style: AppTextStyle.bodySm(
                     action == DeviceCardAction.delete
                         ? AppColor.danger
@@ -468,16 +470,16 @@ class _ActionMenu extends StatelessWidget {
     );
   }
 
-  String _labelFor(DeviceCardAction action) {
+  String _labelFor(DeviceCardAction action, AppLocalizations l10n) {
     switch (action) {
       case DeviceCardAction.reconnect:
-        return 'Переподключить';
+        return l10n.reconnect;
       case DeviceCardAction.moveUp:
-        return 'Поднять выше';
+        return l10n.raiseAbove;
       case DeviceCardAction.moveDown:
-        return 'Опустить ниже';
+        return l10n.lowerBelow;
       case DeviceCardAction.delete:
-        return 'Удалить';
+        return l10n.delete;
     }
   }
 
@@ -511,6 +513,7 @@ class _StatusLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -534,10 +537,10 @@ class _StatusLine extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           online
-              ? 'в сети'
+              ? l10n.online
               : (lastSeen != null
-                  ? 'был ${lastSeen!.formatRelativeShort()}'
-                  : 'не в сети'),
+                  ? l10n.lastSeenAt(lastSeen!.formatRelativeShort())
+                  : l10n.offline),
           style: AppTextStyle.bodySm(
             online ? AppColor.success : AppColor.inkTertiary,
           ).copyWith(fontWeight: FontWeight.w700),
@@ -552,6 +555,7 @@ class _MainBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
@@ -559,7 +563,7 @@ class _MainBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        'ГЛАВНОЕ',
+        l10n.mainBadge,
         style: AppTextStyle.micro(AppColor.accentDeep),
       ),
     );

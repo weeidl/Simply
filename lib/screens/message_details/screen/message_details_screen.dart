@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simply/extensions.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/message.dart';
 import 'package:simply/repositories/messages_repository.dart';
 import 'package:simply/screens/message_details/cubit/message_details_cubit.dart';
@@ -51,6 +52,8 @@ class MessageDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final platformLabel = _platformLabel(l10n);
     return BackgroundWidget(
       appBar: AppBarWidget(
         showBackButton: true,
@@ -74,7 +77,7 @@ class MessageDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                _platformLabel(),
+                platformLabel,
                 style: AppTextStyle.caption(AppColor.inkTertiary),
               ),
             ],
@@ -82,7 +85,7 @@ class MessageDetailsScreen extends StatelessWidget {
         ),
         trailing: Builder(
           builder: (context) => _DotsButton(
-            onTap: () => _showMoreActions(context),
+            onTap: () => _showMoreActions(context, platformLabel),
           ),
         ),
       ),
@@ -109,7 +112,7 @@ class MessageDetailsScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _showMoreActions(BuildContext context) async {
+  Future<void> _showMoreActions(BuildContext context, String platformLabel) async {
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColor.surface,
@@ -120,17 +123,17 @@ class MessageDetailsScreen extends StatelessWidget {
       builder: (sheetContext) {
         return _MoreActionsSheet(
           conversationTitle: title,
-          sourcePlatformLabel: _platformLabel(),
+          sourcePlatformLabel: platformLabel,
         );
       },
     );
   }
 
-  String _platformLabel() {
+  String _platformLabel(AppLocalizations l10n) {
     final p = sourcePlatform?.toLowerCase();
     if (p == null) return 'SMS';
-    if (p.contains('ios')) return 'SMS · с iPhone';
-    if (p.contains('android')) return 'SMS · с Android';
+    if (p.contains('ios')) return l10n.smsFromIphone;
+    if (p.contains('android')) return l10n.smsFromAndroid;
     return 'SMS';
   }
 }
@@ -204,11 +207,6 @@ class _MessageListEntry extends StatelessWidget {
       a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
-/// Dismissible info card shown above the message list.
-///
-/// Once dismissed it is never shown again on this device (persisted via
-/// [UiPreferencesService]); the full copy is still reachable through the
-/// ⋯ menu → "Как работает Simply".
 class _InfoBanner extends StatefulWidget {
   const _InfoBanner();
 
@@ -218,9 +216,6 @@ class _InfoBanner extends StatefulWidget {
 
 class _InfoBannerState extends State<_InfoBanner> {
   final UiPreferencesService _preferences = UiPreferencesService();
-
-  /// `null` → still loading the persisted flag. Avoids flashing the banner
-  /// on repeat users who previously dismissed it.
   bool? _dismissed;
 
   @override
@@ -242,6 +237,7 @@ class _InfoBannerState extends State<_InfoBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_dismissed == null || _dismissed == true) {
       return const SizedBox.shrink();
     }
@@ -277,7 +273,7 @@ class _InfoBannerState extends State<_InfoBanner> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 2, right: 4),
                   child: Text(
-                    'Simply пересылает SMS с устройства и автоматически копирует найденные коды в буфер обмена.',
+                    l10n.howSimplyWorksBody,
                     style: AppTextStyle.bodySm(AppColor.accentInk),
                   ),
                 ),
@@ -285,7 +281,7 @@ class _InfoBannerState extends State<_InfoBanner> {
               PlatformTapScale(
                 child: Semantics(
                   button: true,
-                  label: 'Скрыть подсказку',
+                  label: l10n.hideHint,
                   child: InkResponse(
                     onTap: _dismiss,
                     radius: 20,
@@ -308,8 +304,6 @@ class _InfoBannerState extends State<_InfoBanner> {
   }
 }
 
-/// Bottom sheet behind the ⋯ button. Keeps the primary chat area uncluttered
-/// while still surfacing "how it works" + a few useful extras.
 class _MoreActionsSheet extends StatelessWidget {
   final String conversationTitle;
   final String sourcePlatformLabel;
@@ -321,6 +315,7 @@ class _MoreActionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       top: false,
       child: Padding(
@@ -344,7 +339,7 @@ class _MoreActionsSheet extends StatelessWidget {
             const SizedBox(height: 8),
             _ActionRow(
               icon: Icons.content_copy_rounded,
-              label: 'Скопировать адрес отправителя',
+              label: l10n.copySender,
               onTap: () async {
                 await Clipboard.setData(
                   ClipboardData(text: conversationTitle),
@@ -352,12 +347,12 @@ class _MoreActionsSheet extends StatelessWidget {
                 if (!context.mounted) return;
                 Navigator.of(context).pop();
                 if (!context.mounted) return;
-                WarmToast.copied(context, 'Отправитель скопирован');
+                WarmToast.copied(context, l10n.senderCopied);
               },
             ),
             _ActionRow(
               icon: Icons.devices_rounded,
-              label: 'Источник: $sourcePlatformLabel',
+              label: l10n.source(sourcePlatformLabel),
               onTap: null,
               subtle: true,
             ),
@@ -371,6 +366,7 @@ class _MoreActionsSheet extends StatelessWidget {
 class _HowItWorksCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: const BoxDecoration(
@@ -396,11 +392,11 @@ class _HowItWorksCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Как работает Simply',
+                Text(l10n.howSimplyWorks,
                     style: AppTextStyle.titleSm(AppColor.accentInk)),
                 const SizedBox(height: 4),
                 Text(
-                  'Simply пересылает SMS с устройства и автоматически копирует найденные коды в буфер обмена.',
+                  l10n.howSimplyWorksBody,
                   style: AppTextStyle.bodySm(AppColor.accentInk),
                 ),
               ],
@@ -521,13 +517,9 @@ class _MessageBubble extends StatelessWidget {
               if (code != null) ...[
                 const SizedBox(height: 12),
                 _CodeBlock(code: code),
-                // After the code block we put the timestamp on its own line so
-                // it doesn't visually compete with the "Copy" action.
                 const SizedBox(height: 8),
                 _TimeLabel(label: timeLabel),
               ] else ...[
-                // Without the code block the timestamp hugs the bottom-right of
-                // the same bubble — classic chat affordance, no extra height.
                 const SizedBox(height: 4),
                 _TimeLabel(label: timeLabel),
               ],
@@ -558,6 +550,7 @@ class _CodeBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
       decoration: BoxDecoration(
@@ -571,7 +564,7 @@ class _CodeBlock extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Код из сообщения',
+                Text(l10n.codeFromMessage,
                     style: AppTextStyle.micro(AppColor.inkTertiary)),
                 const SizedBox(height: 2),
                 Text(_spaced(code), style: AppTextStyle.codeMono(AppColor.ink)),
@@ -597,6 +590,7 @@ class _CopyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PlatformTapScale(
       child: Material(
         color: AppColor.accent,
@@ -605,7 +599,7 @@ class _CopyButton extends StatelessWidget {
           borderRadius: AppRadii.brPill,
           onTap: () {
             Clipboard.setData(ClipboardData(text: code));
-            WarmToast.copied(context, 'Код скопирован');
+            WarmToast.copied(context, l10n.codeCopied);
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -619,7 +613,7 @@ class _CopyButton extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Копировать',
+                  l10n.copy,
                   style: AppTextStyle.button(AppColor.white),
                 ),
               ],
@@ -669,6 +663,7 @@ class _EmptyView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -686,10 +681,10 @@ class _EmptyView extends StatelessWidget {
                   color: AppColor.accentDeep, size: 38),
             ),
             const SizedBox(height: 16),
-            Text('Сообщений нет', style: AppTextStyle.title(AppColor.ink)),
+            Text(l10n.noMessages, style: AppTextStyle.title(AppColor.ink)),
             const SizedBox(height: 6),
             Text(
-              'Они появятся здесь, когда придут на устройство.',
+              l10n.hereAfterNotifications,
               textAlign: TextAlign.center,
               style: AppTextStyle.bodySm(AppColor.inkTertiary),
             ),
@@ -706,16 +701,17 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Не удалось загрузить', style: AppTextStyle.title(AppColor.ink)),
+          Text(l10n.failedToLoad, style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 8),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColor.accent),
             onPressed: onRetry,
-            child: const Text('Повторить'),
+            child: Text(l10n.retry),
           ),
         ],
       ),

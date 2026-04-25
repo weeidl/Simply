@@ -1,616 +1,420 @@
 {
   "@@locale": "en",
   "appTitle": "Simply",
-  "@appTitle": {
-    "description": "Application title"
-  },
+  "@appTitle": { "description": "Application title" },
+
   "settingsHeaderEyebrow": "Account & App",
-  "@settingsHeaderEyebrow": {
-    "description": "Settings screen header eyebrow"
-  },
+  "@settingsHeaderEyebrow": { "description": "Settings screen header eyebrow" },
   "settings": "Settings",
-  "@settings": {
-    "description": "Settings tab label and screen title"
-  },
-  "profile": "Profile",
-  "@profile": {
-    "description": "Profile screen title and settings option"
-  },
-  "profileEditButton": "Edit Profile",
-  "@profileEditButton": {
-    "description": "Button to edit profile"
-  },
-  "profileEditing": "Editing",
-  "@profileEditing": {
-    "description": "Profile editing screen title"
-  },
-  "notifications": "Notifications",
-  "@notifications": {
-    "description": "Notifications settings option"
-  },
-  "notificationsSubtitle": "Push, sounds, quiet hours",
-  "@notificationsSubtitle": {
-    "description": "Notifications settings subtitle"
-  },
-  "language": "Language",
-  "@language": {
-    "description": "Language settings option"
-  },
-  "languageEn": "English",
-  "@languageEn": {
-    "description": "English language name"
-  },
-  "languageRu": "Русский",
-  "@languageRu": {
-    "description": "Russian language name"
-  },
-  "privacyPolicy": "Privacy Policy",
-  "@privacyPolicy": {
-    "description": "Privacy policy screen and settings option"
-  },
-  "contactUs": "Contact Us",
-  "@contactUs": {
-    "description": "Contact us screen and settings option"
-  },
-  "logout": "Sign Out",
-  "@logout": {
-    "description": "Logout button text"
-  },
-  "logoutConfirmation": "Sign out of account?",
-  "@logoutConfirmation": {
-    "description": "Logout confirmation dialog"
-  },
-  "logoutConfirmButton": "Sign Out",
-  "@logoutConfirmButton": {
-    "description": "Logout confirm button"
-  },
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button"
-  },
-  "devices": "Devices",
-  "@devices": {
-    "description": "Devices tab label"
-  },
-  "messages": "Messages",
-  "@messages": {
-    "description": "Messages tab label"
-  },
-  "name": "Name",
-  "@name": {
-    "description": "Name field label"
-  },
-  "email": "Email",
-  "@email": {
-    "description": "Email field label"
-  },
-  "memberSince": "Member Since",
-  "@memberSince": {
-    "description": "Member since field label"
-  },
-  "user": "User",
-  "@user": {
-    "description": "Default user name"
-  },
-  "noEmail": "No email",
-  "@noEmail": {
-    "description": "Default text when email is empty"
-  },
-  "profileNameSubtitle": "Name, avatar, contact info",
-  "@profileNameSubtitle": {
-    "description": "Profile settings subtitle"
-  },
-  "simpplyPremium": "Simply Premium",
-  "@simpplyPremium": {
-    "description": "Premium banner title"
-  },
-  "premiumDescription": "Remove limits on devices and history.",
-  "@premiumDescription": {
-    "description": "Premium banner description"
-  },
-  "open": "Open",
-  "@open": {
-    "description": "Open button"
-  },
+  "@settings": { "description": "Settings tab and screen title" },
   "account": "Account",
-  "@account": {
-    "description": "Account section title"
-  },
+  "@account": { "description": "Account section title" },
   "help": "Help",
-  "@help": {
-    "description": "Help section title"
-  },
+  "@help": { "description": "Help section title" },
   "madeWithLove": "Made with love by weeidl",
-  "@madeWithLove": {
-    "description": "Footer text"
-  },
-  "code": "Code",
-  "@code": {
-    "description": "Code label in messages list"
-  },
-  "coming": "Coming Soon",
-  "@coming": {
-    "description": "Coming soon badge"
-  },
-  "unread": "Unread",
-  "@unread": {
-    "description": "Unread messages filter"
-  },
-  "codes": "Codes",
-  "@codes": {
-    "description": "Codes filter"
-  },
-  "banks": "Banks",
-  "@banks": {
-    "description": "Banks filter"
-  },
-  "delivery": "Delivery",
-  "@delivery": {
-    "description": "Delivery filter"
-  },
-  "filters": "Filters",
-  "@filters": {
-    "description": "Filters label"
-  },
-  "select": "Select",
-  "@select": {
-    "description": "Select button"
-  },
-  "delete": "Delete",
-  "@delete": {
-    "description": "Delete button"
-  },
-  "readAll": "Read All",
-  "@readAll": {
-    "description": "Read all button"
-  },
-  "deleteAll": "Delete All",
-  "@deleteAll": {
-    "description": "Delete all button"
-  },
-  "deleteTitle": "Delete",
-  "@deleteTitle": {
-    "description": "Delete dialog title"
-  },
-  "deleteConfirmation": "Delete selected conversations?",
-  "@deleteConfirmation": {
-    "description": "Delete confirmation dialog"
-  },
-  "deleteConfirmationSingle": "Delete conversation {name}?",
-  "@deleteConfirmationSingle": {
-    "description": "Delete single conversation confirmation",
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "messagesWillDisappear": "Messages will disappear from this list.",
-  "@messagesWillDisappear": {
-    "description": "Delete warning text"
-  },
-  "deleteButton": "Delete",
-  "@deleteButton": {
-    "description": "Delete confirm button"
-  },
-  "keep": "Keep",
-  "@keep": {
-    "description": "Keep button"
-  },
-  "selectedConversationsDeleted": "Selected conversations deleted",
-  "@selectedConversationsDeleted": {
-    "description": "Toast message for multiple deletions"
-  },
-  "conversationDeleted": "Conversation deleted",
-  "@conversationDeleted": {
-    "description": "Toast message for single deletion"
-  },
-  "failedToDelete": "Failed to delete",
-  "@failedToDelete": {
-    "description": "Error toast when delete fails"
-  },
-  "noMessages": "No messages",
-  "@noMessages": {
-    "description": "Empty state for messages"
-  },
-  "failedToLoad": "Failed to load",
-  "@failedToLoad": {
-    "description": "Error state title"
-  },
-  "retry": "Retry",
-  "@retry": {
-    "description": "Retry button"
-  },
-  "copy": "Copy",
-  "@copy": {
-    "description": "Copy button"
-  },
-  "copySender": "Copy sender address",
-  "@copySender": {
-    "description": "Copy sender tooltip"
-  },
-  "senderCopied": "Sender copied",
-  "@senderCopied": {
-    "description": "Toast when sender is copied"
-  },
-  "codeCopied": "Code copied",
-  "@codeCopied": {
-    "description": "Toast when code is copied"
-  },
-  "hideHint": "Hide hint",
-  "@hideHint": {
-    "description": "Hide hint button"
-  },
-  "howSimplyWorks": "How Simply Works",
-  "@howSimplyWorks": {
-    "description": "Section title in message details"
-  },
-  "codeFromMessage": "Code from Message",
-  "@codeFromMessage": {
-    "description": "Section title in message details"
-  },
-  "source": "Source: {label}",
-  "@source": {
-    "description": "Source label in message details",
-    "placeholders": {
-      "label": {
-        "type": "String"
-      }
-    }
-  },
-  "noCodes": "No codes found",
-  "@noCodes": {
-    "description": "Empty state for codes filter"
-  },
-  "noDelivery": "No delivery messages",
-  "@noDelivery": {
-    "description": "Empty state for delivery filter"
-  },
-  "noBanks": "No bank messages",
-  "@noBanks": {
-    "description": "Empty state for banks filter"
-  },
-  "noDevices": "No devices yet",
-  "@noDevices": {
-    "description": "Empty state for devices"
-  },
-  "addDevicesHint": "Connect Android as a sender or iPhone as receive-only device.",
-  "@addDevicesHint": {
-    "description": "Hint to add devices"
-  },
-  "addButton": "Add",
-  "@addButton": {
-    "description": "Add device button"
-  },
-  "editDevice": "Edit Device",
-  "@editDevice": {
-    "description": "Device settings title"
-  },
-  "newDevice": "New Device",
-  "@newDevice": {
-    "description": "New device settings title"
-  },
-  "save": "Save",
-  "@save": {
-    "description": "Save button"
-  },
-  "smsForwarding": "SMS Forwarding",
-  "@smsForwarding": {
-    "description": "Device setting"
-  },
-  "networkDisplay": "Network Display",
-  "@networkDisplay": {
-    "description": "Device setting"
-  },
-  "batteryLevel": "Battery Level",
-  "@batteryLevel": {
-    "description": "Device setting"
-  },
-  "networkTypeInfo": "Card will show network type and signal quality",
-  "@networkTypeInfo": {
-    "description": "Device setting description"
-  },
-  "batteryInfo": "Device section will show current battery level",
-  "@batteryInfo": {
-    "description": "Device setting description"
-  },
-  "allowForwarding": "Allow SMS forwarding from this device",
-  "@allowForwarding": {
-    "description": "Device setting description"
-  },
-  "online": "online",
-  "@online": {
-    "description": "Device status online"
-  },
-  "offline": "offline",
-  "@offline": {
-    "description": "Device status offline"
-  },
-  "receiving": "receiving",
-  "@receiving": {
-    "description": "Device status receiving"
-  },
-  "online2": "online",
-  "@online2": {
-    "description": "Device status online variant"
-  },
-  "receiveOnly": "Receive only",
-  "@receiveOnly": {
-    "description": "Device status"
-  },
+  "@madeWithLove": { "description": "Footer text" },
+
+  "profile": "Profile",
+  "@profile": { "description": "Profile screen title" },
+  "profileEditButton": "Edit Profile",
+  "@profileEditButton": { "description": "Edit profile button" },
+  "profileEditing": "Editing",
+  "@profileEditing": { "description": "Profile editing screen title" },
+  "profileNameSubtitle": "Name, avatar, contact info",
+  "@profileNameSubtitle": { "description": "Profile settings subtitle" },
+  "name": "Name",
+  "@name": { "description": "Name field label" },
+  "email": "Email",
+  "@email": { "description": "Email field label" },
+  "memberSince": "Member Since",
+  "@memberSince": { "description": "Member since label" },
+  "user": "User",
+  "@user": { "description": "Default user name" },
+  "noEmail": "No email",
+  "@noEmail": { "description": "Fallback when email is empty" },
+  "yourName": "Your name",
+  "@yourName": { "description": "Name field hint" },
+  "saveProfile": "Profile updated",
+  "@saveProfile": { "description": "Success toast when profile saved" },
+  "saveError": "Failed to save, please try again",
+  "@saveError": { "description": "Error toast when save fails" },
+  "changeEmailInfo": "Change email through support.",
+  "@changeEmailInfo": { "description": "Email change info" },
+  "personalData": "PERSONAL DATA",
+  "@personalData": { "description": "Personal data section header" },
   "protected": "protected",
-  "@protected": {
-    "description": "Device protection status"
+  "@protected": { "description": "Email locked badge" },
+
+  "language": "Language",
+  "@language": { "description": "Language settings option" },
+  "languageEn": "English",
+  "@languageEn": { "description": "English language name" },
+  "languageRu": "Русский",
+  "@languageRu": { "description": "Russian language name" },
+  "chooseLanguage": "Choose your preferred language",
+  "@chooseLanguage": { "description": "Language selection subtitle" },
+  "languageChangedHint": "Language will change immediately",
+  "@languageChangedHint": { "description": "Info banner title on language screen" },
+  "languageChangedDesc": "All text in the app will be displayed in the selected language.",
+  "@languageChangedDesc": { "description": "Info banner body on language screen" },
+
+  "notifications": "Notifications",
+  "@notifications": { "description": "Notifications settings option" },
+  "notificationsSubtitle": "Push, sounds, quiet hours",
+  "@notificationsSubtitle": { "description": "Notifications settings subtitle" },
+
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": { "description": "Privacy policy screen and settings option" },
+  "privacyWhat": "What will be in the policy",
+  "@privacyWhat": { "description": "Privacy policy section title" },
+  "privacyDataCollected": "What data is collected",
+  "@privacyDataCollected": { "description": "Privacy policy bullet" },
+  "privacyDataUsage": "How it is used",
+  "@privacyDataUsage": { "description": "Privacy policy bullet" },
+  "privacyYourRights": "Your rights and control",
+  "@privacyYourRights": { "description": "Privacy policy bullet" },
+  "privacySecurity": "Security and encryption measures",
+  "@privacySecurity": { "description": "Privacy policy bullet" },
+  "privacyContact": "Contact for requests",
+  "@privacyContact": { "description": "Privacy policy bullet" },
+  "documentPlaceholder": "Preparing document. This is a placeholder — do not use in public channels.",
+  "@documentPlaceholder": { "description": "Privacy policy placeholder text" },
+
+  "contactUs": "Contact Us",
+  "@contactUs": { "description": "Contact us settings option" },
+  "contactUsTitle": "Get in Touch",
+  "@contactUsTitle": { "description": "Contact us screen heading" },
+  "contactUsDescription": "Choose a convenient way to contact us — we'll respond during business hours.",
+  "@contactUsDescription": { "description": "Contact us screen subtitle" },
+  "mailContact": "Email",
+  "@mailContact": { "description": "Contact method: email" },
+  "website": "Website",
+  "@website": { "description": "Contact method: website" },
+  "social": "Social Media",
+  "@social": { "description": "Contact method: social" },
+  "team": "Team",
+  "@team": { "description": "Team section" },
+  "failedToOpenLink": "Failed to open link",
+  "@failedToOpenLink": { "description": "Toast when URL fails to open" },
+
+  "simpplyPremium": "Simply Premium",
+  "@simpplyPremium": { "description": "Premium banner title" },
+  "premiumDescription": "Remove limits on devices and history.",
+  "@premiumDescription": { "description": "Premium banner description" },
+  "open": "Open",
+  "@open": { "description": "Open button" },
+
+  "logout": "Sign Out",
+  "@logout": { "description": "Logout button" },
+  "logoutConfirmation": "Sign out of account?",
+  "@logoutConfirmation": { "description": "Logout confirmation text" },
+  "logoutConfirmButton": "Sign Out",
+  "@logoutConfirmButton": { "description": "Confirm logout button" },
+  "cancel": "Cancel",
+  "@cancel": { "description": "Cancel button" },
+  "save": "Save",
+  "@save": { "description": "Save button" },
+  "coming": "Coming Soon",
+  "@coming": { "description": "Coming soon badge" },
+  "retry": "Retry",
+  "@retry": { "description": "Retry button" },
+  "failedToLoad": "Failed to load",
+  "@failedToLoad": { "description": "Error state title" },
+  "copy": "Copy",
+  "@copy": { "description": "Copy button" },
+
+  "devices": "Devices",
+  "@devices": { "description": "Devices tab label" },
+  "devicesEyebrowEmpty": "Connect your first phone",
+  "@devicesEyebrowEmpty": { "description": "Devices header when no devices" },
+  "devicesEyebrow": "{count} devices · {senders} sending SMS",
+  "@devicesEyebrow": {
+    "description": "Devices header eyebrow",
+    "placeholders": {
+      "count": { "type": "int" },
+      "senders": { "type": "int" }
+    }
   },
+  "allDevices": "ALL DEVICES",
+  "@allDevices": { "description": "Device section header" },
+  "mainBadge": "MAIN",
+  "@mainBadge": { "description": "Main device badge label" },
+  "deviceActionsTooltip": "Device Actions",
+  "@deviceActionsTooltip": { "description": "Device menu tooltip" },
+  "online": "online",
+  "@online": { "description": "Device status online" },
+  "offline": "offline",
+  "@offline": { "description": "Device status offline" },
+  "receiving": "receiving",
+  "@receiving": { "description": "Device receive-only status" },
+  "lastSeenAt": "was {time}",
+  "@lastSeenAt": {
+    "description": "Last seen relative time",
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "onlineFleetStatus": "online",
+  "@onlineFleetStatus": { "description": "Fleet badge online label" },
+  "offlineFleetCount": "{count} offline",
+  "@offlineFleetCount": {
+    "description": "Fleet badge offline count",
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "todayLabel": "TODAY",
+  "@todayLabel": { "description": "Today stat label" },
+  "batteryLabel": "BATTERY",
+  "@batteryLabel": { "description": "Battery stat label" },
+  "noData": "no data",
+  "@noData": { "description": "Battery no data label" },
+  "lowBatteryStatus": "low",
+  "@lowBatteryStatus": { "description": "Low battery status" },
+  "mediumBatteryStatus": "medium",
+  "@mediumBatteryStatus": { "description": "Medium battery status" },
+  "normalBatteryStatus": "normal",
+  "@normalBatteryStatus": { "description": "Normal battery status" },
+  "autoSlot": "auto",
+  "@autoSlot": { "description": "Auto SIM slot label" },
+  "activeSimStatus": "ACTIVE",
+  "@activeSimStatus": { "description": "Active SIM status" },
+  "readySimStatus": "READY",
+  "@readySimStatus": { "description": "Ready SIM status" },
+  "receiveOnly": "Receive only",
+  "@receiveOnly": { "description": "Receive only device type" },
   "iphoneInfo": "For iPhone we only show name, platform and device status.",
-  "@iphoneInfo": {
-    "description": "iPhone limitation info"
-  },
+  "@iphoneInfo": { "description": "iPhone limitation info" },
+  "noDevices": "No devices yet",
+  "@noDevices": { "description": "Empty state for devices" },
+  "addDevicesHint": "Connect Android as a sender or iPhone as receive-only device.",
+  "@addDevicesHint": { "description": "Empty devices hint" },
+  "addButton": "Add",
+  "@addButton": { "description": "Add device button" },
+  "editDevice": "Device Settings",
+  "@editDevice": { "description": "Edit device title" },
+  "newDevice": "New Device",
+  "@newDevice": { "description": "New device title" },
+  "permissions": "Choose what data to display in the app and which features to enable.",
+  "@permissions": { "description": "Device settings description" },
+  "smsForwarding": "SMS Forwarding",
+  "@smsForwarding": { "description": "Device setting" },
+  "allowForwarding": "Allow SMS forwarding from this device",
+  "@allowForwarding": { "description": "Device setting description" },
+  "networkDisplay": "Network Display",
+  "@networkDisplay": { "description": "Device setting" },
+  "networkTypeInfo": "Card will show network type and signal quality",
+  "@networkTypeInfo": { "description": "Device setting description" },
+  "batteryLevel": "Battery Level",
+  "@batteryLevel": { "description": "Device setting" },
+  "batteryInfo": "Device section will show current battery level",
+  "@batteryInfo": { "description": "Device setting description" },
   "deleteDevice": "Delete Device",
-  "@deleteDevice": {
-    "description": "Delete device button"
-  },
+  "@deleteDevice": { "description": "Delete device button" },
   "deleteDeviceWarning": "The device will disappear from the list, but can be reconnected later.",
-  "@deleteDeviceWarning": {
-    "description": "Delete device warning"
+  "@deleteDeviceWarning": { "description": "Delete device warning" },
+  "deviceConfirmTitle": "Device",
+  "@deviceConfirmTitle": { "description": "Device deletion dialog title" },
+  "deleteDeviceFromList": "Delete {name} from devices?",
+  "@deleteDeviceFromList": {
+    "description": "Confirm delete device",
+    "placeholders": { "name": { "type": "String" } }
   },
   "lowBattery": "Low battery · {count}",
   "@lowBattery": {
-    "description": "Low battery indicator",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
+    "description": "Low battery insight chip",
+    "placeholders": { "count": { "type": "int" } }
   },
-  "lastSeen": "Last seen {time}",
-  "@lastSeen": {
-    "description": "Last seen indicator",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "lastActivity": "Last activity {time}",
+  "lastActivity": "Last {time}",
   "@lastActivity": {
-    "description": "Last activity indicator",
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
-  "lowBatteryStatus": "low",
-  "@lowBatteryStatus": {
-    "description": "Low battery status label"
-  },
-  "mediumBatteryStatus": "medium",
-  "@mediumBatteryStatus": {
-    "description": "Medium battery status label"
-  },
-  "normalBatteryStatus": "normal",
-  "@normalBatteryStatus": {
-    "description": "Normal battery status label"
+    "description": "Last activity chip",
+    "placeholders": { "time": { "type": "String" } }
   },
   "waitingFirstSms": "Waiting for first SMS",
-  "@waitingFirstSms": {
-    "description": "Device status when waiting for first message"
-  },
+  "@waitingFirstSms": { "description": "Device awaiting first SMS" },
   "connectSender": "Connect sender",
-  "@connectSender": {
-    "description": "Device status when sender needed"
-  },
+  "@connectSender": { "description": "No sender connected chip" },
   "pinned": "Pin expanded view",
-  "@pinned": {
-    "description": "Pin device action"
-  },
+  "@pinned": { "description": "Pin device action" },
   "unpinned": "Unpin expanded view",
-  "@unpinned": {
-    "description": "Unpin device action"
-  },
+  "@unpinned": { "description": "Unpin device action" },
   "raiseAbove": "Raise above",
-  "@raiseAbove": {
-    "description": "Device action"
-  },
+  "@raiseAbove": { "description": "Device reorder action" },
   "lowerBelow": "Lower below",
-  "@lowerBelow": {
-    "description": "Device action"
-  },
+  "@lowerBelow": { "description": "Device reorder action" },
   "reconnect": "Reconnect",
-  "@reconnect": {
-    "description": "Device action"
+  "@reconnect": { "description": "Device reconnect action" },
+  "delete": "Delete",
+  "@delete": { "description": "Delete action" },
+
+  "messages": "Messages",
+  "@messages": { "description": "Messages tab label" },
+  "messagesEyebrowArchive": "{count} in archive",
+  "@messagesEyebrowArchive": {
+    "description": "Messages header when no unread",
+    "placeholders": { "count": { "type": "int" } }
   },
-  "allDevices": "ALL DEVICES",
-  "@allDevices": {
-    "description": "Device section header"
-  },
-  "personalData": "PERSONAL DATA",
-  "@personalData": {
-    "description": "Personal data section header"
-  },
-  "categoryAuto": "Category will be auto-determined from the text.",
-  "@categoryAuto": {
-    "description": "Category info"
-  },
-  "hello": "Hello!",
-  "@hello": {
-    "description": "Auth screen greeting for login"
-  },
-  "createAccount": "Create Account",
-  "@createAccount": {
-    "description": "Auth screen greeting for signup"
-  },
-  "loginTab": "Sign In",
-  "@loginTab": {
-    "description": "Login tab label"
-  },
-  "signupTab": "Sign Up",
-  "@signupTab": {
-    "description": "Signup tab label"
-  },
-  "fullName": "Full Name",
-  "@fullName": {
-    "description": "Full name field placeholder"
-  },
-  "emailField": "Email",
-  "@emailField": {
-    "description": "Email field placeholder"
-  },
-  "password": "Password",
-  "@password": {
-    "description": "Password field placeholder"
-  },
-  "loginButton": "Sign In",
-  "@loginButton": {
-    "description": "Login button"
-  },
-  "signupButton": "Create Account",
-  "@signupButton": {
-    "description": "Signup button"
-  },
-  "forgotPassword": "Forgot password?",
-  "@forgotPassword": {
-    "description": "Forgot password link"
-  },
-  "loginError": "Failed to sign in",
-  "@loginError": {
-    "description": "Login error message"
-  },
-  "signupError": "Failed to create account",
-  "@signupError": {
-    "description": "Signup error message"
-  },
-  "resetPasswordSent": "Password reset link sent",
-  "@resetPasswordSent": {
-    "description": "Success message after password reset"
-  },
-  "resetPasswordError": "Failed to send password reset email",
-  "@resetPasswordError": {
-    "description": "Error when sending reset password email"
-  },
-  "quickStart": "A few seconds — and you're in Simply",
-  "@quickStart": {
-    "description": "Quick start message on splash"
-  },
-  "loginDescription": "Sign in to continue forwarding SMS",
-  "@loginDescription": {
-    "description": "Login screen description"
-  },
-  "permissions": "Choose what data to display in the app and which features to enable.",
-  "@permissions": {
-    "description": "Permissions description"
-  },
-  "yourName": "Your name",
-  "@yourName": {
-    "description": "Name field hint"
-  },
-  "saveProfile": "Profile updated",
-  "@saveProfile": {
-    "description": "Success toast when profile is saved"
-  },
-  "saveError": "Failed to save, please try again",
-  "@saveError": {
-    "description": "Error toast when save fails"
-  },
-  "changeEmailInfo": "Change email through support.",
-  "@changeEmailInfo": {
-    "description": "Email change info"
-  },
-  "contactUsTitle": "Contact Us",
-  "@contactUsTitle": {
-    "description": "Contact us screen title"
-  },
-  "contactUsDescription": "Choose a convenient way to contact us — we'll respond during business hours.",
-  "@contactUsDescription": {
-    "description": "Contact us screen description"
-  },
-  "email": "Email",
-  "@email": {
-    "description": "Contact method"
-  },
-  "website": "Website",
-  "@website": {
-    "description": "Contact method"
-  },
-  "social": "Social Media",
-  "@social": {
-    "description": "Contact method"
-  },
-  "team": "Team",
-  "@team": {
-    "description": "Team section"
-  },
-  "privacyWhat": "What will be in the policy",
-  "@privacyWhat": {
-    "description": "Privacy policy section title"
-  },
-  "privacyDataCollected": "What data is collected",
-  "@privacyDataCollected": {
-    "description": "Privacy policy bullet point"
-  },
-  "privacyDataUsage": "How it is used",
-  "@privacyDataUsage": {
-    "description": "Privacy policy bullet point"
-  },
-  "privacyYourRights": "Your rights and control",
-  "@privacyYourRights": {
-    "description": "Privacy policy bullet point"
-  },
-  "privacySecurity": "Security and encryption measures",
-  "@privacySecurity": {
-    "description": "Privacy policy bullet point"
-  },
-  "privacyContact": "Contact for requests",
-  "@privacyContact": {
-    "description": "Privacy policy bullet point"
-  },
-  "documentPlaceholder": "Preparing document. This is a placeholder — do not use in public channels.",
-  "@documentPlaceholder": {
-    "description": "Privacy policy placeholder text"
-  },
-  "search": "Search messages",
-  "@search": {
-    "description": "Search field placeholder"
-  },
-  "today": "TODAY",
-  "@today": {
-    "description": "Date group header"
-  },
-  "allRead": "All Read",
-  "@allRead": {
-    "description": "Filter state"
-  },
-  "noNewMessages": "No new messages.",
-  "@noNewMessages": {
-    "description": "Filter state description"
-  },
-  "notFound": "Nothing found",
-  "@notFound": {
-    "description": "Search empty state"
-  },
-  "tryChangingQuery": "Try changing your query or reset the filter.",
-  "@tryChangingQuery": {
-    "description": "Search empty state description"
+  "messagesEyebrowUnread": "{count} new · today",
+  "@messagesEyebrowUnread": {
+    "description": "Messages header with unread count",
+    "placeholders": { "count": { "type": "int" } }
   },
   "yourSms": "Your SMS will appear here",
-  "@yourSms": {
-    "description": "Empty state when no devices are set up"
+  "@yourSms": { "description": "Messages header when empty" },
+  "search": "Search messages",
+  "@search": { "description": "Search field placeholder" },
+  "allFilter": "All",
+  "@allFilter": { "description": "All messages filter chip" },
+  "unread": "Unread",
+  "@unread": { "description": "Unread filter chip" },
+  "codes": "Codes",
+  "@codes": { "description": "Codes filter chip" },
+  "banks": "Banks",
+  "@banks": { "description": "Banks filter chip" },
+  "delivery": "Delivery",
+  "@delivery": { "description": "Delivery filter chip" },
+  "filters": "Filters",
+  "@filters": { "description": "Filters sheet title" },
+  "select": "Select",
+  "@select": { "description": "Select action" },
+  "deleteAll": "Delete All",
+  "@deleteAll": { "description": "Delete all button" },
+  "readAll": "Read All",
+  "@readAll": { "description": "Mark all read button" },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "description": "Selection bar count label",
+    "placeholders": { "count": { "type": "int" } }
   },
-  "hereAfterNotifications": "They will appear here after notifications arrive.",
-  "@hereAfterNotifications": {
-    "description": "Empty state description"
+  "markedReadToast": "Selected conversations marked as read",
+  "@markedReadToast": { "description": "Toast after marking read" },
+  "conversationActionsSheet": "Message Actions",
+  "@conversationActionsSheet": { "description": "Conversation actions sheet barrier label" },
+  "conversationSelectedToast": "Conversation selected",
+  "@conversationSelectedToast": { "description": "Toast when conversation selected" },
+  "deleteTitle": "Delete",
+  "@deleteTitle": { "description": "Delete dialog title" },
+  "deleteConfirmation": "Delete selected conversations?",
+  "@deleteConfirmation": { "description": "Delete confirmation text" },
+  "selectedDialogsDisappear": "{count, plural, =1{1 conversation will disappear from the list.} other{{count} conversations will disappear from the list.}}",
+  "@selectedDialogsDisappear": {
+    "description": "Plural delete warning",
+    "placeholders": { "count": { "type": "int" } }
   },
+  "deleteButton": "Delete All",
+  "@deleteButton": { "description": "Confirm delete all button" },
+  "keep": "Keep",
+  "@keep": { "description": "Keep button" },
+  "selectedConversationsDeleted": "Selected conversations deleted",
+  "@selectedConversationsDeleted": { "description": "Toast after multi delete" },
+  "failedToDeleteMany": "Failed to delete conversations",
+  "@failedToDeleteMany": { "description": "Error toast multi delete" },
+  "deleteConfirmationSingle": "Delete conversation {name}?",
+  "@deleteConfirmationSingle": {
+    "description": "Single conversation delete confirm",
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "messagesWillDisappear": "Messages will disappear from this list.",
+  "@messagesWillDisappear": { "description": "Single delete warning" },
+  "conversationDeleted": "Conversation deleted",
+  "@conversationDeleted": { "description": "Toast after single delete" },
+  "failedToDelete": "Failed to delete",
+  "@failedToDelete": { "description": "Error toast single delete" },
+  "noMessages": "No messages",
+  "@noMessages": { "description": "Empty messages state" },
+  "noMessagesYet": "No messages yet",
+  "@noMessagesYet": { "description": "Empty state for all messages filter" },
   "hereWhenSmsArrives": "They will appear here as soon as the device receives SMS.",
-  "@hereWhenSmsArrives": {
-    "description": "Empty state description for codes"
+  "@hereWhenSmsArrives": { "description": "Empty state hint" },
+  "allRead": "All Read",
+  "@allRead": { "description": "Unread filter empty state title" },
+  "noNewMessages": "No new messages.",
+  "@noNewMessages": { "description": "Unread filter empty state subtitle" },
+  "noCodes": "No codes found",
+  "@noCodes": { "description": "Codes filter empty state" },
+  "codesHint": "One-time code messages will appear here.",
+  "@codesHint": { "description": "Codes empty state hint" },
+  "noBanks": "No bank messages",
+  "@noBanks": { "description": "Banks filter empty state" },
+  "categoryAuto": "Category will be auto-determined from the text.",
+  "@categoryAuto": { "description": "Banks empty state hint" },
+  "noDelivery": "No delivery messages",
+  "@noDelivery": { "description": "Delivery filter empty state" },
+  "deliveryHint": "They'll appear when courier notifications arrive.",
+  "@deliveryHint": { "description": "Delivery empty state hint" },
+  "notFound": "Nothing found",
+  "@notFound": { "description": "Search empty state" },
+  "tryChangingQuery": "Try changing your query or reset the filter.",
+  "@tryChangingQuery": { "description": "Search empty state hint" },
+  "hereAfterNotifications": "They will appear here after notifications arrive.",
+  "@hereAfterNotifications": { "description": "Empty state notification hint" },
+
+  "code": "Code",
+  "@code": { "description": "Code label" },
+  "codeCopied": "Code copied",
+  "@codeCopied": { "description": "Code copied toast" },
+  "copySender": "Copy sender address",
+  "@copySender": { "description": "Copy sender chip" },
+  "senderCopied": "Sender copied",
+  "@senderCopied": { "description": "Sender copied toast" },
+  "hideHint": "Hide hint",
+  "@hideHint": { "description": "Hide hint chip" },
+  "howSimplyWorks": "How Simply Works",
+  "@howSimplyWorks": { "description": "How Simply works section title" },
+  "howSimplyWorksBody": "Simply forwards SMS from the device and automatically copies found codes to clipboard.",
+  "@howSimplyWorksBody": { "description": "How Simply works description" },
+  "codeFromMessage": "Code from Message",
+  "@codeFromMessage": { "description": "Code from message section title" },
+  "source": "Source: {label}",
+  "@source": {
+    "description": "Source chip label",
+    "placeholders": { "label": { "type": "String" } }
   },
-  "onContact": "On Contact",
-  "@onContact": {
-    "description": "Device status"
-  },
+  "smsFromIphone": "SMS · from iPhone",
+  "@smsFromIphone": { "description": "iOS source label" },
+  "smsFromAndroid": "SMS · from Android",
+  "@smsFromAndroid": { "description": "Android source label" },
+
+  "hello": "Hello!",
+  "@hello": { "description": "Login greeting" },
+  "createAccount": "Create Account",
+  "@createAccount": { "description": "Signup greeting" },
+  "loginTab": "Sign In",
+  "@loginTab": { "description": "Login tab" },
+  "signupTab": "Sign Up",
+  "@signupTab": { "description": "Signup tab" },
+  "fullName": "Name",
+  "@fullName": { "description": "Full name field" },
+  "emailField": "Email",
+  "@emailField": { "description": "Email field" },
+  "password": "Password",
+  "@password": { "description": "Password field" },
+  "loginButton": "Sign In",
+  "@loginButton": { "description": "Login button" },
+  "signupButton": "Create Account",
+  "@signupButton": { "description": "Signup button" },
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": { "description": "Forgot password link" },
+  "loginError": "Failed to sign in",
+  "@loginError": { "description": "Login error dialog title" },
+  "signupError": "Failed to create account",
+  "@signupError": { "description": "Signup error dialog title" },
+  "loginErrorMessage": "Failed to sign in",
+  "@loginErrorMessage": { "description": "Login error fallback message" },
+  "signupErrorMessage": "Failed to create account",
+  "@signupErrorMessage": { "description": "Signup error fallback message" },
+  "resetPasswordSent": "Password reset link sent",
+  "@resetPasswordSent": { "description": "Reset password success toast" },
+  "resetPasswordError": "Failed to send reset email",
+  "@resetPasswordError": { "description": "Reset password error fallback" },
+  "quickStart": "A few seconds — and you're in Simply",
+  "@quickStart": { "description": "Signup description" },
+  "loginDescription": "Sign in to continue forwarding SMS",
+  "@loginDescription": { "description": "Login description" },
+
+  "today": "TODAY",
+  "@today": { "description": "Today date group header" },
   "allLowercase": "all",
-  "@allLowercase": {
-    "description": "All devices label"
-  }
+  "@allLowercase": { "description": "All lowercase label" },
+
+  "splashSubtitle": "SMS forwarding between devices",
+  "@splashSubtitle": { "description": "Splash screen subtitle" },
+  "copied": "Copied",
+  "@copied": { "description": "Default copied toast message" }
 }

@@ -150,7 +150,7 @@ class _ProfileCard extends StatelessWidget {
   String get _name {
     final n = user?.displayName;
     if (n != null && n.trim().isNotEmpty) return n;
-    return user?.email ?? 'Пользователь';
+    return user?.email ?? l10n.user;
   }
 
   String get _initials {
@@ -210,7 +210,7 @@ class _ProfileCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyle.titleSm(AppColor.ink)),
                     const SizedBox(height: 2),
-                    Text(user?.email ?? 'Без почты',
+                    Text(user?.email ?? l10n.noEmail,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyle.bodySm(AppColor.inkTertiary)),

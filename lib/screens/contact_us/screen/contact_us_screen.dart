@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/widget/app_bar_widget.dart';
 import 'package:simply/screens/widget/background_widget.dart';
 import 'package:simply/screens/widget/platform_tap_scale.dart';
@@ -19,36 +20,38 @@ class ContactUsScreen extends StatelessWidget {
   }
 
   Future<void> _launchUrl(BuildContext context, String url) async {
+    final l10n = AppLocalizations.of(context)!;
     final uri = Uri.parse(url);
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      WarmToast.error(context, 'Не удалось открыть ссылку');
+      WarmToast.error(context, l10n.failedToOpenLink);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BackgroundWidget(
-      appBar: const AppBarWidget(
-        title: 'Связаться с нами',
+      appBar: AppBarWidget(
+        title: l10n.contactUs,
         showBackButton: true,
       ),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
         children: [
           Text(
-            'На связи',
+            l10n.contactUsTitle,
             style: AppTextStyle.h1(AppColor.ink),
           ),
           const SizedBox(height: 6),
           Text(
-            'Выберите удобный способ связи — мы ответим в рабочее время.',
+            l10n.contactUsDescription,
             style: AppTextStyle.bodySm(AppColor.inkTertiary),
           ),
           const SizedBox(height: 20),
           _ContactCard(
             icon: Icons.mail_outline_rounded,
-            title: 'Почта',
+            title: l10n.mailContact,
             subtitle: 'weeidlone@gmail.com',
             iconBg: AppColor.accentSoft,
             iconFg: AppColor.accentDeep,
@@ -57,7 +60,7 @@ class ContactUsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _ContactCard(
             icon: Icons.language_rounded,
-            title: 'Сайт',
+            title: l10n.website,
             subtitle: 'weeidl.com',
             iconBg: const Color(0xFFE7F1FB),
             iconFg: const Color(0xFF2F6BBA),
@@ -66,7 +69,7 @@ class ContactUsScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _ContactCard(
             icon: Icons.alternate_email_rounded,
-            title: 'Соцсети',
+            title: l10n.social,
             subtitle: 'instagram.com/weeidl',
             iconBg: const Color(0xFFF5E8FB),
             iconFg: const Color(0xFF8B3FB5),
@@ -74,9 +77,9 @@ class ContactUsScreen extends StatelessWidget {
                 _launchUrl(context, 'https://www.instagram.com/weeidl'),
           ),
           const SizedBox(height: 28),
-          Text('Команда', style: AppTextStyle.title(AppColor.ink)),
+          Text(l10n.team, style: AppTextStyle.title(AppColor.ink)),
           const SizedBox(height: 12),
-          _TeamMember(
+          const _TeamMember(
             name: 'Artur Rustamov',
             role: 'Founder & CEO',
             initials: 'AR',

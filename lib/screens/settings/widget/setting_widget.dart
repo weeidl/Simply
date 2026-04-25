@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/screens/widget/warm/icon_tile.dart';
 import 'package:simply/themes/colors.dart';
 import 'package:simply/themes/text_style.dart';
@@ -93,7 +94,7 @@ class _SoonBadge extends StatelessWidget {
         color: AppColor.accentSoft,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text('Скоро', style: AppTextStyle.micro(AppColor.accentDeep)),
+      child: Text(AppLocalizations.of(context)!.coming, style: AppTextStyle.micro(AppColor.accentDeep)),
     );
   }
 }

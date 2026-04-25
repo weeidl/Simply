@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/screens/devices/add_new_device/check_device_cubit.dart';
 import 'package:simply/screens/devices/cubit/device_cubit.dart';
@@ -40,6 +41,7 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.device != null;
     return SafeArea(
       top: false,
@@ -62,45 +64,43 @@ class _DeviceSettingsWidgetState extends State<DeviceSettingsWidget> {
               ),
               const SizedBox(height: 18),
               Text(
-                isEdit ? 'Настройки устройства' : 'Новое устройство',
+                isEdit ? l10n.editDevice : l10n.newDevice,
                 style: AppTextStyle.title(AppColor.ink),
               ),
               const SizedBox(height: 6),
               Text(
-                'Выберите, какие данные показывать в приложении и какие функции активировать.',
+                l10n.permissions,
                 style: AppTextStyle.bodySm(AppColor.inkTertiary),
               ),
               const SizedBox(height: 20),
               BuildSwitchTile(
-                title: 'Отправка SMS',
-                subtitle:
-                    'Разрешить пересылать сообщения с этого устройства',
+                title: l10n.smsForwarding,
+                subtitle: l10n.allowForwarding,
                 value: isSMSEnabled,
                 onChanged: (v) => setState(() => isSMSEnabled = v),
               ),
               const SizedBox(height: 10),
               BuildSwitchTile(
-                title: 'Показ сети',
-                subtitle: 'В карточке отобразится тип сети и качество сигнала',
+                title: l10n.networkDisplay,
+                subtitle: l10n.networkTypeInfo,
                 value: isNetworkEnabled,
                 onChanged: (v) => setState(() => isNetworkEnabled = v),
               ),
               const SizedBox(height: 10),
               BuildSwitchTile(
-                title: 'Уровень заряда',
-                subtitle:
-                    'В разделе «Устройства» появится текущий уровень заряда',
+                title: l10n.batteryLevel,
+                subtitle: l10n.batteryInfo,
                 value: isChargingEnabled,
                 onChanged: (v) => setState(() => isChargingEnabled = v),
               ),
               const Spacer(),
               _PrimaryAction(
-                label: 'Сохранить',
+                label: l10n.save,
                 onTap: _save,
               ),
               if (isEdit) ...[
                 const SizedBox(height: 10),
-                _DangerAction(label: 'Удалить устройство', onTap: _delete),
+                _DangerAction(label: l10n.deleteDevice, onTap: _delete),
               ],
             ],
           ),

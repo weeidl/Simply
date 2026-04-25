@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simply/l10n/app_localizations.dart';
 import 'package:simply/models/device.dart';
 import 'package:simply/models/device_sim_card.dart';
 import 'package:simply/themes/colors.dart';
@@ -111,10 +112,11 @@ class _TodayStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StatLabel('СЕГОДНЯ'),
+        _StatLabel(l10n.todayLabel),
         const SizedBox(height: 8),
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -197,6 +199,7 @@ class _BatteryStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final value = level?.clamp(0, 100);
     final ratio = value == null ? 0.0 : value / 100.0;
     final fill = !online
@@ -210,7 +213,7 @@ class _BatteryStat extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _StatLabel('БАТАРЕЯ'),
+        _StatLabel(l10n.batteryLabel),
         const SizedBox(height: 10),
         Row(
           children: [
@@ -249,10 +252,10 @@ class _BatteryStat extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           value == null
-              ? 'нет данных'
+              ? l10n.noData
               : (value <= 20
-                  ? 'низкий'
-                  : (value <= 40 ? 'средний' : 'в норме')),
+                  ? l10n.lowBatteryStatus
+                  : (value <= 40 ? l10n.mediumBatteryStatus : l10n.normalBatteryStatus)),
           style: AppTextStyle.caption(
             value != null && value <= 20 ? AppColor.danger : AppColor.inkTertiary,
           ).copyWith(fontWeight: FontWeight.w700),
@@ -273,6 +276,7 @@ class _SimStat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final activeSlot = device.activeSimSlot;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -293,7 +297,7 @@ class _SimStat extends StatelessWidget {
           runSpacing: 4,
           children: [
             _MiniPill(
-              label: activeSlot != null ? 'SIM $activeSlot' : 'авто',
+              label: activeSlot != null ? 'SIM $activeSlot' : l10n.autoSlot,
               active: online,
             ),
             if ((device.networkType?.trim().isNotEmpty ?? false))
@@ -350,8 +354,9 @@ class _SimRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusLabel =
-        card.isActive ? (networkType?.toUpperCase() ?? 'АКТИВНА') : 'ГОТОВА';
+        card.isActive ? (networkType?.toUpperCase() ?? l10n.activeSimStatus) : l10n.readySimStatus;
     final activeRing =
         card.isActive && online ? AppColor.success : AppColor.inkPlaceholder;
 
@@ -437,6 +442,7 @@ class _ReceiverOnlyBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -448,12 +454,12 @@ class _ReceiverOnlyBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Только получает сообщения',
+            l10n.receiveOnly,
             style: AppTextStyle.titleSm(AppColor.ink),
           ),
           const SizedBox(height: 4),
           Text(
-            'Для iPhone показываем только имя, платформу и статус устройства.',
+            l10n.iphoneInfo,
             style: AppTextStyle.bodySm(AppColor.inkTertiary),
           ),
           const SizedBox(height: 12),
@@ -463,7 +469,7 @@ class _ReceiverOnlyBody extends StatelessWidget {
             children: [
               _MiniPill(label: device.platformLabel, active: false),
               _MiniPill(
-                label: online ? 'в сети' : 'приём',
+                label: online ? l10n.online : l10n.receiving,
                 active: online,
               ),
             ],

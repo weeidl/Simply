@@ -110,161 +110,11 @@ abstract class AppLocalizations {
   /// **'Account & App'**
   String get settingsHeaderEyebrow;
 
-  /// Settings tab label and screen title
+  /// Settings tab and screen title
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
-
-  /// Profile screen title and settings option
-  ///
-  /// In en, this message translates to:
-  /// **'Profile'**
-  String get profile;
-
-  /// Button to edit profile
-  ///
-  /// In en, this message translates to:
-  /// **'Edit Profile'**
-  String get profileEditButton;
-
-  /// Profile editing screen title
-  ///
-  /// In en, this message translates to:
-  /// **'Editing'**
-  String get profileEditing;
-
-  /// Notifications settings option
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
-
-  /// Notifications settings subtitle
-  ///
-  /// In en, this message translates to:
-  /// **'Push, sounds, quiet hours'**
-  String get notificationsSubtitle;
-
-  /// Language settings option
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get language;
-
-  /// English language name
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEn;
-
-  /// Russian language name
-  ///
-  /// In en, this message translates to:
-  /// **'Русский'**
-  String get languageRu;
-
-  /// Privacy policy screen and settings option
-  ///
-  /// In en, this message translates to:
-  /// **'Privacy Policy'**
-  String get privacyPolicy;
-
-  /// Contact us screen and settings option
-  ///
-  /// In en, this message translates to:
-  /// **'Contact Us'**
-  String get contactUs;
-
-  /// Logout button text
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Out'**
-  String get logout;
-
-  /// Logout confirmation dialog
-  ///
-  /// In en, this message translates to:
-  /// **'Sign out of account?'**
-  String get logoutConfirmation;
-
-  /// Logout confirm button
-  ///
-  /// In en, this message translates to:
-  /// **'Sign Out'**
-  String get logoutConfirmButton;
-
-  /// Cancel button
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel'**
-  String get cancel;
-
-  /// Devices tab label
-  ///
-  /// In en, this message translates to:
-  /// **'Devices'**
-  String get devices;
-
-  /// Messages tab label
-  ///
-  /// In en, this message translates to:
-  /// **'Messages'**
-  String get messages;
-
-  /// Name field label
-  ///
-  /// In en, this message translates to:
-  /// **'Name'**
-  String get name;
-
-  /// Contact method
-  ///
-  /// In en, this message translates to:
-  /// **'Email'**
-  String get email;
-
-  /// Member since field label
-  ///
-  /// In en, this message translates to:
-  /// **'Member Since'**
-  String get memberSince;
-
-  /// Default user name
-  ///
-  /// In en, this message translates to:
-  /// **'User'**
-  String get user;
-
-  /// Default text when email is empty
-  ///
-  /// In en, this message translates to:
-  /// **'No email'**
-  String get noEmail;
-
-  /// Profile settings subtitle
-  ///
-  /// In en, this message translates to:
-  /// **'Name, avatar, contact info'**
-  String get profileNameSubtitle;
-
-  /// Premium banner title
-  ///
-  /// In en, this message translates to:
-  /// **'Simply Premium'**
-  String get simpplyPremium;
-
-  /// Premium banner description
-  ///
-  /// In en, this message translates to:
-  /// **'Remove limits on devices and history.'**
-  String get premiumDescription;
-
-  /// Open button
-  ///
-  /// In en, this message translates to:
-  /// **'Open'**
-  String get open;
 
   /// Account section title
   ///
@@ -284,239 +134,281 @@ abstract class AppLocalizations {
   /// **'Made with love by weeidl'**
   String get madeWithLove;
 
-  /// Code label in messages list
+  /// Profile screen title
   ///
   /// In en, this message translates to:
-  /// **'Code'**
-  String get code;
+  /// **'Profile'**
+  String get profile;
 
-  /// Coming soon badge
+  /// Edit profile button
   ///
   /// In en, this message translates to:
-  /// **'Coming Soon'**
-  String get coming;
+  /// **'Edit Profile'**
+  String get profileEditButton;
 
-  /// Unread messages filter
+  /// Profile editing screen title
   ///
   /// In en, this message translates to:
-  /// **'Unread'**
-  String get unread;
+  /// **'Editing'**
+  String get profileEditing;
 
-  /// Codes filter
+  /// Profile settings subtitle
   ///
   /// In en, this message translates to:
-  /// **'Codes'**
-  String get codes;
+  /// **'Name, avatar, contact info'**
+  String get profileNameSubtitle;
 
-  /// Banks filter
+  /// Name field label
   ///
   /// In en, this message translates to:
-  /// **'Banks'**
-  String get banks;
+  /// **'Name'**
+  String get name;
 
-  /// Delivery filter
+  /// Email field label
   ///
   /// In en, this message translates to:
-  /// **'Delivery'**
-  String get delivery;
+  /// **'Email'**
+  String get email;
 
-  /// Filters label
+  /// Member since label
   ///
   /// In en, this message translates to:
-  /// **'Filters'**
-  String get filters;
+  /// **'Member Since'**
+  String get memberSince;
 
-  /// Select button
+  /// Default user name
   ///
   /// In en, this message translates to:
-  /// **'Select'**
-  String get select;
+  /// **'User'**
+  String get user;
 
-  /// Delete button
+  /// Fallback when email is empty
   ///
   /// In en, this message translates to:
-  /// **'Delete'**
-  String get delete;
+  /// **'No email'**
+  String get noEmail;
 
-  /// Read all button
+  /// Name field hint
   ///
   /// In en, this message translates to:
-  /// **'Read All'**
-  String get readAll;
+  /// **'Your name'**
+  String get yourName;
 
-  /// Delete all button
+  /// Success toast when profile saved
   ///
   /// In en, this message translates to:
-  /// **'Delete All'**
-  String get deleteAll;
+  /// **'Profile updated'**
+  String get saveProfile;
 
-  /// Delete dialog title
+  /// Error toast when save fails
   ///
   /// In en, this message translates to:
-  /// **'Delete'**
-  String get deleteTitle;
+  /// **'Failed to save, please try again'**
+  String get saveError;
 
-  /// Delete confirmation dialog
+  /// Email change info
   ///
   /// In en, this message translates to:
-  /// **'Delete selected conversations?'**
-  String get deleteConfirmation;
+  /// **'Change email through support.'**
+  String get changeEmailInfo;
 
-  /// Delete single conversation confirmation
+  /// Personal data section header
   ///
   /// In en, this message translates to:
-  /// **'Delete conversation {name}?'**
-  String deleteConfirmationSingle(String name);
+  /// **'PERSONAL DATA'**
+  String get personalData;
 
-  /// Delete warning text
+  /// Email locked badge
   ///
   /// In en, this message translates to:
-  /// **'Messages will disappear from this list.'**
-  String get messagesWillDisappear;
+  /// **'protected'**
+  String get protected;
 
-  /// Delete confirm button
+  /// Language settings option
   ///
   /// In en, this message translates to:
-  /// **'Delete'**
-  String get deleteButton;
+  /// **'Language'**
+  String get language;
 
-  /// Keep button
+  /// English language name
   ///
   /// In en, this message translates to:
-  /// **'Keep'**
-  String get keep;
+  /// **'English'**
+  String get languageEn;
 
-  /// Toast message for multiple deletions
+  /// Russian language name
   ///
   /// In en, this message translates to:
-  /// **'Selected conversations deleted'**
-  String get selectedConversationsDeleted;
+  /// **'Русский'**
+  String get languageRu;
 
-  /// Toast message for single deletion
+  /// Language selection subtitle
   ///
   /// In en, this message translates to:
-  /// **'Conversation deleted'**
-  String get conversationDeleted;
+  /// **'Choose your preferred language'**
+  String get chooseLanguage;
 
-  /// Error toast when delete fails
+  /// Info banner title on language screen
   ///
   /// In en, this message translates to:
-  /// **'Failed to delete'**
-  String get failedToDelete;
+  /// **'Language will change immediately'**
+  String get languageChangedHint;
 
-  /// Empty state for messages
+  /// Info banner body on language screen
   ///
   /// In en, this message translates to:
-  /// **'No messages'**
-  String get noMessages;
+  /// **'All text in the app will be displayed in the selected language.'**
+  String get languageChangedDesc;
 
-  /// Error state title
+  /// Notifications settings option
   ///
   /// In en, this message translates to:
-  /// **'Failed to load'**
-  String get failedToLoad;
+  /// **'Notifications'**
+  String get notifications;
 
-  /// Retry button
+  /// Notifications settings subtitle
   ///
   /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
+  /// **'Push, sounds, quiet hours'**
+  String get notificationsSubtitle;
 
-  /// Copy button
+  /// Privacy policy screen and settings option
   ///
   /// In en, this message translates to:
-  /// **'Copy'**
-  String get copy;
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
 
-  /// Copy sender tooltip
+  /// Privacy policy section title
   ///
   /// In en, this message translates to:
-  /// **'Copy sender address'**
-  String get copySender;
+  /// **'What will be in the policy'**
+  String get privacyWhat;
 
-  /// Toast when sender is copied
+  /// Privacy policy bullet
   ///
   /// In en, this message translates to:
-  /// **'Sender copied'**
-  String get senderCopied;
+  /// **'What data is collected'**
+  String get privacyDataCollected;
 
-  /// Toast when code is copied
+  /// Privacy policy bullet
   ///
   /// In en, this message translates to:
-  /// **'Code copied'**
-  String get codeCopied;
+  /// **'How it is used'**
+  String get privacyDataUsage;
 
-  /// Hide hint button
+  /// Privacy policy bullet
   ///
   /// In en, this message translates to:
-  /// **'Hide hint'**
-  String get hideHint;
+  /// **'Your rights and control'**
+  String get privacyYourRights;
 
-  /// Section title in message details
+  /// Privacy policy bullet
   ///
   /// In en, this message translates to:
-  /// **'How Simply Works'**
-  String get howSimplyWorks;
+  /// **'Security and encryption measures'**
+  String get privacySecurity;
 
-  /// Section title in message details
+  /// Privacy policy bullet
   ///
   /// In en, this message translates to:
-  /// **'Code from Message'**
-  String get codeFromMessage;
+  /// **'Contact for requests'**
+  String get privacyContact;
 
-  /// Source label in message details
+  /// Privacy policy placeholder text
   ///
   /// In en, this message translates to:
-  /// **'Source: {label}'**
-  String source(String label);
+  /// **'Preparing document. This is a placeholder — do not use in public channels.'**
+  String get documentPlaceholder;
 
-  /// Empty state for codes filter
+  /// Contact us settings option
   ///
   /// In en, this message translates to:
-  /// **'No codes found'**
-  String get noCodes;
+  /// **'Contact Us'**
+  String get contactUs;
 
-  /// Empty state for delivery filter
+  /// Contact us screen heading
   ///
   /// In en, this message translates to:
-  /// **'No delivery messages'**
-  String get noDelivery;
+  /// **'Get in Touch'**
+  String get contactUsTitle;
 
-  /// Empty state for banks filter
+  /// Contact us screen subtitle
   ///
   /// In en, this message translates to:
-  /// **'No bank messages'**
-  String get noBanks;
+  /// **'Choose a convenient way to contact us — we\'ll respond during business hours.'**
+  String get contactUsDescription;
 
-  /// Empty state for devices
+  /// Contact method: email
   ///
   /// In en, this message translates to:
-  /// **'No devices yet'**
-  String get noDevices;
+  /// **'Email'**
+  String get mailContact;
 
-  /// Hint to add devices
+  /// Contact method: website
   ///
   /// In en, this message translates to:
-  /// **'Connect Android as a sender or iPhone as receive-only device.'**
-  String get addDevicesHint;
+  /// **'Website'**
+  String get website;
 
-  /// Add device button
+  /// Contact method: social
   ///
   /// In en, this message translates to:
-  /// **'Add'**
-  String get addButton;
+  /// **'Social Media'**
+  String get social;
 
-  /// Device settings title
+  /// Team section
   ///
   /// In en, this message translates to:
-  /// **'Edit Device'**
-  String get editDevice;
+  /// **'Team'**
+  String get team;
 
-  /// New device settings title
+  /// Toast when URL fails to open
   ///
   /// In en, this message translates to:
-  /// **'New Device'**
-  String get newDevice;
+  /// **'Failed to open link'**
+  String get failedToOpenLink;
+
+  /// Premium banner title
+  ///
+  /// In en, this message translates to:
+  /// **'Simply Premium'**
+  String get simpplyPremium;
+
+  /// Premium banner description
+  ///
+  /// In en, this message translates to:
+  /// **'Remove limits on devices and history.'**
+  String get premiumDescription;
+
+  /// Open button
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// Logout button
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get logout;
+
+  /// Logout confirmation text
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out of account?'**
+  String get logoutConfirmation;
+
+  /// Confirm logout button
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get logoutConfirmButton;
+
+  /// Cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
 
   /// Save button
   ///
@@ -524,41 +416,65 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
-  /// Device setting
+  /// Coming soon badge
   ///
   /// In en, this message translates to:
-  /// **'SMS Forwarding'**
-  String get smsForwarding;
+  /// **'Coming Soon'**
+  String get coming;
 
-  /// Device setting
+  /// Retry button
   ///
   /// In en, this message translates to:
-  /// **'Network Display'**
-  String get networkDisplay;
+  /// **'Retry'**
+  String get retry;
 
-  /// Device setting
+  /// Error state title
   ///
   /// In en, this message translates to:
-  /// **'Battery Level'**
-  String get batteryLevel;
+  /// **'Failed to load'**
+  String get failedToLoad;
 
-  /// Device setting description
+  /// Copy button
   ///
   /// In en, this message translates to:
-  /// **'Card will show network type and signal quality'**
-  String get networkTypeInfo;
+  /// **'Copy'**
+  String get copy;
 
-  /// Device setting description
+  /// Devices tab label
   ///
   /// In en, this message translates to:
-  /// **'Device section will show current battery level'**
-  String get batteryInfo;
+  /// **'Devices'**
+  String get devices;
 
-  /// Device setting description
+  /// Devices header when no devices
   ///
   /// In en, this message translates to:
-  /// **'Allow SMS forwarding from this device'**
-  String get allowForwarding;
+  /// **'Connect your first phone'**
+  String get devicesEyebrowEmpty;
+
+  /// Devices header eyebrow
+  ///
+  /// In en, this message translates to:
+  /// **'{count} devices · {senders} sending SMS'**
+  String devicesEyebrow(int count, int senders);
+
+  /// Device section header
+  ///
+  /// In en, this message translates to:
+  /// **'ALL DEVICES'**
+  String get allDevices;
+
+  /// Main device badge label
+  ///
+  /// In en, this message translates to:
+  /// **'MAIN'**
+  String get mainBadge;
+
+  /// Device menu tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Device Actions'**
+  String get deviceActionsTooltip;
 
   /// Device status online
   ///
@@ -572,35 +488,167 @@ abstract class AppLocalizations {
   /// **'offline'**
   String get offline;
 
-  /// Device status receiving
+  /// Device receive-only status
   ///
   /// In en, this message translates to:
   /// **'receiving'**
   String get receiving;
 
-  /// Device status online variant
+  /// Last seen relative time
+  ///
+  /// In en, this message translates to:
+  /// **'was {time}'**
+  String lastSeenAt(String time);
+
+  /// Fleet badge online label
   ///
   /// In en, this message translates to:
   /// **'online'**
-  String get online2;
+  String get onlineFleetStatus;
 
-  /// Device status
+  /// Fleet badge offline count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} offline'**
+  String offlineFleetCount(int count);
+
+  /// Today stat label
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get todayLabel;
+
+  /// Battery stat label
+  ///
+  /// In en, this message translates to:
+  /// **'BATTERY'**
+  String get batteryLabel;
+
+  /// Battery no data label
+  ///
+  /// In en, this message translates to:
+  /// **'no data'**
+  String get noData;
+
+  /// Low battery status
+  ///
+  /// In en, this message translates to:
+  /// **'low'**
+  String get lowBatteryStatus;
+
+  /// Medium battery status
+  ///
+  /// In en, this message translates to:
+  /// **'medium'**
+  String get mediumBatteryStatus;
+
+  /// Normal battery status
+  ///
+  /// In en, this message translates to:
+  /// **'normal'**
+  String get normalBatteryStatus;
+
+  /// Auto SIM slot label
+  ///
+  /// In en, this message translates to:
+  /// **'auto'**
+  String get autoSlot;
+
+  /// Active SIM status
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get activeSimStatus;
+
+  /// Ready SIM status
+  ///
+  /// In en, this message translates to:
+  /// **'READY'**
+  String get readySimStatus;
+
+  /// Receive only device type
   ///
   /// In en, this message translates to:
   /// **'Receive only'**
   String get receiveOnly;
-
-  /// Device protection status
-  ///
-  /// In en, this message translates to:
-  /// **'protected'**
-  String get protected;
 
   /// iPhone limitation info
   ///
   /// In en, this message translates to:
   /// **'For iPhone we only show name, platform and device status.'**
   String get iphoneInfo;
+
+  /// Empty state for devices
+  ///
+  /// In en, this message translates to:
+  /// **'No devices yet'**
+  String get noDevices;
+
+  /// Empty devices hint
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Android as a sender or iPhone as receive-only device.'**
+  String get addDevicesHint;
+
+  /// Add device button
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addButton;
+
+  /// Edit device title
+  ///
+  /// In en, this message translates to:
+  /// **'Device Settings'**
+  String get editDevice;
+
+  /// New device title
+  ///
+  /// In en, this message translates to:
+  /// **'New Device'**
+  String get newDevice;
+
+  /// Device settings description
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what data to display in the app and which features to enable.'**
+  String get permissions;
+
+  /// Device setting
+  ///
+  /// In en, this message translates to:
+  /// **'SMS Forwarding'**
+  String get smsForwarding;
+
+  /// Device setting description
+  ///
+  /// In en, this message translates to:
+  /// **'Allow SMS forwarding from this device'**
+  String get allowForwarding;
+
+  /// Device setting
+  ///
+  /// In en, this message translates to:
+  /// **'Network Display'**
+  String get networkDisplay;
+
+  /// Device setting description
+  ///
+  /// In en, this message translates to:
+  /// **'Card will show network type and signal quality'**
+  String get networkTypeInfo;
+
+  /// Device setting
+  ///
+  /// In en, this message translates to:
+  /// **'Battery Level'**
+  String get batteryLevel;
+
+  /// Device setting description
+  ///
+  /// In en, this message translates to:
+  /// **'Device section will show current battery level'**
+  String get batteryInfo;
 
   /// Delete device button
   ///
@@ -614,49 +662,37 @@ abstract class AppLocalizations {
   /// **'The device will disappear from the list, but can be reconnected later.'**
   String get deleteDeviceWarning;
 
-  /// Low battery indicator
+  /// Device deletion dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Device'**
+  String get deviceConfirmTitle;
+
+  /// Confirm delete device
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name} from devices?'**
+  String deleteDeviceFromList(String name);
+
+  /// Low battery insight chip
   ///
   /// In en, this message translates to:
   /// **'Low battery · {count}'**
   String lowBattery(int count);
 
-  /// Last seen indicator
+  /// Last activity chip
   ///
   /// In en, this message translates to:
-  /// **'Last seen {time}'**
-  String lastSeen(String time);
-
-  /// Last activity indicator
-  ///
-  /// In en, this message translates to:
-  /// **'Last activity {time}'**
+  /// **'Last {time}'**
   String lastActivity(String time);
 
-  /// Low battery status label
-  ///
-  /// In en, this message translates to:
-  /// **'low'**
-  String get lowBatteryStatus;
-
-  /// Medium battery status label
-  ///
-  /// In en, this message translates to:
-  /// **'medium'**
-  String get mediumBatteryStatus;
-
-  /// Normal battery status label
-  ///
-  /// In en, this message translates to:
-  /// **'normal'**
-  String get normalBatteryStatus;
-
-  /// Device status when waiting for first message
+  /// Device awaiting first SMS
   ///
   /// In en, this message translates to:
   /// **'Waiting for first SMS'**
   String get waitingFirstSms;
 
-  /// Device status when sender needed
+  /// No sender connected chip
   ///
   /// In en, this message translates to:
   /// **'Connect sender'**
@@ -674,79 +710,391 @@ abstract class AppLocalizations {
   /// **'Unpin expanded view'**
   String get unpinned;
 
-  /// Device action
+  /// Device reorder action
   ///
   /// In en, this message translates to:
   /// **'Raise above'**
   String get raiseAbove;
 
-  /// Device action
+  /// Device reorder action
   ///
   /// In en, this message translates to:
   /// **'Lower below'**
   String get lowerBelow;
 
-  /// Device action
+  /// Device reconnect action
   ///
   /// In en, this message translates to:
   /// **'Reconnect'**
   String get reconnect;
 
-  /// Device section header
+  /// Delete action
   ///
   /// In en, this message translates to:
-  /// **'ALL DEVICES'**
-  String get allDevices;
+  /// **'Delete'**
+  String get delete;
 
-  /// Personal data section header
+  /// Messages tab label
   ///
   /// In en, this message translates to:
-  /// **'PERSONAL DATA'**
-  String get personalData;
+  /// **'Messages'**
+  String get messages;
 
-  /// Category info
+  /// Messages header when no unread
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in archive'**
+  String messagesEyebrowArchive(int count);
+
+  /// Messages header with unread count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new · today'**
+  String messagesEyebrowUnread(int count);
+
+  /// Messages header when empty
+  ///
+  /// In en, this message translates to:
+  /// **'Your SMS will appear here'**
+  String get yourSms;
+
+  /// Search field placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search messages'**
+  String get search;
+
+  /// All messages filter chip
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allFilter;
+
+  /// Unread filter chip
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unread;
+
+  /// Codes filter chip
+  ///
+  /// In en, this message translates to:
+  /// **'Codes'**
+  String get codes;
+
+  /// Banks filter chip
+  ///
+  /// In en, this message translates to:
+  /// **'Banks'**
+  String get banks;
+
+  /// Delivery filter chip
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get delivery;
+
+  /// Filters sheet title
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// Select action
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// Delete all button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All'**
+  String get deleteAll;
+
+  /// Mark all read button
+  ///
+  /// In en, this message translates to:
+  /// **'Read All'**
+  String get readAll;
+
+  /// Selection bar count label
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(int count);
+
+  /// Toast after marking read
+  ///
+  /// In en, this message translates to:
+  /// **'Selected conversations marked as read'**
+  String get markedReadToast;
+
+  /// Conversation actions sheet barrier label
+  ///
+  /// In en, this message translates to:
+  /// **'Message Actions'**
+  String get conversationActionsSheet;
+
+  /// Toast when conversation selected
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation selected'**
+  String get conversationSelectedToast;
+
+  /// Delete dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteTitle;
+
+  /// Delete confirmation text
+  ///
+  /// In en, this message translates to:
+  /// **'Delete selected conversations?'**
+  String get deleteConfirmation;
+
+  /// Plural delete warning
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 conversation will disappear from the list.} other{{count} conversations will disappear from the list.}}'**
+  String selectedDialogsDisappear(int count);
+
+  /// Confirm delete all button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete All'**
+  String get deleteButton;
+
+  /// Keep button
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get keep;
+
+  /// Toast after multi delete
+  ///
+  /// In en, this message translates to:
+  /// **'Selected conversations deleted'**
+  String get selectedConversationsDeleted;
+
+  /// Error toast multi delete
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete conversations'**
+  String get failedToDeleteMany;
+
+  /// Single conversation delete confirm
+  ///
+  /// In en, this message translates to:
+  /// **'Delete conversation {name}?'**
+  String deleteConfirmationSingle(String name);
+
+  /// Single delete warning
+  ///
+  /// In en, this message translates to:
+  /// **'Messages will disappear from this list.'**
+  String get messagesWillDisappear;
+
+  /// Toast after single delete
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation deleted'**
+  String get conversationDeleted;
+
+  /// Error toast single delete
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete'**
+  String get failedToDelete;
+
+  /// Empty messages state
+  ///
+  /// In en, this message translates to:
+  /// **'No messages'**
+  String get noMessages;
+
+  /// Empty state for all messages filter
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get noMessagesYet;
+
+  /// Empty state hint
+  ///
+  /// In en, this message translates to:
+  /// **'They will appear here as soon as the device receives SMS.'**
+  String get hereWhenSmsArrives;
+
+  /// Unread filter empty state title
+  ///
+  /// In en, this message translates to:
+  /// **'All Read'**
+  String get allRead;
+
+  /// Unread filter empty state subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'No new messages.'**
+  String get noNewMessages;
+
+  /// Codes filter empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No codes found'**
+  String get noCodes;
+
+  /// Codes empty state hint
+  ///
+  /// In en, this message translates to:
+  /// **'One-time code messages will appear here.'**
+  String get codesHint;
+
+  /// Banks filter empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No bank messages'**
+  String get noBanks;
+
+  /// Banks empty state hint
   ///
   /// In en, this message translates to:
   /// **'Category will be auto-determined from the text.'**
   String get categoryAuto;
 
-  /// Auth screen greeting for login
+  /// Delivery filter empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No delivery messages'**
+  String get noDelivery;
+
+  /// Delivery empty state hint
+  ///
+  /// In en, this message translates to:
+  /// **'They\'ll appear when courier notifications arrive.'**
+  String get deliveryHint;
+
+  /// Search empty state
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing found'**
+  String get notFound;
+
+  /// Search empty state hint
+  ///
+  /// In en, this message translates to:
+  /// **'Try changing your query or reset the filter.'**
+  String get tryChangingQuery;
+
+  /// Empty state notification hint
+  ///
+  /// In en, this message translates to:
+  /// **'They will appear here after notifications arrive.'**
+  String get hereAfterNotifications;
+
+  /// Code label
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get code;
+
+  /// Code copied toast
+  ///
+  /// In en, this message translates to:
+  /// **'Code copied'**
+  String get codeCopied;
+
+  /// Copy sender chip
+  ///
+  /// In en, this message translates to:
+  /// **'Copy sender address'**
+  String get copySender;
+
+  /// Sender copied toast
+  ///
+  /// In en, this message translates to:
+  /// **'Sender copied'**
+  String get senderCopied;
+
+  /// Hide hint chip
+  ///
+  /// In en, this message translates to:
+  /// **'Hide hint'**
+  String get hideHint;
+
+  /// How Simply works section title
+  ///
+  /// In en, this message translates to:
+  /// **'How Simply Works'**
+  String get howSimplyWorks;
+
+  /// How Simply works description
+  ///
+  /// In en, this message translates to:
+  /// **'Simply forwards SMS from the device and automatically copies found codes to clipboard.'**
+  String get howSimplyWorksBody;
+
+  /// Code from message section title
+  ///
+  /// In en, this message translates to:
+  /// **'Code from Message'**
+  String get codeFromMessage;
+
+  /// Source chip label
+  ///
+  /// In en, this message translates to:
+  /// **'Source: {label}'**
+  String source(String label);
+
+  /// iOS source label
+  ///
+  /// In en, this message translates to:
+  /// **'SMS · from iPhone'**
+  String get smsFromIphone;
+
+  /// Android source label
+  ///
+  /// In en, this message translates to:
+  /// **'SMS · from Android'**
+  String get smsFromAndroid;
+
+  /// Login greeting
   ///
   /// In en, this message translates to:
   /// **'Hello!'**
   String get hello;
 
-  /// Auth screen greeting for signup
+  /// Signup greeting
   ///
   /// In en, this message translates to:
   /// **'Create Account'**
   String get createAccount;
 
-  /// Login tab label
+  /// Login tab
   ///
   /// In en, this message translates to:
   /// **'Sign In'**
   String get loginTab;
 
-  /// Signup tab label
+  /// Signup tab
   ///
   /// In en, this message translates to:
   /// **'Sign Up'**
   String get signupTab;
 
-  /// Full name field placeholder
+  /// Full name field
   ///
   /// In en, this message translates to:
-  /// **'Full Name'**
+  /// **'Name'**
   String get fullName;
 
-  /// Email field placeholder
+  /// Email field
   ///
   /// In en, this message translates to:
   /// **'Email'**
   String get emailField;
 
-  /// Password field placeholder
+  /// Password field
   ///
   /// In en, this message translates to:
   /// **'Password'**
@@ -770,209 +1118,77 @@ abstract class AppLocalizations {
   /// **'Forgot password?'**
   String get forgotPassword;
 
-  /// Login error message
+  /// Login error dialog title
   ///
   /// In en, this message translates to:
   /// **'Failed to sign in'**
   String get loginError;
 
-  /// Signup error message
+  /// Signup error dialog title
   ///
   /// In en, this message translates to:
   /// **'Failed to create account'**
   String get signupError;
 
-  /// Success message after password reset
+  /// Login error fallback message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to sign in'**
+  String get loginErrorMessage;
+
+  /// Signup error fallback message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create account'**
+  String get signupErrorMessage;
+
+  /// Reset password success toast
   ///
   /// In en, this message translates to:
   /// **'Password reset link sent'**
   String get resetPasswordSent;
 
-  /// Error when sending reset password email
+  /// Reset password error fallback
   ///
   /// In en, this message translates to:
-  /// **'Failed to send password reset email'**
+  /// **'Failed to send reset email'**
   String get resetPasswordError;
 
-  /// Quick start message on splash
+  /// Signup description
   ///
   /// In en, this message translates to:
   /// **'A few seconds — and you\'re in Simply'**
   String get quickStart;
 
-  /// Login screen description
+  /// Login description
   ///
   /// In en, this message translates to:
   /// **'Sign in to continue forwarding SMS'**
   String get loginDescription;
 
-  /// Permissions description
-  ///
-  /// In en, this message translates to:
-  /// **'Choose what data to display in the app and which features to enable.'**
-  String get permissions;
-
-  /// Name field hint
-  ///
-  /// In en, this message translates to:
-  /// **'Your name'**
-  String get yourName;
-
-  /// Success toast when profile is saved
-  ///
-  /// In en, this message translates to:
-  /// **'Profile updated'**
-  String get saveProfile;
-
-  /// Error toast when save fails
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to save, please try again'**
-  String get saveError;
-
-  /// Email change info
-  ///
-  /// In en, this message translates to:
-  /// **'Change email through support.'**
-  String get changeEmailInfo;
-
-  /// Contact us screen title
-  ///
-  /// In en, this message translates to:
-  /// **'Contact Us'**
-  String get contactUsTitle;
-
-  /// Contact us screen description
-  ///
-  /// In en, this message translates to:
-  /// **'Choose a convenient way to contact us — we\'ll respond during business hours.'**
-  String get contactUsDescription;
-
-  /// Contact method
-  ///
-  /// In en, this message translates to:
-  /// **'Website'**
-  String get website;
-
-  /// Contact method
-  ///
-  /// In en, this message translates to:
-  /// **'Social Media'**
-  String get social;
-
-  /// Team section
-  ///
-  /// In en, this message translates to:
-  /// **'Team'**
-  String get team;
-
-  /// Privacy policy section title
-  ///
-  /// In en, this message translates to:
-  /// **'What will be in the policy'**
-  String get privacyWhat;
-
-  /// Privacy policy bullet point
-  ///
-  /// In en, this message translates to:
-  /// **'What data is collected'**
-  String get privacyDataCollected;
-
-  /// Privacy policy bullet point
-  ///
-  /// In en, this message translates to:
-  /// **'How it is used'**
-  String get privacyDataUsage;
-
-  /// Privacy policy bullet point
-  ///
-  /// In en, this message translates to:
-  /// **'Your rights and control'**
-  String get privacyYourRights;
-
-  /// Privacy policy bullet point
-  ///
-  /// In en, this message translates to:
-  /// **'Security and encryption measures'**
-  String get privacySecurity;
-
-  /// Privacy policy bullet point
-  ///
-  /// In en, this message translates to:
-  /// **'Contact for requests'**
-  String get privacyContact;
-
-  /// Privacy policy placeholder text
-  ///
-  /// In en, this message translates to:
-  /// **'Preparing document. This is a placeholder — do not use in public channels.'**
-  String get documentPlaceholder;
-
-  /// Search field placeholder
-  ///
-  /// In en, this message translates to:
-  /// **'Search messages'**
-  String get search;
-
-  /// Date group header
+  /// Today date group header
   ///
   /// In en, this message translates to:
   /// **'TODAY'**
   String get today;
 
-  /// Filter state
-  ///
-  /// In en, this message translates to:
-  /// **'All Read'**
-  String get allRead;
-
-  /// Filter state description
-  ///
-  /// In en, this message translates to:
-  /// **'No new messages.'**
-  String get noNewMessages;
-
-  /// Search empty state
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing found'**
-  String get notFound;
-
-  /// Search empty state description
-  ///
-  /// In en, this message translates to:
-  /// **'Try changing your query or reset the filter.'**
-  String get tryChangingQuery;
-
-  /// Empty state when no devices are set up
-  ///
-  /// In en, this message translates to:
-  /// **'Your SMS will appear here'**
-  String get yourSms;
-
-  /// Empty state description
-  ///
-  /// In en, this message translates to:
-  /// **'They will appear here after notifications arrive.'**
-  String get hereAfterNotifications;
-
-  /// Empty state description for codes
-  ///
-  /// In en, this message translates to:
-  /// **'They will appear here as soon as the device receives SMS.'**
-  String get hereWhenSmsArrives;
-
-  /// Device status
-  ///
-  /// In en, this message translates to:
-  /// **'On Contact'**
-  String get onContact;
-
-  /// All devices label
+  /// All lowercase label
   ///
   /// In en, this message translates to:
   /// **'all'**
   String get allLowercase;
+
+  /// Splash screen subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'SMS forwarding between devices'**
+  String get splashSubtitle;
+
+  /// Default copied toast message
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
 }
 
 class _AppLocalizationsDelegate

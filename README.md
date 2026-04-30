@@ -42,16 +42,6 @@ The classic use case: keep a work Android as a SIM-bound OTP receiver, and read 
     <td><img src="assets/screenshots/IMG_3950.PNG" width="240" alt="Messages list with filter chips and code highlights"/></td>
     <td><img src="assets/screenshots/IMG_3953.PNG" width="240" alt="Conversation with auto-detected OTP code block"/></td>
   </tr>
-  <tr>
-    <td align="center"><b>All Devices</b></td>
-    <td align="center"><b>Settings</b></td>
-    <td align="center"><b>—</b></td>
-  </tr>
-  <tr>
-    <td><img src="assets/screenshots/IMG_3954.PNG" width="240" alt="Multiple devices synced together"/></td>
-    <td><img src="assets/screenshots/IMG_3952.PNG" width="240" alt="Settings, profile and Premium banner"/></td>
-    <td></td>
-  </tr>
 </table>
 
 </div>
